@@ -35,7 +35,7 @@ export default {
             throw error  
         }
     },
-    nuevo: async (req: Request, res: Response) => {
+    create: async (req: Request, res: Response) => {
         try {
             const role = req.body
             const query =
@@ -49,5 +49,11 @@ export default {
             res.status(500).send(error.sqlMessage)
             throw error
         }
+    },
+    update: async (req: Request, res: Response) => {
+
+    },
+    delete: async (req: Request, res: Response) => {
+        
     }
 }
