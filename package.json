@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc",
-    "start": "node build",
+    "start": "node dist",
     "dev": "nodemon",
     "test": "mocha -r ts-node/register test/**/*.test.ts --exit"
   },
