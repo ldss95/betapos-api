@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import controller from '../controllers/business'
+import controller from './controller'
+
 const router: Router = Router()
 
 router.route('/')
@@ -9,5 +10,6 @@ router.route('/')
 router.route('/:id')
     .get(controller.getOne)
     .put(controller.update)
+    .delete(controller.delete)
 
 export default router

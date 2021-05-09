@@ -1,4 +1,4 @@
-import mysql from '../lib/mysql_connection' 
+import mysql from '../../database/connection' 
 import { Request, Response } from 'express'
 
 export default {
