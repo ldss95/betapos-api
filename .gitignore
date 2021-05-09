@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .env
+.husky/_
+.vscode
+.DS_Store
