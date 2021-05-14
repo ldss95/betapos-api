@@ -7,6 +7,7 @@ import branchs from './components/branchs/routes'
 import categories from './components/categories/routes'
 import paymentTypes from './components/payment-types/routes'
 import coupons from './components/coupons/routes'
+import roles from './components/roles/routes'
 import auth from './components/auth/routes'
 
 router.use('/auth', auth)
@@ -16,6 +17,7 @@ router.use('/branchs', branchs)
 router.use('/categories', categories)
 router.use('/payment-types', paymentTypes)
 router.use('/coupons', coupons)
+router.use('/roles', roles)
 
 router.all('*', (req, res) => res.sendStatus(404))
 
