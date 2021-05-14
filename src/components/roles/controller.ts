@@ -1,59 +1,86 @@
-import mysql from '../../database/connection' 
 import { Request, Response } from 'express'
+import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize'
+
+import { Role } from './model'
 
 export default {
-    getAll: async (req: Request, res: Response) => {
-        try {
-            const query =
-                `SELECT
-                    *
-                FROM
-                    roles`
+	getAll: (req: Request, res: Response) => {
+		Role.findAll()
+			.then(roles => res.status(200).send(roles))
+			.catch(error => {
+				res.sendStatus(500)
+				throw error
+			})
+	},
+	getOne: (req: Request, res: Response) => {
+		const { id } = req.params
 
-            const [row, fields] = await mysql.query(query)
-            res.status(200).send(row)
-        } catch (error) {
-            res.status(500).send(error.sqlMessage)
-            throw error
-        }
-    },
-    getOne: async (req: Request, res: Response) => {
-        try {
-            const id: number = +req.params.id
-            const query =
-                `SELECT
-                    *
-                FROM
-                    roles
-                WHERE
-                    id = ?`
+		Role.findOne({ where: { id } })
+			.then(role => {
+				if (role)
+					return res.status(200).send(role)
+				
+				res.status(404).send({
+					message: 'Rol no encontrado'
+				})
+			}).catch(error => {
+				res.sendStatus(500)
+				throw error
+			})
+	},
+	create: (req: Request, res: Response) => {
+		Role.create(req.body)
+			.then(role => res.status(201).send({ id: role.id }))
+			.catch(error => {
+				if (error instanceof UniqueConstraintError) {
+					return res.status(400).send({
+						message: `Ya existe un rol con el nombre "${req.body.name}"`
+					})
+				}
+				
+				res.sendStatus(500)
+				throw error
+			})
+	},
+	update: (req: Request, res: Response) => {
+		const { id } = req.body
 
-            const [rows, fields] = await mysql.query(query, [id])
-            res.status(200).send(rows)
-        } catch (error) {
-            res.status(500).send(error.sqlMessage)
-            throw error  
-        }
-    },
-    create: async (req: Request, res: Response) => {
-        try {
-            const role = req.body
-            const query =
-                `INSERT INTO
-                    roles
-                SET ?`
+		Role.update(req.body, { where: { id } })
+			.then(([updated]) => {
+				if(updated)
+					return res.sendStatus(204)
+				
+				res.status(404).send({ message: 'Rol no encontrado' })
+			}).catch(error => {
+				if (error instanceof UniqueConstraintError) {
+					return res.status(400).send({
+						message: `Ya existe un rol con el nombre "${req.body.name}"`
+					})
+				}
+				
+				res.sendStatus(500)
+				throw error
+			})
+	},
+	delete: (req: Request, res: Response) => {
+		const { id } = req.params
 
-            const [results, fielsd] = await mysql.query(query, role)
-            res.status(200).send(results.insertId)
-        } catch (error) {
-            res.status(500).send(error.sqlMessage)
-            throw error
-        }
-    },
-    update: async (req: Request, res: Response) => {
+		Role.destroy({ where: { id } })
+			.then(deleted => {
+				if(deleted)
+					return res.sendStatus(204)
+				
+				res.status(404).send({ message: 'Role no encontrado' })
+			}).catch(error => {
+				if (error instanceof ForeignKeyConstraintError) {
+					res.status(400).send({
+						message: 'No se puede eliminar un rol con usuarios asignados.'
+					})
+					return;
+				}
 
-    },
-    delete: async (req: Request, res: Response) => {
-        
-    }
+				res.sendStatus(500)
+				throw error
+			})
+	}
 }
