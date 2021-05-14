@@ -12,10 +12,7 @@ const Role = db.define<RoleAttr>('role', {
 	name: {
 		type: DataTypes.STRING(50),
 		unique: true,
-		allowNull: false,
-		validate: {
-			isAlpha: true
-		}
+		allowNull: false
 	},
 	description: DataTypes.STRING(300)
 })
