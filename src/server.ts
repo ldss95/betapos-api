@@ -1,12 +1,12 @@
-import os from 'os';
-import cluster from 'cluster';
+import os from 'os'
+import cluster from 'cluster'
 
 import { app } from './app'
 
 function runServer() {
 	const port = app.get('port')
 	app.listen(port, () => {
-		console.log(`Listen on port: ${port}`);
+		console.log(`Listen on port: ${port}`)
 	})
 }
 
@@ -20,7 +20,7 @@ function runServer() {
 	const cpus = os.cpus().length
 	if (cluster.isMaster) {
 		for (let i = 0; i < cpus; i++) {
-			cluster.fork();
+			cluster.fork()
 		}
 	} else {
 		runServer()

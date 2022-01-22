@@ -4,7 +4,7 @@ import { app } from '../../app'
 
 describe('Auth', () => {
 	describe('POST /auth/login', () => {
-		it('Deberia iniciar sesion', done => {
+		it('Deberia iniciar sesion', (done) => {
 			http(app)
 				.post('/auth/login')
 				.send({ email: 'user@test.com', password: '123456' })
@@ -18,10 +18,11 @@ describe('Auth', () => {
 					expect(body.user).toHaveProperty('roleId')
 
 					done()
-				}).catch(error => done(error))
+				})
+				.catch((error) => done(error))
 		})
 
-		it('Deberia fallar por email incorrecto', done => {
+		it('Deberia fallar por email incorrecto', (done) => {
 			http(app)
 				.post('/auth/login')
 				.send({ email: 'incorrect@email.com', password: '123456' })
@@ -31,10 +32,11 @@ describe('Auth', () => {
 					expect(body.message).toBe('Email incorrecto.')
 
 					done()
-				}).catch(error => done(error))
+				})
+				.catch((error) => done(error))
 		})
 
-		it('Deberia fallar por contraseña incorrecta', done => {
+		it('Deberia fallar por contraseña incorrecta', (done) => {
 			http(app)
 				.post('/auth/login')
 				.send({ email: 'user@test.com', password: '12345655' })
@@ -44,7 +46,8 @@ describe('Auth', () => {
 					expect(body.message).toBe('Contraseña incorrecta.')
 
 					done()
-				}).catch(error => done(error))
+				})
+				.catch((error) => done(error))
 		})
 	})
 })

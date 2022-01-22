@@ -1,13 +1,11 @@
-import { Router } from 'express';
-const routes: Router = Router();
+import { Router } from 'express'
+const routes: Router = Router()
 
-import controller from './controller';
+import controller from './controller'
 import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
 
-routes.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
+routes.route('/').get(isLoggedin, tokenIsValid, controller.getAll)
 
-routes.route('/:id')
-	.get(isLoggedin, tokenIsValid, controller.getOne)
+routes.route('/:id').get(isLoggedin, tokenIsValid, controller.getOne)
 
-export default routes;
+export default routes

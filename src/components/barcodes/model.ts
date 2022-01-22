@@ -1,7 +1,7 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
-import { db } from '../../database/connection';
-import { BarcodeAttr } from './interface';
+import { db } from '../../database/connection'
+import { BarcodeAttr } from './interface'
 
 const Barcode = db.define<BarcodeAttr>('barcode', {
 	id: {
@@ -12,12 +12,12 @@ const Barcode = db.define<BarcodeAttr>('barcode', {
 	barcode: {
 		type: DataTypes.STRING(30),
 		allowNull: false,
-		unique: true
+		unique: true,
 	},
 	productId: {
 		type: DataTypes.UUID,
-		allowNull: false
-	}
+		allowNull: false,
+	},
 })
 
 export { Barcode }

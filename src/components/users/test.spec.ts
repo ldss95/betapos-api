@@ -2,9 +2,9 @@ import http from 'supertest'
 
 import { app } from '../../app'
 
-let userId: string;
-let token: string;
-let session: any;
+let userId: string
+let token: string
+let session: string
 
 const user = {
 	firstName: 'Test First Name',
@@ -13,44 +13,46 @@ const user = {
 	email: 'test@test.com',
 	password: '123456',
 	dui: '40225688353',
-	roleId: 1
+	roleId: 1,
 }
 
-beforeAll(done => {
+beforeAll((done) => {
 	http(app)
 		.post('/auth/login')
 		.send({
 			email: 'user@test.com',
-			password: '123456'
-		}).then(res => {
-			token = res.body.token;
+			password: '123456',
+		})
+		.then((res) => {
+			token = res.body.token
 
-			session = res
-				.headers['set-cookie'][0]
+			session = res.headers['set-cookie'][0]
 				.split(',')
-				.map((item: any) => item.split(';')[0])
+				.map((item: string) => item.split(';')[0])
 				.join(';')
-			
+
 			done()
-		}).catch(error => done(error))
+		})
+		.catch((error) => done(error))
 })
 
 describe('Users', () => {
 	describe('POST /users', () => {
-		it('Crea usuario', done => {
+		it('Crea usuario', (done) => {
 			http(app)
 				.post('/users')
 				.send(user)
 				.set('Authorization', `Bearer ${token}`)
 				.set('Cookie', session)
 				.expect(201)
-				.then(res => {
+				.then((res) => {
 					userId = res.body.id
 					done()
-				}).catch(error => done(error))
+				})
+				.catch((error) => done(error))
 		})
 
-		it('Deberia fallar por email duplicado', done => {
+		it('Deberia fallar por email duplicado', (done) => {
 			http(app)
 				.post('/users')
 				.send(user)
@@ -59,7 +61,7 @@ describe('Users', () => {
 				.expect(400, done)
 		})
 
-		it('Deberia fallar por cedula duplicada', done => {
+		it('Deberia fallar por cedula duplicada', (done) => {
 			http(app)
 				.post('/users')
 				.send({ ...user, email: 'other@email.com' })
@@ -68,7 +70,7 @@ describe('Users', () => {
 				.expect(400, done)
 		})
 
-		it('Deberia fallar por cedula invalida', done => {
+		it('Deberia fallar por cedula invalida', (done) => {
 			http(app)
 				.post('/users')
 				.send({ ...user, email: 'other@email.com', dui: '40225688242' })
@@ -79,7 +81,7 @@ describe('Users', () => {
 	})
 
 	describe('GET /users', () => {
-		it('Deberia obtener un array con todos los usuarios', done => {
+		it('Deberia obtener un array con todos los usuarios', (done) => {
 			http(app)
 				.get('/users')
 				.set('Authorization', `Bearer ${token}`)
@@ -88,9 +90,9 @@ describe('Users', () => {
 				.expect(200, done)
 		})
 	})
-		
+
 	describe('GET /users/:id', () => {
-		it('Deberia obtener un objeto con 1 usuario', done => {
+		it('Deberia obtener un objeto con 1 usuario', (done) => {
 			http(app)
 				.get(`/users/${userId}`)
 				.set('Authorization', `Bearer ${token}`)
@@ -112,12 +114,12 @@ describe('Users', () => {
 					expect(body).toHaveProperty('updatedAt')
 
 					expect(body).not.toHaveProperty('password')
-					
+
 					done()
 				})
 		})
 
-		it('Deberia obtener un error 404 al intentar obtener los datos de un usuario inexistente', done => {
+		it('Deberia obtener un error 404 al intentar obtener los datos de un usuario inexistente', (done) => {
 			http(app)
 				.get('/users/inexistent-user')
 				.set('Authorization', `Bearer ${token}`)
@@ -127,32 +129,33 @@ describe('Users', () => {
 	})
 
 	describe('PUT /users', () => {
-		it('Deberia actualizar el nombre del usuario creado', done => {
+		it('Deberia actualizar el nombre del usuario creado', (done) => {
 			http(app)
 				.put('/users')
 				.send({
 					firstName: 'Update First Name',
-					id: userId
+					id: userId,
 				})
 				.set('Authorization', `Bearer ${token}`)
 				.set('Cookie', session)
 				.expect(204, done)
 		})
 
-		it('Deberia fallar al intentar actualizar usuario inexistente', done => {
+		it('Deberia fallar al intentar actualizar usuario inexistente', (done) => {
 			http(app)
 				.put('/users')
 				.set('Authorization', `Bearer ${token}`)
 				.set('Cookie', session)
 				.send({
 					firstName: 'Update First Name',
-					id: 'inexistent-user'
-				}).expect(404, done)
+					id: 'inexistent-user',
+				})
+				.expect(404, done)
 		})
 	})
 
 	describe('DELETE /users', () => {
-		it('Deberia eliminar el usuario creado para los tests', done => {
+		it('Deberia eliminar el usuario creado para los tests', (done) => {
 			http(app)
 				.delete(`/users/${userId}`)
 				.set('Authorization', `Bearer ${token}`)
@@ -160,7 +163,7 @@ describe('Users', () => {
 				.expect(204, done)
 		})
 
-		it('Deberia devolver 404 al intentar eliminar un usuario que no existe', done => {
+		it('Deberia devolver 404 al intentar eliminar un usuario que no existe', (done) => {
 			http(app)
 				.delete('/users/inexistent-user')
 				.set('Authorization', `Bearer ${token}`)

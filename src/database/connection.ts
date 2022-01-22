@@ -6,11 +6,11 @@ const db = new Sequelize({
 	dialect: 'mysql',
 	dialectOptions: {
 		dateStrings: true,
-		typeCast: true
+		typeCast: true,
 	},
 	define: {
 		charset: 'utf8',
-		collate: 'utf8_general_ci'
+		collate: 'utf8_general_ci',
 	},
 	timezone: '-04:00',
 	host: DB_HOST,
@@ -18,7 +18,7 @@ const db = new Sequelize({
 	password: DB_PASS,
 	port: Number(DB_PORT),
 	database: DB_NAME,
-	logging: false
+	logging: false,
 })
 
 db.sync()

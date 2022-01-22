@@ -1,7 +1,7 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
-import { db } from '../../database/connection';
-import { SaleAttr } from './interface';
+import { db } from '../../database/connection'
+import { SaleAttr } from './interface'
 import { SaleStatusAttr } from '../sale-statuses/interface'
 import { Payment } from '../payments/model'
 
@@ -9,66 +9,52 @@ const Sale = db.define<SaleAttr>('sale', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,
-		defaultValue: DataTypes.UUIDV4
+		defaultValue: DataTypes.UUIDV4,
 	},
 	ticketId: {
 		type: DataTypes.BIGINT,
-		allowNull: false
+		allowNull: false,
 	},
 	businessId: {
 		type: DataTypes.UUID,
-		allowNull: false
+		allowNull: false,
 	},
 	clientId: DataTypes.UUID,
 	sellerId: {
 		type: DataTypes.UUID,
-		allowNull: false
+		allowNull: false,
 	},
 	amount: {
 		type: DataTypes.DOUBLE,
 		allowNull: false,
 		validate: {
-			min: 0
-		}
+			min: 0,
+		},
 	},
 	discount: DataTypes.DOUBLE,
 	shiftId: {
 		type: DataTypes.UUID,
-		allowNull: false
+		allowNull: false,
 	},
 	statusId: {
 		type: DataTypes.STRING,
 		allowNull: false,
-		defaultValue: 1
-	}
-}/*,
-{
-	hooks: {
-		beforeCreate: async (model: any) => {
-			try {
-				const max = await Sale.max('ticketId', { where: { branchId:  } });
-				let last = Number(max) | 0;
-				model.ticketId = last + 1;
-			} catch (error) {
-				throw error;
-			}
-		}
-	}
-}*/
-)
+		defaultValue: 1,
+	},
+})
 
 const SaleStatus = db.define<SaleStatusAttr>('sale_status', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,
-		defaultValue: DataTypes.UUIDV4
+		defaultValue: DataTypes.UUIDV4,
 	},
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false,
-		unique: true
+		unique: true,
 	},
-	description: DataTypes.STRING
+	description: DataTypes.STRING,
 })
 
 Sale.hasOne(SaleStatus, { foreignKey: 'statusId', as: 'status' })

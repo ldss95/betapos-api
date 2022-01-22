@@ -1,7 +1,11 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import { format } from '@ldss95/helpers'
-import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from 'sequelize'
+import {
+	ForeignKeyConstraintError,
+	UniqueConstraintError,
+	ValidationError,
+} from 'sequelize'
 
 import { User } from './model'
 
@@ -25,23 +29,24 @@ export default {
 				'isActive',
 				'createdAt',
 				'updatedAt',
-			]
-		}).then(user => {
-			if (user)
-				return res.status(200).send(user)
-					
-			res.status(404).send({
-				message: 'Usuario no encontrado'
-			})
-		}).catch(error => {
-			res.sendStatus(500)
-			throw error
+			],
 		})
+			.then((user) => {
+				if (user) return res.status(200).send(user)
+
+				res.status(404).send({
+					message: 'Usuario no encontrado',
+				})
+			})
+			.catch((error) => {
+				res.sendStatus(500)
+				throw error
+			})
 	},
 	getAll: (req: Request, res: Response) => {
 		User.findAll()
-			.then(user => res.status(200).send(user))
-			.catch(error => {
+			.then((user) => res.status(200).send(user))
+			.catch((error) => {
 				res.sendStatus(500)
 				throw error
 			})
@@ -51,21 +56,21 @@ export default {
 
 		User.update(req.body, { where: { id } })
 			.then(([updated]) => {
-				if(updated)
-					return res.sendStatus(204)
-				
+				if (updated) return res.sendStatus(204)
+
 				res.status(404).send({ message: 'Usuario no encontrado' })
-			}).catch(error => {
+			})
+			.catch((error) => {
 				if (error instanceof UniqueConstraintError) {
 					const { fields } = error
 					const { email, dui } = req.body
 
-					let message: string = ''
+					let message = ''
 					if (fields['users.email'])
 						message = `El email '${email}' ya está en uso.`
 					else if (fields['users.dui'])
 						message = `La cedula '${format.dui(dui)}' ya está en uso.`
-						
+
 					return res.status(400).send({ message })
 				}
 
@@ -76,17 +81,18 @@ export default {
 	delete: (req: Request, res: Response) => {
 		const { id } = req.params
 		User.destroy({ where: { id } })
-			.then(deleted => {
-				if(deleted)
-					return res.sendStatus(204)
-				
+			.then((deleted) => {
+				if (deleted) return res.sendStatus(204)
+
 				res.status(404).send({ message: 'Usuario no encontrado' })
-			}).catch(error => {
+			})
+			.catch((error) => {
 				if (error instanceof ForeignKeyConstraintError) {
 					res.status(400).send({
-						message: 'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.'
+						message:
+              'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.',
 					})
-					return;
+					return
 				}
 
 				res.sendStatus(500)
@@ -96,20 +102,20 @@ export default {
 	create: (req: Request, res: Response) => {
 		const user = req.body
 		user.password = bcrypt.hashSync(user.password, 13)
-		
+
 		User.create(req.body)
 			.then(({ id }) => res.status(201).send({ id }))
-			.catch(error => {
+			.catch((error) => {
 				if (error instanceof UniqueConstraintError) {
 					const { fields } = error
 					const { email, dui } = user
 
-					let message: string = ''
+					let message = ''
 					if (fields['users.email'])
 						message = `El email '${email}' ya está en uso.`
 					else if (fields['users.dui'])
 						message = `La cedula '${format.dui(dui)}' ya está en uso.`
-						
+
 					return res.status(400).send({ message })
 				}
 
@@ -121,5 +127,5 @@ export default {
 				res.status(500).send(error)
 				throw error
 			})
-	}
+	},
 }

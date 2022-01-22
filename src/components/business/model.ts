@@ -1,8 +1,7 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
-import { db } from '../../database/connection';
-import { BusinessAttr } from './interface';
-import { Branch } from '../branchs/model'
+import { db } from '../../database/connection'
+import { BusinessAttr } from './interface'
 
 const Business = db.define<BusinessAttr>('business', {
 	id: {
@@ -12,7 +11,7 @@ const Business = db.define<BusinessAttr>('business', {
 	},
 	name: {
 		type: DataTypes.STRING(60),
-		allowNull: false
+		allowNull: false,
 	},
 	address: DataTypes.STRING(200),
 	email: {
@@ -20,8 +19,8 @@ const Business = db.define<BusinessAttr>('business', {
 		allowNull: false,
 		unique: true,
 		validate: {
-			isEmail: true
-		}
+			isEmail: true,
+		},
 	},
 	phone: DataTypes.CHAR(10),
 	rnc: {
@@ -29,17 +28,15 @@ const Business = db.define<BusinessAttr>('business', {
 		allowNull: false,
 		unique: true,
 		validate: {
-			isNumeric: true
-		}
+			isNumeric: true,
+		},
 	},
 	logoUrl: DataTypes.STRING(400),
 	isActive: {
 		type: DataTypes.BOOLEAN,
 		defaultValue: true,
-		allowNull: false
-	}
+		allowNull: false,
+	},
 })
-
-Business.hasMany(Branch, { foreignKey: 'businessId', as: 'branchs' })
 
 export { Business }
