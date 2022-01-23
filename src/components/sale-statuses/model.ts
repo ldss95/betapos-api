@@ -7,14 +7,14 @@ const SaleStatus = db.define<SaleStatusAttr>('sale_status', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,
-		defaultValue: DataTypes.UUIDV4,
+		defaultValue: DataTypes.UUIDV4
 	},
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false,
-		unique: true,
+		unique: true
 	},
-	description: DataTypes.STRING,
+	description: DataTypes.STRING
 })
 
 export { SaleStatus }

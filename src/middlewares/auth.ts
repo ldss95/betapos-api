@@ -10,7 +10,7 @@ function isLoggedin(req: Request, res: Response, next: NextFunction): void {
 	}
 
 	res.status(401).send({
-		message: 'Ninguna sesion iniciada',
+		message: 'Ninguna sesion iniciada'
 	})
 }
 
@@ -18,11 +18,7 @@ function isLoggedin(req: Request, res: Response, next: NextFunction): void {
  * Verifica que el usuario logueado tenga los permisos necesarios.
  * De lo contrario devuelve un estado 403
  */
-function havePermissions(
-	req: Request,
-	res: Response,
-	next: NextFunction
-): void {
+function havePermissions(req: Request, res: Response, next: NextFunction): void {
 	if (req && res) {
 		next()
 	}
@@ -36,7 +32,7 @@ function tokenIsValid(req: Request, res: Response, next: NextFunction): void {
 
 	if (!bearerHeader) {
 		res.status(401).send({
-			message: 'No se encontro el token',
+			message: 'No se encontro el token'
 		})
 		return
 	}
@@ -47,7 +43,7 @@ function tokenIsValid(req: Request, res: Response, next: NextFunction): void {
 	jwt.verify(token, process.env.SECRET_TOKEN || '', (error) => {
 		if (error) {
 			res.status(401).send({
-				message: 'Token invalido',
+				message: 'Token invalido'
 			})
 			return
 		}

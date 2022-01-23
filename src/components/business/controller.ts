@@ -30,7 +30,7 @@ export default {
 					const { email, rnc } = req.body
 
 					res.status(400).send({
-						message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`,
+						message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`
 					})
 					return
 				}
@@ -48,7 +48,7 @@ export default {
 					const { email, rnc } = req.body
 
 					res.status(400).send({
-						message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`,
+						message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`
 					})
 					return
 				}
@@ -56,5 +56,5 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
-	},
+	}
 }

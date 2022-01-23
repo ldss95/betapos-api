@@ -7,7 +7,7 @@ export default {
 	create: (req: Request, res: Response) => {
 		const brand = {
 			...req.body,
-			businessId: req.session!.businessId,
+			businessId: req.session!.businessId
 		}
 
 		Brand.create(brand)
@@ -45,7 +45,7 @@ export default {
 		Brand.destroy({ where: { id } })
 			.then(() => res.sendStatus(200))
 			.catch((error) => {
-				if(error instanceof ForeignKeyConstraintError) {
+				if (error instanceof ForeignKeyConstraintError) {
 					res.status(400).send({
 						message: 'Esta marca no puede ser eliminada ya que está en uso'
 					})
@@ -74,5 +74,5 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
-	},
+	}
 }

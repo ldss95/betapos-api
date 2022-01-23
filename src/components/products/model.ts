@@ -11,15 +11,15 @@ const Product = db.define<ProductAttr>('product', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
-		primaryKey: true,
+		primaryKey: true
 	},
 	businessId: {
 		type: DataTypes.UUID,
-		allowNull: false,
+		allowNull: false
 	},
 	name: {
 		type: DataTypes.STRING(100),
-		allowNull: false,
+		allowNull: false
 	},
 	brandId: DataTypes.UUID,
 	categoryId: DataTypes.UUID,
@@ -27,22 +27,22 @@ const Product = db.define<ProductAttr>('product', {
 	minStock: DataTypes.SMALLINT,
 	cost: {
 		type: DataTypes.DOUBLE,
-		allowNull: false,
+		allowNull: false
 	},
 	price: {
 		type: DataTypes.DOUBLE,
-		allowNull: false,
+		allowNull: false
 	},
 	itbis: {
 		type: DataTypes.BOOLEAN,
 		defaultValue: true,
-		allowNull: false,
+		allowNull: false
 	},
 	isActive: {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
-		defaultValue: true,
-	},
+		defaultValue: true
+	}
 })
 
 Product.hasMany(Barcode, { foreignKey: 'productId', as: 'barcodes' })

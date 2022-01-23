@@ -10,15 +10,15 @@ const User = db.define<UserAttr>('user', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,
-		defaultValue: DataTypes.UUIDV4,
+		defaultValue: DataTypes.UUIDV4
 	},
 	firstName: {
 		type: DataTypes.STRING,
-		allowNull: false,
+		allowNull: false
 	},
 	lastName: {
 		type: DataTypes.STRING,
-		allowNull: false,
+		allowNull: false
 	},
 	birthDate: DataTypes.DATEONLY,
 	email: {
@@ -26,16 +26,16 @@ const User = db.define<UserAttr>('user', {
 		allowNull: false,
 		unique: true,
 		validate: {
-			isEmail: true,
-		},
+			isEmail: true
+		}
 	},
 	nickName: {
 		type: DataTypes.STRING(16),
-		unique: true,
+		unique: true
 	},
 	password: {
 		type: DataTypes.STRING(200),
-		allowNull: false,
+		allowNull: false
 	},
 	dui: {
 		type: DataTypes.CHAR(11),
@@ -45,22 +45,22 @@ const User = db.define<UserAttr>('user', {
 				if (!duiIsValid(dui)) {
 					throw new Error('Cedula Invalida')
 				}
-			},
+			}
 		},
-		unique: true,
+		unique: true
 	},
 	address: DataTypes.STRING(200),
 	photoUrl: DataTypes.STRING(400),
 	roleId: {
 		type: DataTypes.UUID,
-		allowNull: false,
+		allowNull: false
 	},
 	businessId: DataTypes.UUID,
 	isActive: {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
-		defaultValue: true,
-	},
+		defaultValue: true
+	}
 })
 
 User.belongsTo(Role, { foreignKey: 'roleId', as: 'role' })

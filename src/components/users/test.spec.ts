@@ -13,7 +13,7 @@ const user = {
 	email: 'test@test.com',
 	password: '123456',
 	dui: '40225688353',
-	roleId: 1,
+	roleId: 1
 }
 
 beforeAll((done) => {
@@ -21,7 +21,7 @@ beforeAll((done) => {
 		.post('/auth/login')
 		.send({
 			email: 'user@test.com',
-			password: '123456',
+			password: '123456'
 		})
 		.then((res) => {
 			token = res.body.token
@@ -134,7 +134,7 @@ describe('Users', () => {
 				.put('/users')
 				.send({
 					firstName: 'Update First Name',
-					id: userId,
+					id: userId
 				})
 				.set('Authorization', `Bearer ${token}`)
 				.set('Cookie', session)
@@ -148,7 +148,7 @@ describe('Users', () => {
 				.set('Cookie', session)
 				.send({
 					firstName: 'Update First Name',
-					id: 'inexistent-user',
+					id: 'inexistent-user'
 				})
 				.expect(404, done)
 		})

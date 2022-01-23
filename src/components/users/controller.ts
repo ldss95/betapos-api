@@ -1,11 +1,7 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import { format } from '@ldss95/helpers'
-import {
-	ForeignKeyConstraintError,
-	UniqueConstraintError,
-	ValidationError,
-} from 'sequelize'
+import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from 'sequelize'
 
 import { User } from './model'
 
@@ -28,14 +24,14 @@ export default {
 				'businessId',
 				'isActive',
 				'createdAt',
-				'updatedAt',
-			],
+				'updatedAt'
+			]
 		})
 			.then((user) => {
 				if (user) return res.status(200).send(user)
 
 				res.status(404).send({
-					message: 'Usuario no encontrado',
+					message: 'Usuario no encontrado'
 				})
 			})
 			.catch((error) => {
@@ -66,10 +62,8 @@ export default {
 					const { email, dui } = req.body
 
 					let message = ''
-					if (fields['users.email'])
-						message = `El email '${email}' ya está en uso.`
-					else if (fields['users.dui'])
-						message = `La cedula '${format.dui(dui)}' ya está en uso.`
+					if (fields['users.email']) message = `El email '${email}' ya está en uso.`
+					else if (fields['users.dui']) message = `La cedula '${format.dui(dui)}' ya está en uso.`
 
 					return res.status(400).send({ message })
 				}
@@ -90,7 +84,7 @@ export default {
 				if (error instanceof ForeignKeyConstraintError) {
 					res.status(400).send({
 						message:
-              'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.',
+							'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.'
 					})
 					return
 				}
@@ -111,10 +105,8 @@ export default {
 					const { email, dui } = user
 
 					let message = ''
-					if (fields['users.email'])
-						message = `El email '${email}' ya está en uso.`
-					else if (fields['users.dui'])
-						message = `La cedula '${format.dui(dui)}' ya está en uso.`
+					if (fields['users.email']) message = `El email '${email}' ya está en uso.`
+					else if (fields['users.dui']) message = `La cedula '${format.dui(dui)}' ya está en uso.`
 
 					return res.status(400).send({ message })
 				}
@@ -127,5 +119,5 @@ export default {
 				res.status(500).send(error)
 				throw error
 			})
-	},
+	}
 }

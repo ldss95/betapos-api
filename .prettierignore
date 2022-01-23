@@ -1,0 +1,5 @@
+.expo-shared
+.husky
+.vscode
+assets
+node_modules/

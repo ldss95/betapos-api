@@ -3,11 +3,7 @@ const routes: Router = Router()
 
 import controller from './controller'
 
-routes
-	.route('/')
-	.get(controller.getAll)
-	.post(controller.create)
-	.put(controller.update)
+routes.route('/').get(controller.getAll).post(controller.create).put(controller.update)
 
 routes.get('/status-list', controller.statusList)
 

@@ -2,7 +2,7 @@ import express, { Express } from 'express'
 import morgan from 'morgan'
 import session from 'express-session'
 // eslint-disable-next-line
-const MySqlStore = require("express-mysql-session")(session);
+const MySqlStore = require('express-mysql-session')(session);
 import cors from 'cors'
 import swaggerUI from 'swagger-ui-express'
 import swaggerJsDoc from 'swagger-jsdoc'
@@ -12,23 +12,14 @@ import routes from './routes'
 
 const app: Express = express()
 
-const {
-	PORT,
-	DB_HOST,
-	DB_PASS,
-	DB_NAME,
-	DB_PORT,
-	DB_USER,
-	SECRET_SESSION,
-	NODE_ENV,
-} = process.env
+const { PORT, DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER, SECRET_SESSION, NODE_ENV } = process.env
 
 const sessionStore = new MySqlStore({
 	host: DB_HOST,
 	user: DB_USER,
 	password: DB_PASS,
 	database: DB_NAME,
-	port: Number(DB_PORT),
+	port: Number(DB_PORT)
 })
 
 app.set('port', PORT || 3000)
@@ -41,14 +32,14 @@ app.use(
 		resave: false,
 		saveUninitialized: false,
 		cookie: {
-			secure: false,
-		},
+			secure: false
+		}
 	})
 )
 app.use(
 	cors({
 		origin: (origin, callback) => callback(null, true),
-		credentials: true,
+		credentials: true
 	})
 )
 
@@ -63,26 +54,26 @@ const specs = swaggerJsDoc({
 		info: {
 			title: 'ZECONOMY API',
 			version: '0.0.1',
-			description: 'API para las aplicaciones de ZECONOMY',
+			description: 'API para las aplicaciones de ZECONOMY'
 		},
 		securityDefinitions: {
 			auth: {
-				type: 'basic',
-			},
+				type: 'basic'
+			}
 		},
 		security: [
 			{
 				bearerAuth: [],
-				auth: [],
-			},
+				auth: []
+			}
 		],
 		servers: [
 			{
-				url: 'http://localhost:3000',
-			},
-		],
+				url: 'http://localhost:3000'
+			}
+		]
 	},
-	apis: ['./src/components/**/docs.ts'],
+	apis: ['./src/components/**/docs.ts']
 })
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs))
 app.use(routes)

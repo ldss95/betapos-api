@@ -10,7 +10,7 @@ beforeAll((done) => {
 		.post('/auth/login')
 		.send({
 			email: 'user@test.com',
-			password: '123456',
+			password: '123456'
 		})
 		.then((res) => {
 			token = res.body.token

@@ -8,8 +8,7 @@ let session: string
 
 const role = {
 	name: 'Rol de pruebas',
-	description:
-    'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente',
+	description: 'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente'
 }
 
 beforeAll((done) => {
@@ -17,7 +16,7 @@ beforeAll((done) => {
 		.post('/auth/login')
 		.send({
 			email: 'user@test.com',
-			password: '123456',
+			password: '123456'
 		})
 		.then((res) => {
 			token = res.body.token
@@ -102,8 +101,8 @@ describe('Roles', () => {
 				.send({
 					name: 'Rol de pruebas (Actualizado)',
 					description:
-            'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente (Actualizado)',
-					id: roleId,
+						'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente (Actualizado)',
+					id: roleId
 				})
 				.set('Authorization', `Bearer ${token}`)
 				.set('Cookie', session)
@@ -118,8 +117,8 @@ describe('Roles', () => {
 				.send({
 					name: 'Rol de pruebas (Falla - Actualizar)',
 					descrption:
-            'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente (Falla - Actualizar)',
-					id: 'inexistent-role',
+						'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente (Falla - Actualizar)',
+					id: 'inexistent-role'
 				})
 				.expect(404, done)
 		})

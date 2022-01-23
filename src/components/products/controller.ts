@@ -49,5 +49,5 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
-	},
+	}
 }

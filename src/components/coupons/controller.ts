@@ -7,7 +7,7 @@ export default {
 		const { businessId } = req.session!
 		const coupon = {
 			...req.body,
-			businessId,
+			businessId
 		}
 
 		Coupon.create(coupon)
@@ -56,5 +56,5 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
-	},
+	}
 }

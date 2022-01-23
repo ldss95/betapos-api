@@ -13,7 +13,7 @@ export default {
 
 			if (!user) {
 				res.status(401).send({
-					message: 'Email incorrecto.',
+					message: 'Email incorrecto.'
 				})
 				return
 			}
@@ -21,44 +21,44 @@ export default {
 			const passwordMatch = bcrypt.compareSync(password, user.password)
 			if (!passwordMatch) {
 				res.status(401).send({
-					message: 'Contraseña incorrecta.',
+					message: 'Contraseña incorrecta.'
 				})
 				return
 			}
 
-      req.session!.loggedin = true
-      req.session!.name = `${user.firstName} ${user.lastName}`
-      req.session!.photo = user.photoUrl
-      req.session!.email = user.email
-      req.session!.roleId = user.roleId
-      req.session!.businessId = user.businessId
+			req.session!.loggedin = true
+			req.session!.name = `${user.firstName} ${user.lastName}`
+			req.session!.photo = user.photoUrl
+			req.session!.email = user.email
+			req.session!.roleId = user.roleId
+			req.session!.businessId = user.businessId
 
-      const data = {
-      	iss: 'Zeconomy-API',
-      	aud: 'web',
-      	iat: new Date().getTime() / 1000,
-      	user: {
-      		id: user.id,
-      		name: req.session!.name,
-      		email: user.email,
-      		createdAt: user.createdAt,
-      	},
-      }
+			const data = {
+				iss: 'Zeconomy-API',
+				aud: 'web',
+				iat: new Date().getTime() / 1000,
+				user: {
+					id: user.id,
+					name: req.session!.name,
+					email: user.email,
+					createdAt: user.createdAt
+				}
+			}
 
-      const token = jwt.sign(data, process.env.SECRET_TOKEN || '', {
-      	expiresIn: '24h',
-      })
+			const token = jwt.sign(data, process.env.SECRET_TOKEN || '', {
+				expiresIn: '24h'
+			})
 
-      res.status(200).send({
-      	token: token,
-      	message: 'Sesion iniciada correctamente',
-      	user: {
-      		firstName: user.firstName,
-      		lastName: user.lastName,
-      		email: user.email,
-      		roleId: user.roleId,
-      	},
-      })
+			res.status(200).send({
+				token: token,
+				message: 'Sesion iniciada correctamente',
+				user: {
+					firstName: user.firstName,
+					lastName: user.lastName,
+					email: user.email,
+					roleId: user.roleId
+				}
+			})
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
@@ -73,5 +73,5 @@ export default {
 
 			res.sendStatus(204)
 		})
-	},
+	}
 }

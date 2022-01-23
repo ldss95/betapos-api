@@ -10,7 +10,7 @@ beforeAll((done) => {
 		.post('/auth/login')
 		.send({
 			email: 'user@test.com',
-			password: '123456',
+			password: '123456'
 		})
 		.then((res) => {
 			token = res.body.token
@@ -35,7 +35,7 @@ describe('Coupons', () => {
 				.send({
 					type: 'AMOUNT',
 					value: 200,
-					code: 'MONTATE',
+					code: 'MONTATE'
 				})
 				.expect(201, done)
 		})
@@ -43,11 +43,7 @@ describe('Coupons', () => {
 
 	describe('GET /coupons', () => {
 		it('Deberia obtener un array con todos los cupones', (done) => {
-			http(app)
-				.get('/coupons')
-				.set('Authorization', `Bearer ${token}`)
-				.set('Cookie', session)
-				.expect(200, done)
+			http(app).get('/coupons').set('Authorization', `Bearer ${token}`).set('Cookie', session).expect(200, done)
 		})
 	})
 })

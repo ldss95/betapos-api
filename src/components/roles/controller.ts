@@ -20,7 +20,7 @@ export default {
 				if (role) return res.status(200).send(role)
 
 				res.status(404).send({
-					message: 'Rol no encontrado',
+					message: 'Rol no encontrado'
 				})
 			})
 			.catch((error) => {
@@ -34,7 +34,7 @@ export default {
 			.catch((error) => {
 				if (error instanceof UniqueConstraintError) {
 					return res.status(400).send({
-						message: `Ya existe un rol con el nombre "${req.body.name}"`,
+						message: `Ya existe un rol con el nombre "${req.body.name}"`
 					})
 				}
 
@@ -54,7 +54,7 @@ export default {
 			.catch((error) => {
 				if (error instanceof UniqueConstraintError) {
 					return res.status(400).send({
-						message: `Ya existe un rol con el nombre "${req.body.name}"`,
+						message: `Ya existe un rol con el nombre "${req.body.name}"`
 					})
 				}
 
@@ -74,7 +74,7 @@ export default {
 			.catch((error) => {
 				if (error instanceof ForeignKeyConstraintError) {
 					res.status(400).send({
-						message: 'No se puede eliminar un rol con usuarios asignados.',
+						message: 'No se puede eliminar un rol con usuarios asignados.'
 					})
 					return
 				}
@@ -82,5 +82,5 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
-	},
+	}
 }

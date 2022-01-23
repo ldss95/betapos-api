@@ -7,17 +7,17 @@ const Barcode = db.define<BarcodeAttr>('barcode', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
-		primaryKey: true,
+		primaryKey: true
 	},
 	barcode: {
 		type: DataTypes.STRING(30),
 		allowNull: false,
-		unique: true,
+		unique: true
 	},
 	productId: {
 		type: DataTypes.UUID,
-		allowNull: false,
-	},
+		allowNull: false
+	}
 })
 
 export { Barcode }

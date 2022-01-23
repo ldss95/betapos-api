@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize'
 
 import { Category } from './model'
 
@@ -6,12 +7,18 @@ export default {
 	create: (req: Request, res: Response) => {
 		const category = {
 			...req.body,
-			businessId: req.session!.businessId,
+			businessId: req.session!.businessId
 		}
 
 		Category.create(category)
 			.then(() => res.sendStatus(201))
 			.catch((error) => {
+				if (error instanceof UniqueConstraintError) {
+					return res.status(400).send({
+						message: `Ya existe una categoría con el nombre "${req.body.name}"`
+					})
+				}
+
 				res.sendStatus(500)
 				throw error
 			})
@@ -22,6 +29,12 @@ export default {
 		Category.update(req.body, { where: { id } })
 			.then(() => res.sendStatus(200))
 			.catch((error) => {
+				if (error instanceof UniqueConstraintError) {
+					return res.status(400).send({
+						message: `Ya existe una categoría con el nombre "${req.body.name}"`
+					})
+				}
+
 				res.sendStatus(500)
 				throw error
 			})
@@ -32,6 +45,12 @@ export default {
 		Category.destroy({ where: { id } })
 			.then(() => res.sendStatus(200))
 			.catch((error) => {
+				if (error instanceof ForeignKeyConstraintError) {
+					res.status(400).send({
+						message: 'Esta categoria no puede ser eliminada ya que está en uso'
+					})
+				}
+
 				res.sendStatus(500)
 				throw error
 			})
@@ -39,7 +58,7 @@ export default {
 	getAll: (req: Request, res: Response) => {
 		const { businessId } = req.session!
 
-		Category.findAll({ where: { businessId } })
+		Category.findAll({ where: { businessId }, order: [['name', 'ASC']] })
 			.then((categories) => res.status(200).send(categories))
 			.catch((error) => {
 				res.sendStatus(500)
@@ -55,5 +74,5 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
-	},
+	}
 }

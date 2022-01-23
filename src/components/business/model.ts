@@ -7,11 +7,11 @@ const Business = db.define<BusinessAttr>('business', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
-		primaryKey: true,
+		primaryKey: true
 	},
 	name: {
 		type: DataTypes.STRING(60),
-		allowNull: false,
+		allowNull: false
 	},
 	address: DataTypes.STRING(200),
 	email: {
@@ -19,8 +19,8 @@ const Business = db.define<BusinessAttr>('business', {
 		allowNull: false,
 		unique: true,
 		validate: {
-			isEmail: true,
-		},
+			isEmail: true
+		}
 	},
 	phone: DataTypes.CHAR(10),
 	rnc: {
@@ -28,15 +28,15 @@ const Business = db.define<BusinessAttr>('business', {
 		allowNull: false,
 		unique: true,
 		validate: {
-			isNumeric: true,
-		},
+			isNumeric: true
+		}
 	},
 	logoUrl: DataTypes.STRING(400),
 	isActive: {
 		type: DataTypes.BOOLEAN,
 		defaultValue: true,
-		allowNull: false,
-	},
+		allowNull: false
+	}
 })
 
 export { Business }
