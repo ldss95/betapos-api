@@ -81,7 +81,7 @@
  *          type: http
  *          scheme: bearer
  *          bearerFormat: JWT
- *      response:
+ *      responses:
  *          204: OK
  *          500: Error del servidor
  */
