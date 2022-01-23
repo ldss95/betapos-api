@@ -1,4 +1,7 @@
 import { Request, Response } from 'express'
+import { Barcode } from '../barcodes/model'
+import { Brand } from '../brands/model'
+import { Category } from '../categories/model'
 // import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize'
 
 import { Product } from './model'
@@ -33,7 +36,25 @@ export default {
 			})
 	},
 	getAll: (req: Request, res: Response) => {
-		Product.findAll()
+		Product.findAll({
+			include: [
+				{
+					model: Barcode,
+					as: 'barcodes',
+					required: false
+				},
+				{
+					model: Brand,
+					as: 'brand',
+					required: false
+				},
+				{
+					model: Category,
+					as: 'category',
+					required: false
+				}
+			]
+		})
 			.then((products) => res.status(200).send(products))
 			.catch((error) => {
 				res.sendStatus(500)
