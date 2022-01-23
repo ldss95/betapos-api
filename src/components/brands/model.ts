@@ -18,6 +18,14 @@ const Brand = db.define<BrandAttr>('brand', {
 		type: DataTypes.UUID,
 		allowNull: false,
 	},
+}, {
+	indexes: [
+		{
+			name: 'unique_brand_name_by_business',
+			unique: true,
+			fields: ['businessId', 'name']
+		}
+	]
 })
 
 Brand.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
