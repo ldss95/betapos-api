@@ -21,14 +21,14 @@ const Product = db.define<ProductAttr>('product', {
 		type: DataTypes.STRING(100),
 		allowNull: false
 	},
+	referenceCode: DataTypes.STRING(30),
 	brandId: DataTypes.UUID,
 	categoryId: DataTypes.UUID,
-	typeId: DataTypes.UUID,
-	minStock: DataTypes.SMALLINT,
-	cost: {
-		type: DataTypes.DOUBLE,
-		allowNull: false
+	stock: {
+		type: DataTypes.MEDIUMINT,
+		defaultValue: 0
 	},
+	cost: DataTypes.DOUBLE,
 	price: {
 		type: DataTypes.DOUBLE,
 		allowNull: false

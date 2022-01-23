@@ -7,9 +7,9 @@ export interface ProductAttr extends Model {
 	businessId: string;
 	name: string;
 	categoryId: string;
-	typeId: string;
 	barcodes: BarcodeAttr[];
-	minStock: number;
+	referenceCode: string;
+	stock: number;
 	cost: number;
 	price: number;
 	itbis: boolean;
