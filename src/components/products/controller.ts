@@ -8,7 +8,17 @@ import { Product } from './model'
 
 export default {
 	create: (req: Request, res: Response) => {
-		Product.create(req.body)
+		const { businessId } = req.session!
+
+		Product.create(
+			{ ...req.body, businessId },
+			{
+				include: {
+					model: Barcode,
+					as: 'barcodes'
+				}
+			}
+		)
 			.then(() => res.sendStatus(201))
 			.catch((error) => {
 				res.sendStatus(500)
