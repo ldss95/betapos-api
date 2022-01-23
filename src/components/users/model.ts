@@ -47,7 +47,12 @@ const User = db.define<UserAttr>('user', {
 				}
 			}
 		},
-		unique: true
+		unique: true,
+		set: function (dui: string) {
+			if (dui) {
+				this.setDataValue('dui', dui.replace(/[^0-9]/g, ''))
+			}
+		}
 	},
 	address: DataTypes.STRING(200),
 	photoUrl: DataTypes.STRING(400),
