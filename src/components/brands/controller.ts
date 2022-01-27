@@ -46,7 +46,7 @@ export default {
 			.then(() => res.sendStatus(200))
 			.catch((error) => {
 				if (error instanceof ForeignKeyConstraintError) {
-					res.status(400).send({
+					return res.status(400).send({
 						message: 'Esta marca no puede ser eliminada ya que está en uso'
 					})
 				}
