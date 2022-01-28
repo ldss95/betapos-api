@@ -14,6 +14,11 @@ const Role = db.define<RoleAttr>('role', {
 		unique: true,
 		allowNull: false
 	},
+	code: {
+		type: DataTypes.STRING(50),
+		unique: true,
+		allowNull: false
+	},
 	description: DataTypes.STRING(300)
 })
 
