@@ -56,7 +56,9 @@ export default {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					email: user.email,
-					roleId: user.roleId
+					roleId: user.roleId,
+					id: user.id,
+					businessId: user.businessId
 				}
 			})
 		} catch (error) {
