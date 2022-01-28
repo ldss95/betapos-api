@@ -13,7 +13,7 @@ const user = {
 	email: 'test@test.com',
 	password: '123456',
 	dui: '40225688353',
-	roleId: 1
+	roleId: process.env.ADMIN_ROLE_ID
 }
 
 beforeAll((done) => {

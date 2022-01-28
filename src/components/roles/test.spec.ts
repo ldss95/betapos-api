@@ -8,7 +8,8 @@ let session: string
 
 const role = {
 	name: 'Rol de pruebas',
-	description: 'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente'
+	description: 'Este rol es creado por los tests unitarios, deberia ser eliminado automaticamente',
+	code: 'TEST'
 }
 
 beforeAll((done) => {
