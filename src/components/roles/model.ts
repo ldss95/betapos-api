@@ -40,6 +40,11 @@ Role.sync().then(() => {
 				name: 'Vendedor',
 				code: 'SELLER',
 				description: 'Solo puede acceder al POS.'
+			},
+			{
+				name: 'Soporte',
+				code: 'SUPORT',
+				description: 'Puede acceder al panel y aplicacion movil de ayuda para dar soporte a los clientes'
 			}
 		],
 		{ ignoreDuplicates: true }
