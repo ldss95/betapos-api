@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize'
 import { duiIsValid } from '@ldss95/helpers'
+import bcrypt from 'bcrypt'
 
 import { db } from '../../database/connection'
 import { UserAttr } from './interface'
@@ -35,7 +36,10 @@ const User = db.define<UserAttr>('user', {
 	},
 	password: {
 		type: DataTypes.STRING(200),
-		allowNull: false
+		allowNull: false,
+		set: function (password: string) {
+			this.setDataValue('password', bcrypt.hashSync(password, 13))
+		}
 	},
 	dui: {
 		type: DataTypes.CHAR(11),

@@ -95,7 +95,6 @@ export default {
 	},
 	create: (req: Request, res: Response) => {
 		const user = req.body
-		user.password = bcrypt.hashSync(user.password, 13)
 
 		User.create(req.body)
 			.then(({ id }) => res.status(201).send({ id }))
