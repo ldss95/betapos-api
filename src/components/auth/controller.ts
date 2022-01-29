@@ -32,6 +32,7 @@ export default {
 			req.session!.email = user.email
 			req.session!.roleId = user.roleId
 			req.session!.businessId = user.businessId
+			req.session!.userId = user.id
 
 			const data = {
 				iss: 'Zeconomy-API',
