@@ -68,6 +68,27 @@ export default {
 			throw error
 		}
 	},
+	changePassword: async (req: Request, res: Response) => {
+		try {
+			const { oldPassword, newPassword } = req.body
+			const { userId } = req.session!
+
+			const user = await User.findOne({ where: { id: userId } })
+			const passwordMatch = bcrypt.compareSync(oldPassword, user!.password)
+			if (!passwordMatch) {
+				res.status(401).send({
+					message: 'Contraseña incorrecta.'
+				})
+				return
+			}
+
+			user?.update({ password: newPassword })
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
 	logout: (req: Request, res: Response) => {
 		req.session?.destroy((error) => {
 			if (error) {

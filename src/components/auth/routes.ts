@@ -6,5 +6,6 @@ import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
 
 router.post('/login', controller.login)
 router.post('/logout', isLoggedin, tokenIsValid, controller.logout)
+router.post('/change-password', isLoggedin, tokenIsValid, controller.changePassword)
 
 export default router
