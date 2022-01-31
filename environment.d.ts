@@ -9,5 +9,6 @@ declare namespace NodeJS {
         NODE_ENV: 'dev' | 'prod' | 'test';
         SECRET_SESSION: string;
         SECRET_TOKEN: string;
+        SENTRY_DSN: string;
     }
 }

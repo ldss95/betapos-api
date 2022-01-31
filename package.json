@@ -16,7 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "@ldss95/helpers": "^0.1.4",
-    "@sentry/node": "^5.10.2",
+    "@sentry/node": "^5.30.0",
+    "@sentry/tracing": "^6.17.3",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^14.2.0",
