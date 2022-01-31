@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import bcrypt from 'bcrypt'
 import { format } from '@ldss95/helpers'
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from 'sequelize'
 
@@ -116,6 +115,22 @@ export default {
 				}
 
 				res.status(500).send(error)
+				throw error
+			})
+	},
+	setProfileImage: (req: any, res: Response) => {
+		const { file } = req
+		let { location } = file
+		if (location.substr(0, 8) != 'https://') {
+			location = `https://${location}`
+		}
+
+		const id = req.session!.userId
+
+		User.update({ photoUrl: location }, { where: { id } })
+			.then(() => res.status(200).send({ photoUrl: location }))
+			.catch((error) => {
+				res.sendStatus(500)
 				throw error
 			})
 	}

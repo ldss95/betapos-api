@@ -10,5 +10,9 @@ declare namespace NodeJS {
         SECRET_SESSION: string;
         SECRET_TOKEN: string;
         SENTRY_DSN: string;
+        S3_ENDPOINT: string;
+        AWS_SECRET_ACCESS_KEY: string;
+        AWS_ACCESS_KEY_ID: string;
+        BUCKET_NAME: string;
     }
 }

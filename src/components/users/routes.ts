@@ -2,6 +2,7 @@ import { Router } from 'express'
 const router: Router = Router()
 
 import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 
 router
@@ -14,5 +15,7 @@ router
 	.get(isLoggedin, tokenIsValid, controller.getAll)
 	.post(isLoggedin, tokenIsValid, controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
+
+router.post('/set-prpfile-image', uploadSingle('images/profile/'), controller.setProfileImage)
 
 export default router
