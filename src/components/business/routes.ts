@@ -1,9 +1,24 @@
 import { Router } from 'express'
+
+import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 const router: Router = Router()
 
-router.route('/').get(controller.getAll).post(controller.create)
+router
+	.route('/')
+	.get(isLoggedin, tokenIsValid, controller.getAll)
+	.post(isLoggedin, tokenIsValid, controller.create)
+	.put(isLoggedin, tokenIsValid, controller.update)
 
-router.route('/:id').get(controller.getOne).put(controller.update)
+router.post(
+	'/set-logo-image',
+	isLoggedin,
+	tokenIsValid,
+	uploadSingle('images/business-logo/'),
+	controller.setLogoImage
+)
+
+router.route('/:id').get(isLoggedin, tokenIsValid, controller.getOne)
 
 export default router
