@@ -3,6 +3,7 @@ import { format } from '@ldss95/helpers'
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from 'sequelize'
 
 import { User } from './model'
+import { Role } from '../roles/model'
 
 export default {
 	getOne: (req: Request, res: Response) => {
@@ -39,7 +40,12 @@ export default {
 			})
 	},
 	getAll: (req: Request, res: Response) => {
-		User.findAll()
+		User.findAll({
+			include: {
+				model: Role,
+				as: 'role'
+			}
+		})
 			.then((user) => res.status(200).send(user))
 			.catch((error) => {
 				res.sendStatus(500)
