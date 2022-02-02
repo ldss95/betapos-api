@@ -16,6 +16,12 @@ router
 	.post(isLoggedin, tokenIsValid, controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
 
-router.post('/set-prpfile-image', uploadSingle('images/profile/'), controller.setProfileImage)
+router.post(
+	'/set-prpfile-image',
+	isLoggedin,
+	tokenIsValid,
+	uploadSingle('images/profile/'),
+	controller.setProfileImage
+)
 
 export default router
