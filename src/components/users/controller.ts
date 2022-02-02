@@ -44,9 +44,12 @@ export default {
 			include: {
 				model: Role,
 				as: 'role'
+			},
+			where: {
+				businessId: req.session!.businessId
 			}
 		})
-			.then((user) => res.status(200).send(user))
+			.then((users) => res.status(200).send(users))
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error
