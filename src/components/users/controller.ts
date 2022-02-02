@@ -104,7 +104,7 @@ export default {
 	create: (req: Request, res: Response) => {
 		const user = req.body
 
-		User.create(req.body)
+		User.create({ ...req.body, businessId: req.session!.businessId })
 			.then(({ id }) => res.status(201).send({ id }))
 			.catch((error) => {
 				if (error instanceof UniqueConstraintError) {
