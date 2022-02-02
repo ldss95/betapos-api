@@ -8,6 +8,7 @@ export interface BusinessAttr extends Model {
 	phone: string;
 	rnc: string;
 	logoUrl: string;
+	typeId: string;
 	isActive: boolean;
 	createdAt: string;
 	updatedAt: string;
