@@ -4,6 +4,7 @@ import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } fro
 
 import { User } from './model'
 import { Role } from '../roles/model'
+import { deleteFile } from '../../helpers'
 
 export default {
 	getOne: (req: Request, res: Response) => {
@@ -127,20 +128,29 @@ export default {
 				throw error
 			})
 	},
-	setProfileImage: (req: any, res: Response) => {
-		const { file } = req
-		let { location } = file
-		if (location.substr(0, 8) != 'https://') {
-			location = `https://${location}`
+	setProfileImage: async (req: any, res: Response) => {
+		try {
+			const { file } = req
+			let { location } = file
+			if (location.substr(0, 8) != 'https://') {
+				location = `https://${location}`
+			}
+
+			const id = req.session!.userId
+			const user = await User.findOne({ where: { id } })
+
+			// Delte current photo if exists
+			if (user?.photoUrl && user.photoUrl != location) {
+				let key = user.photoUrl.split('/images/').pop()
+				key = 'images/' + key
+				deleteFile(key)
+			}
+
+			user!.update({ photoUrl: location })
+			res.status(200).send({ photoUrl: location })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
 		}
-
-		const id = req.session!.userId
-
-		User.update({ photoUrl: location }, { where: { id } })
-			.then(() => res.status(200).send({ photoUrl: location }))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
 	}
 }

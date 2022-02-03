@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { UniqueConstraintError } from 'sequelize'
+import { deleteFile } from '../../helpers'
 
 import { Business } from './model'
 
@@ -57,20 +58,29 @@ export default {
 				throw error
 			})
 	},
-	setLogoImage: (req: any, res: Response) => {
-		const { file } = req
-		let { location } = file
-		if (location.substr(0, 8) != 'https://') {
-			location = `https://${location}`
+	setLogoImage: async (req: any, res: Response) => {
+		try {
+			const { file } = req
+			let { location } = file
+			if (location.substr(0, 8) != 'https://') {
+				location = `https://${location}`
+			}
+
+			const id = req.session!.businessId
+			const business = await Business.findOne({ where: { id } })
+
+			// Delte current photo if exists
+			if (business?.logoUrl && business.logoUrl != location) {
+				let key = business.logoUrl.split('/images/').pop()
+				key = 'images/' + key
+				deleteFile(key)
+			}
+
+			business!.update({ logoUrl: location })
+			res.status(200).send({ logoUrl: location })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
 		}
-
-		const id = req.session!.businessId
-
-		Business.update({ logoUrl: location }, { where: { id } })
-			.then(() => res.status(200).send({ logoUrl: location }))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
 	}
 }
