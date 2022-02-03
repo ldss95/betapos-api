@@ -26,7 +26,6 @@ const Business = db.define<BusinessAttr>('business', {
 	phone: DataTypes.CHAR(10),
 	rnc: {
 		type: DataTypes.CHAR(9),
-		allowNull: false,
 		unique: true,
 		validate: {
 			isNumeric: true
