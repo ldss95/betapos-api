@@ -17,7 +17,7 @@ router
 	.put(isLoggedin, tokenIsValid, controller.update)
 
 router.post(
-	'/set-prpfile-image',
+	'/set-profile-image',
 	isLoggedin,
 	tokenIsValid,
 	uploadSingle('images/profile/'),
