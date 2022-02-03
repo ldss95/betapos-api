@@ -27,8 +27,10 @@ const Business = db.define<BusinessAttr>('business', {
 	rnc: {
 		type: DataTypes.CHAR(9),
 		unique: true,
-		validate: {
-			isNumeric: true
+		set: function(value: string) {
+			if(value){
+				this.setDataValue('rnc', value.replace(/[^0-9]/g, ''))
+			}
 		}
 	},
 	logoUrl: DataTypes.STRING(400),
