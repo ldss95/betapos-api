@@ -5,7 +5,7 @@ import { Client } from './model'
 export default {
 	create: (req: Request, res: Response) => {
 		Client.create({ ...req.body, businessId: req.session!.businessId })
-			.then(() => res.sendStatus(201))
+			.then(({ id }) => res.status(201).send({ id }))
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error
