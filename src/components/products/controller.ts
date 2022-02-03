@@ -63,7 +63,10 @@ export default {
 					as: 'category',
 					required: false
 				}
-			]
+			],
+			where: {
+				businessId: req.session!.businessId
+			}
 		})
 			.then((products) => res.status(200).send(products))
 			.catch((error) => {
