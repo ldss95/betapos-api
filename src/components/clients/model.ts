@@ -34,6 +34,7 @@ const Client = db.define<ClientAttr>('client', {
 			isEmail: true
 		}
 	},
+	birthDate: DataTypes.DATE,
 	phone: {
 		type: DataTypes.STRING(15),
 		set: function (value: string) {

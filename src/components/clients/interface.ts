@@ -7,6 +7,7 @@ export interface ClientAttr extends Model {
 	photoUrl: string;
 	email: string;
 	phone: string;
+	birthDate: string;
 	address: string;
 	businessId: string;
 	createdAt: string;
