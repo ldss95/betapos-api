@@ -15,13 +15,12 @@ import routes from './routes'
 const { PORT, DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER, SECRET_SESSION, NODE_ENV, SENTRY_DSN } = process.env
 const app: Express = express()
 
-if (NODE_ENV === 'prod') {
-	Sentry.init({
-		dsn: SENTRY_DSN,
-		integrations: [new Sentry.Integrations.Http({ tracing: true }), new Tracing.Integrations.Express({ app })],
-		tracesSampleRate: 1.0
-	})
-}
+Sentry.init({
+	dsn: SENTRY_DSN,
+	integrations: [new Sentry.Integrations.Http({ tracing: true }), new Tracing.Integrations.Express({ app })],
+	tracesSampleRate: 1.0,
+	environment: NODE_ENV
+})
 
 const sessionStore = new MySqlStore({
 	host: DB_HOST,
@@ -85,16 +84,12 @@ const specs = swaggerJsDoc({
 	apis: ['./src/components/**/docs.ts']
 })
 
-if (NODE_ENV == 'prod') {
-	app.use(Sentry.Handlers.requestHandler())
-	app.use(Sentry.Handlers.tracingHandler())
-}
+app.use(Sentry.Handlers.requestHandler())
+app.use(Sentry.Handlers.tracingHandler())
 
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs))
 app.use(routes)
 
-if (NODE_ENV == 'prod') {
-	app.use(Sentry.Handlers.errorHandler())
-}
+app.use(Sentry.Handlers.errorHandler())
 
 export { app }
