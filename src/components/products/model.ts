@@ -38,6 +38,12 @@ const Product = db.define<ProductAttr>('product', {
 		defaultValue: true,
 		allowNull: false
 	},
+	photoUrl: {
+		type: DataTypes.STRING,
+		validate: {
+			isUrl: true
+		}
+	},
 	isActive: {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,

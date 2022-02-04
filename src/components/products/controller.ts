@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { deleteFile } from '../../helpers'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
@@ -83,5 +84,31 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
+	},
+	addPhoto: async (req: any, res: Response) => {
+		try {
+			const { file } = req
+			let { location } = file
+			if (location.substr(0, 8) != 'https://') {
+				location = `https://${location}`
+			}
+
+			const { id } = req.body
+
+			const product = await Product.findOne({ where: { id } })
+
+			// Delte current photo if exists
+			if (product?.photoUrl && product.photoUrl != location) {
+				let key = product.photoUrl.split('/images/').pop()
+				key = 'images/' + key
+				deleteFile(key)
+			}
+
+			await product!.update({ photoUrl: location })
+			res.status(200).send({ photoUrl: location })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	}
 }

@@ -12,6 +12,7 @@ export interface ProductAttr extends Model {
 	stock: number;
 	cost: number;
 	price: number;
+	photoUrl: string;
 	itbis: boolean;
 	isActive: boolean;
 	createdAt: string;
