@@ -2,6 +2,7 @@ import { Model } from 'sequelize'
 
 export interface BusinessAttr extends Model {
 	id: string;
+	merchatId: string;
 	name: string;
 	address: string;
 	email: string;
