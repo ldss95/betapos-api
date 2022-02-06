@@ -55,9 +55,11 @@ const Business = db.define<BusinessAttr>('business', {
 		type: DataTypes.CHAR(9),
 		unique: true,
 		set: function (value: string) {
-			if (value) {
-				this.setDataValue('rnc', value.replace(/[^0-9]/g, ''))
+			if (!value || value == '') {
+				return this.setDataValue('rnc', null)
 			}
+
+			this.setDataValue('rnc', value.replace(/[^0-9]/g, ''))
 		}
 	},
 	logoUrl: DataTypes.STRING(400),
