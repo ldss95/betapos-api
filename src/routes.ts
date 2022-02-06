@@ -12,6 +12,7 @@ import paymentTypes from './components/payment-types/routes'
 import coupons from './components/coupons/routes'
 import roles from './components/roles/routes'
 import products from './components/products/routes'
+import devices from './components/devices/routes'
 import auth from './components/auth/routes'
 
 router.use('/auth', auth)
@@ -25,6 +26,7 @@ router.use('/payment-types', paymentTypes)
 router.use('/coupons', coupons)
 router.use('/roles', roles)
 router.use('/products', products)
+router.use('/devices', devices)
 
 router.all('*', (req, res) => res.sendStatus(404))
 
