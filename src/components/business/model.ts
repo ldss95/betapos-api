@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { BusinessType } from '../business-types/model'
+import { Province } from '../provinces/model'
 import { BusinessAttr } from './interface'
 
 const Business = db.define<BusinessAttr>('business', {
@@ -53,14 +54,18 @@ const Business = db.define<BusinessAttr>('business', {
 	rnc: {
 		type: DataTypes.CHAR(9),
 		unique: true,
-		set: function(value: string) {
-			if(value){
+		set: function (value: string) {
+			if (value) {
 				this.setDataValue('rnc', value.replace(/[^0-9]/g, ''))
 			}
 		}
 	},
 	logoUrl: DataTypes.STRING(400),
 	typeId: {
+		type: DataTypes.UUID,
+		allowNull: false
+	},
+	provinceId: {
 		type: DataTypes.UUID,
 		allowNull: false
 	},
@@ -72,5 +77,6 @@ const Business = db.define<BusinessAttr>('business', {
 })
 
 Business.belongsTo(BusinessType, { foreignKey: 'typeId', as: 'type' })
+Business.belongsTo(Province, { foreignKey: 'provinceId', as: 'province' })
 
 export { Business }

@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import { UniqueConstraintError } from 'sequelize'
 import { deleteFile } from '../../helpers'
+import { BusinessType } from '../business-types/model'
+import { Province } from '../provinces/model'
 
 import { Business } from './model'
 
@@ -8,7 +10,19 @@ export default {
 	getOne: (req: Request, res: Response) => {
 		const { id } = req.params
 
-		Business.findOne({ where: { id } })
+		Business.findOne({
+			where: { id },
+			include: [
+				{
+					model: BusinessType,
+					as: 'type'
+				},
+				{
+					model: Province,
+					as: 'province'
+				}
+			]
+		})
 			.then((business) => res.status(200).send(business))
 			.catch((error) => {
 				res.sendStatus(500)
