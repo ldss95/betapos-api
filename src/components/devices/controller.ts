@@ -46,7 +46,7 @@ export default {
 		const { businessId } = req.session!
 
 		Device.findAll({ where: { businessId } })
-			.then((model) => res.status(200).send(model))
+			.then((devices) => res.status(200).send(devices))
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error

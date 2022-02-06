@@ -44,7 +44,7 @@ export default {
 		const { id } = req.params
 
 		Client.findOne({ where: { id } })
-			.then((model) => res.status(200).send(model))
+			.then((client) => res.status(200).send(client))
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error

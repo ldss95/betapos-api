@@ -79,7 +79,7 @@ export default {
 		const { id } = req.params
 
 		Product.findOne({ where: { id } })
-			.then((model) => res.status(200).send(model))
+			.then((product) => res.status(200).send(product))
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error
