@@ -37,22 +37,24 @@ export default {
 				throw error
 			})
 	},
-	create: (req: Request, res: Response) => {
-		Business.create(req.body)
-			.then(() => res.sendStatus(201))
-			.catch((error) => {
-				if (error instanceof UniqueConstraintError) {
-					const { email, rnc } = req.body
+	create: async (req: Request, res: Response) => {
+		try {
+			const merchatId = await getMerchantId()
+			await Business.create({ ...req.body, merchatId })
+			res.sendStatus(201)
+		} catch (error) {
+			if (error instanceof UniqueConstraintError) {
+				const { email, rnc } = req.body
 
-					res.status(400).send({
-						message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`
-					})
-					return
-				}
+				res.status(400).send({
+					message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`
+				})
+				return
+			}
 
-				res.sendStatus(500)
-				throw error
-			})
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	update: (req: Request, res: Response) => {
 		const { id } = req.body
@@ -97,4 +99,23 @@ export default {
 			throw error
 		}
 	}
+}
+
+/**
+ * Obtiene un string de 9 caracteres unico para ser usado como merchant id de un
+ * negoci en el formato AA 999999
+ */
+async function getMerchantId(): Promise<string> {
+	const firstChar = String.fromCharCode(Math.random() * (90 - 65) + 65) // A-Z
+	const lastChar = String.fromCharCode(Math.random() * (90 - 65) + 65) // A-Z
+	const rdNumber = Math.round(Math.random() * (0 - 999999) + 999999) // 000000 - 999999
+
+	const code = firstChar + lastChar + ' ' + rdNumber.toString().padStart(6, '0')
+	const codeTakend = await Business.count({ where: { merchatId: code } })
+
+	if (!codeTakend) {
+		return code
+	}
+
+	return await getMerchantId()
 }

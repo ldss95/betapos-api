@@ -13,29 +13,7 @@ const Business = db.define<BusinessAttr>('business', {
 	},
 	merchantId: {
 		type: DataTypes.CHAR(9),
-		unique: true,
-		set: async function () {
-			/**
-			 * Obtiene un string de 9 caracteres unico para ser usado como merchant id de un
-			 * negoci en el formato AA 999999
-			 */
-			const merchantId = async (): Promise<string> => {
-				const firstChar = String.fromCharCode(Math.random() * (90 - 65) + 65) // A-Z
-				const lastChar = String.fromCharCode(Math.random() * (90 - 65) + 65) // A-Z
-				const rdNumber = Math.round(Math.random() * (0 - 999999) + 999999) // 000000 - 999999
-
-				const code = firstChar + lastChar + ' ' + rdNumber.toString().padStart(6, '0')
-				const codeTakend = await Business.count({ where: { merchatId: code } })
-
-				if (!codeTakend) {
-					return code
-				}
-
-				return await merchantId()
-			}
-
-			this.setDataValue('merchatId', merchantId())
-		}
+		unique: true
 	},
 	name: {
 		type: DataTypes.STRING(60),
