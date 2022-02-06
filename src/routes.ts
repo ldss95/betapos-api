@@ -14,6 +14,7 @@ import roles from './components/roles/routes'
 import products from './components/products/routes'
 import devices from './components/devices/routes'
 import auth from './components/auth/routes'
+import provinces from './components/provinces/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -27,6 +28,7 @@ router.use('/coupons', coupons)
 router.use('/roles', roles)
 router.use('/products', products)
 router.use('/devices', devices)
+router.use('/provinces', provinces)
 
 router.all('*', (req, res) => res.sendStatus(404))
 
