@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
+import { Os } from '../operative-systems/model'
 import { DeviceAttr } from './interface'
 
 const Device = db.define<DeviceAttr>('device', {
@@ -9,8 +10,13 @@ const Device = db.define<DeviceAttr>('device', {
 		primaryKey: true,
 		defaultValue: DataTypes.UUIDV4
 	},
-	os: {
+	deviceId: {
 		type: DataTypes.STRING,
+		allowNull: false,
+		unique: true
+	},
+	osId: {
+		type: DataTypes.UUID,
 		allowNull: false
 	},
 	businessId: {
@@ -27,5 +33,7 @@ const Device = db.define<DeviceAttr>('device', {
 		defaultValue: true
 	}
 })
+
+Device.belongsTo(Os, { foreignKey: 'osId', as: 'os' })
 
 export { Device }

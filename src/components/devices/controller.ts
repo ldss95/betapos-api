@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { Business } from '../business/model'
 
+import { Os } from '../operative-systems/model'
 import { Device } from './model'
 
 export default {
@@ -45,7 +46,13 @@ export default {
 	getAll: (req: Request, res: Response) => {
 		const { businessId } = req.session!
 
-		Device.findAll({ where: { businessId } })
+		Device.findAll({
+			where: { businessId },
+			include: {
+				model: Os,
+				as: 'os'
+			}
+		})
 			.then((devices) => res.status(200).send(devices))
 			.catch((error) => {
 				res.sendStatus(500)
