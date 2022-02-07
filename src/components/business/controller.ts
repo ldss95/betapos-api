@@ -110,7 +110,7 @@ async function getMerchantId(): Promise<string> {
 	const lastChar = String.fromCharCode(Math.random() * (90 - 65) + 65) // A-Z
 	const rdNumber = Math.round(Math.random() * (0 - 999999) + 999999) // 000000 - 999999
 
-	const code = firstChar + lastChar + ' ' + rdNumber.toString().padStart(6, '0')
+	const code = firstChar + lastChar + rdNumber.toString().padStart(6, '0')
 	const codeTakend = await Business.count({ where: { merchatId: code } })
 
 	if (!codeTakend) {

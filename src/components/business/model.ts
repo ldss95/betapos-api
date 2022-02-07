@@ -12,7 +12,7 @@ const Business = db.define<BusinessAttr>('business', {
 		primaryKey: true
 	},
 	merchantId: {
-		type: DataTypes.CHAR(9),
+		type: DataTypes.CHAR(8),
 		unique: true
 	},
 	name: {
