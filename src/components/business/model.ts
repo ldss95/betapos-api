@@ -22,7 +22,6 @@ const Business = db.define<BusinessAttr>('business', {
 	address: DataTypes.STRING(200),
 	email: {
 		type: DataTypes.STRING(60),
-		allowNull: false,
 		unique: true,
 		validate: {
 			isEmail: true
