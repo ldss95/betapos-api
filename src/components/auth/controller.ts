@@ -1,8 +1,13 @@
 import { Request, Response } from 'express'
+import { UniqueConstraintError } from 'sequelize'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
+import { db } from '../../database/connection'
 import { User } from '../users/model'
+import { Business } from '../business/model'
+import { generateMerchantId } from '../business/controller'
+import { Role } from '../roles/model'
 
 export default {
 	login: async (req: Request, res: Response) => {
@@ -85,6 +90,32 @@ export default {
 			user?.update({ password: newPassword })
 			res.sendStatus(204)
 		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	signup: async (req: Request, res: Response) => {
+		const transaction = await db.transaction()
+
+		try {
+			const { user, business } = req.body
+
+			const merchantId = await generateMerchantId()
+			const role = await Role.findOne({ where: { code: 'BIOWNER' } })
+
+			const { id } = await Business.create({ ...business, merchantId }, { transaction })
+			await User.create({ ...user, businessId: id, roleId: role?.id }, { transaction })
+			await transaction.commit()
+			res.sendStatus(201)
+		} catch (error) {
+			await transaction.rollback()
+
+			if (error instanceof UniqueConstraintError) {
+				return res.status(400).send({
+					message: ''
+				})
+			}
+
 			res.sendStatus(500)
 			throw error
 		}
