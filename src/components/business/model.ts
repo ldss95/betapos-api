@@ -27,7 +27,14 @@ const Business = db.define<BusinessAttr>('business', {
 			isEmail: true
 		}
 	},
-	phone: DataTypes.CHAR(10),
+	phone: {
+		type: DataTypes.CHAR(10),
+		set: function (phone: string) {
+			if (phone && phone.length > 0) {
+				this.setDataValue('phone', phone.replace(/[^0-9]/g, ''))
+			}
+		}
+	},
 	rnc: {
 		type: DataTypes.CHAR(9),
 		unique: true,
