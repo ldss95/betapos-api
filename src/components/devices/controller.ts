@@ -24,9 +24,9 @@ export default {
 				const device = await Device.findOne({ where: { deviceId: req.body.deviceId } })
 				const { businessId } = device!
 				const business = await Business.findOne({ where: { id: businessId } })
-				const { merchatId } = business!
+				const { merchantId } = business!
 
-				if (merchatId == req.body.merchantId) {
+				if (merchantId == req.body.merchantId) {
 					return res.sendStatus(201)
 				}
 

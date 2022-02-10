@@ -4,7 +4,7 @@ import { ProvinceAttr } from '../provinces/interface'
 
 export interface BusinessAttr extends Model {
 	id: string;
-	merchatId: string;
+	merchantId: string;
 	name: string;
 	address: string;
 	email: string;

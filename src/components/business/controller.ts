@@ -39,8 +39,8 @@ export default {
 	},
 	create: async (req: Request, res: Response) => {
 		try {
-			const merchatId = await getMerchantId()
-			await Business.create({ ...req.body, merchatId })
+			const merchantId = await generateMerchantId()
+			await Business.create({ ...req.body, merchantId })
 			res.sendStatus(201)
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
@@ -105,17 +105,17 @@ export default {
  * Obtiene un string de 9 caracteres unico para ser usado como merchant id de un
  * negoci en el formato AA 999999
  */
-async function getMerchantId(): Promise<string> {
+export async function generateMerchantId(): Promise<string> {
 	const firstChar = String.fromCharCode(Math.random() * (90 - 65) + 65) // A-Z
 	const lastChar = String.fromCharCode(Math.random() * (90 - 65) + 65) // A-Z
 	const rdNumber = Math.round(Math.random() * (0 - 999999) + 999999) // 000000 - 999999
 
 	const code = firstChar + lastChar + rdNumber.toString().padStart(6, '0')
-	const codeTakend = await Business.count({ where: { merchatId: code } })
+	const codeTakend = await Business.count({ where: { merchantId: code } })
 
 	if (!codeTakend) {
 		return code
 	}
 
-	return await getMerchantId()
+	return await generateMerchantId()
 }
