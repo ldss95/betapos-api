@@ -4,8 +4,11 @@ import { BusinessType } from './model'
 
 export default {
 	getAll: (req: Request, res: Response) => {
-		BusinessType.findAll()
-			.then((types) => res.status(200).send(types))
+		BusinessType.findAll({ order: [['name', 'ASC']] })
+			.then((types) => {
+				const other = types.find((type) => type.code === 'OTHE')
+				res.status(200).send([...types.filter((type) => type.code !== 'OTHE'), other])
+			})
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error
