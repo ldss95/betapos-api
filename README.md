@@ -1,6 +1,6 @@
-# ZECONOMY API
+# BETA POS API
 
-ZECONOMY es un sistema de facturación POS y gestion de inventario multi usuarios.
+BETA POS es un sistema de facturación POS y gestion de inventario multi usuarios.
 
 ## Documentacion
 La documentacion del API es generada con [Swagger JsDoc](https://www.npmjs.com/package/swagger-jsdoc) y [Swagger UI Express](https://www.npmjs.com/package/swagger-ui-express), puedes verla en este [link](http://localhost:3000/docs) despues de iniciar el proyecto usando el siduiente comando.

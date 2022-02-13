@@ -40,7 +40,7 @@ export default {
 			req.session!.userId = user.id
 
 			const data = {
-				iss: 'Zeconomy-API',
+				iss: 'Beta-POS-API',
 				aud: 'web',
 				iat: new Date().getTime() / 1000,
 				user: {

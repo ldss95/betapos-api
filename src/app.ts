@@ -60,9 +60,9 @@ const specs = swaggerJsDoc({
 	definition: {
 		openapi: '3.0.1',
 		info: {
-			title: 'ZECONOMY API',
+			title: 'BETA POS API',
 			version: '0.0.1',
-			description: 'API para las aplicaciones de ZECONOMY'
+			description: 'API para las aplicaciones de BETA POS'
 		},
 		securityDefinitions: {
 			auth: {
