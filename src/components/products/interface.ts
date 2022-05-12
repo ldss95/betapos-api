@@ -9,7 +9,7 @@ export interface ProductAttr extends Model {
 	categoryId: string;
 	barcodes: BarcodeAttr[];
 	referenceCode: string;
-	stock: number;
+	initialStock: number;
 	cost: number;
 	price: number;
 	photoUrl: string;

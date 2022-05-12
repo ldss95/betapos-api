@@ -24,7 +24,7 @@ const Product = db.define<ProductAttr>('product', {
 	referenceCode: DataTypes.STRING(30),
 	brandId: DataTypes.UUID,
 	categoryId: DataTypes.UUID,
-	stock: {
+	initialStock: {
 		type: DataTypes.MEDIUMINT,
 		defaultValue: 0
 	},
