@@ -36,10 +36,7 @@ const User = db.define<UserAttr>('user', {
 	},
 	password: {
 		type: DataTypes.STRING(200),
-		allowNull: false,
-		set: function (password: string) {
-			this.setDataValue('password', bcrypt.hashSync(password, 13))
-		}
+		allowNull: false
 	},
 	dui: {
 		type: DataTypes.CHAR(11),
