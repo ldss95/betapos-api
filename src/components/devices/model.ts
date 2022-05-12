@@ -15,10 +15,7 @@ const Device = db.define<DeviceAttr>('device', {
 		allowNull: false,
 		unique: true
 	},
-	osId: {
-		type: DataTypes.UUID,
-		allowNull: false
-	},
+	osId: DataTypes.UUID,
 	businessId: {
 		type: DataTypes.UUID,
 		allowNull: false
