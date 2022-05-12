@@ -58,6 +58,10 @@ const User = db.define<UserAttr>('user', {
 			}
 		}
 	},
+	gender: {
+		type: DataTypes.ENUM('M', 'F', 'O'),
+		allowNull: false
+	},
 	address: DataTypes.STRING(200),
 	photoUrl: DataTypes.STRING(400),
 	roleId: {

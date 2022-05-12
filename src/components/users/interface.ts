@@ -9,6 +9,7 @@ export interface UserAttr extends Model {
 	nickName: string;
 	password: string;
 	dui: string;
+	gender: 'M' | 'F' | 'O';
 	address: string;
 	photoUrl: string;
 	roleId: string;

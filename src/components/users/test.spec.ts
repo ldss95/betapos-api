@@ -12,6 +12,7 @@ const user = {
 	birthDate: '1995-08-10',
 	email: 'test@test.com',
 	password: '123456',
+	gender: 'O',
 	dui: '40225688353',
 	roleId: process.env.ADMIN_ROLE_ID
 }
