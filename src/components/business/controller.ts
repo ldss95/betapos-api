@@ -1,8 +1,13 @@
 import { Request, Response } from 'express'
 import { UniqueConstraintError } from 'sequelize'
 import { deleteFile } from '../../helpers'
+import { Barcode } from '../barcodes/model'
+import { Brand } from '../brands/model'
 import { BusinessType } from '../business-types/model'
+import { Category } from '../categories/model'
+import { Product } from '../products/model'
 import { Province } from '../provinces/model'
+import { User } from '../users/model'
 
 import { Business } from './model'
 
@@ -94,6 +99,88 @@ export default {
 
 			business!.update({ logoUrl: location })
 			res.status(200).send({ logoUrl: location })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	confirm: (req: Request, res: Response) => {
+		const { merchantId } = req.query
+		Business.findOne({
+			where: { merchantId },
+			attributes: ['name', 'id']
+		})
+			.then((business) => {
+				if (!business) {
+					return res.sendStatus(204)
+				}
+
+				res.status(200).send({ name: business.name, id: business.id })
+			})
+			.catch((error) => {
+				res.sendStatus(500)
+				throw error
+			})
+	},
+	getPosData: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.query
+			const business = await Business.findOne({ where: { id } })
+
+			if (!business) {
+				return res.sendStatus(204)
+			}
+
+			const users = await User.findAll({
+				where: { businessId: id },
+				attributes: [
+					'id',
+					'firstName',
+					'lastName',
+					'nickName',
+					'email',
+					'password',
+					'gender',
+					'roleId',
+					'photoUrl',
+					'isActive'
+				]
+			})
+			const products = await Product.findAll({
+				where: { businessId: id },
+				attributes: [
+					'id',
+					'name',
+					'referenceCode',
+					'brandId',
+					'categoryId',
+					'price',
+					'itbis',
+					'photoUrl',
+					'isActive'
+				],
+				include: {
+					model: Barcode,
+					as: 'barcodes',
+					attributes: ['id', 'barcode']
+				}
+			})
+			const categories = await Category.findAll({
+				where: { businessId: id },
+				attributes: ['id', 'name', 'description']
+			})
+			const brands = await Brand.findAll({
+				where: { businessId: id },
+				attributes: ['id', 'name']
+			})
+
+			res.status(200).send({
+				business: business.toJSON(),
+				users: users.map((user) => user.toJSON()),
+				products: products.map((product) => product.toJSON()),
+				categories: categories.map((category) => category.toJSON()),
+				brands: brands.map((brand) => brand.toJSON())
+			})
 		} catch (error) {
 			res.sendStatus(500)
 			throw error

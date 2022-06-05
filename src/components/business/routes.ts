@@ -19,6 +19,9 @@ router.post(
 	controller.setLogoImage
 )
 
+router.get('/confirm', controller.confirm)
+router.get('/get-pos-data', controller.getPosData)
+
 router.route('/:id').get(isLoggedin, tokenIsValid, controller.getOne)
 
 export default router
