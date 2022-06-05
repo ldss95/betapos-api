@@ -5,16 +5,18 @@ import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
 import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 
-router
-	.route('/:id')
-	.get(isLoggedin, tokenIsValid, controller.getOne)
-	.delete(isLoggedin, tokenIsValid, controller.delete)
+router.get('/updates/:date', controller.getUpdates)
 
 router
 	.route('/')
 	.get(isLoggedin, tokenIsValid, controller.getAll)
 	.post(isLoggedin, tokenIsValid, controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
+
+router
+	.route('/:id')
+	.get(isLoggedin, tokenIsValid, controller.getOne)
+	.delete(isLoggedin, tokenIsValid, controller.delete)
 
 router.post(
 	'/set-profile-image',

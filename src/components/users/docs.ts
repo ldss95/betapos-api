@@ -99,5 +99,5 @@
  *                             id:
  *                                 type: string
  *                                 description: Id del usuario
- *                                 format: uuid 
+ *                                 format: uuid
  */
