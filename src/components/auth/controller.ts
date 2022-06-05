@@ -111,7 +111,18 @@ export default {
 			const role = await Role.findOne({ where: { code: 'BIOWNER' } })
 
 			const { id } = await Business.create({ ...business, merchantId }, { transaction })
-			await User.create({ ...user, businessId: id, roleId: role?.id }, { transaction })
+			const password = bcrypt.hashSync(user.password, 13)
+			await User.create(
+				{
+					...user,
+					password,
+					businessId: id,
+					roleId: role?.id
+				},
+				{
+					transaction
+				}
+			)
 			await transaction.commit()
 			res.sendStatus(201)
 		} catch (error) {
