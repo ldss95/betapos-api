@@ -16,6 +16,7 @@ import products from './components/products/routes'
 import devices from './components/devices/routes'
 import auth from './components/auth/routes'
 import provinces from './components/provinces/routes'
+import banks from './components/banks/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -28,6 +29,7 @@ router.use('/barcodes', barcodes)
 router.use('/payment-types', paymentTypes)
 router.use('/coupons', coupons)
 router.use('/roles', roles)
+router.use('/banks', banks)
 router.use('/products', products)
 router.use('/devices', devices)
 router.use('/provinces', provinces)
