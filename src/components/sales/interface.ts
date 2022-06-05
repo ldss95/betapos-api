@@ -6,6 +6,7 @@ export interface SaleAttr extends Model {
 	businessId: string;
 	clientId: string;
 	sellerId: string;
+	deviceId: string;
 	amount: number;
 	discount: number;
 	shiftId: string;

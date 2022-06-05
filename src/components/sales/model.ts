@@ -4,6 +4,7 @@ import { db } from '../../database/connection'
 import { SaleAttr } from './interface'
 import { SaleStatusAttr } from '../sale-statuses/interface'
 import { Payment } from '../payments/model'
+import { Device } from '../devices/model'
 
 const Sale = db.define<SaleAttr>('sale', {
 	id: {
@@ -21,6 +22,10 @@ const Sale = db.define<SaleAttr>('sale', {
 	},
 	clientId: DataTypes.UUID,
 	sellerId: {
+		type: DataTypes.UUID,
+		allowNull: false
+	},
+	deviceId: {
 		type: DataTypes.UUID,
 		allowNull: false
 	},
@@ -57,6 +62,7 @@ const SaleStatus = db.define<SaleStatusAttr>('sale_status', {
 	description: DataTypes.STRING
 })
 
+Sale.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' })
 Sale.hasOne(SaleStatus, { foreignKey: 'statusId', as: 'status' })
 Sale.hasMany(Payment, { foreignKey: 'saleId', as: 'payments' })
 
