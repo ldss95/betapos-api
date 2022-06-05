@@ -8,11 +8,11 @@ let session: string
 
 const user = {
 	firstName: 'Test First Name',
-	lastName: 'Last First Name',
+	lastName: 'Test Last Name',
 	birthDate: '1995-08-10',
 	email: 'test@test.com',
 	password: '123456',
-	gender: 'O',
+	gender: 'M',
 	dui: '40225688353',
 	roleId: process.env.ADMIN_ROLE_ID
 }
@@ -118,7 +118,7 @@ describe('Users', () => {
 
 					done()
 				})
-		})
+		}, 10000)
 
 		it('Deberia obtener un error 404 al intentar obtener los datos de un usuario inexistente', (done) => {
 			http(app)
