@@ -14,7 +14,13 @@ export default {
 		try {
 			const { email, password } = req.body
 
-			const user = await User.findOne({ where: { email } })
+			const user = await User.findOne({
+				where: { email },
+				include: {
+					model: Business,
+					as: 'business'
+				}
+			})
 
 			if (!user) {
 				res.status(401).send({
@@ -37,6 +43,7 @@ export default {
 			req.session!.email = user.email
 			req.session!.roleId = user.roleId
 			req.session!.businessId = user.businessId
+			req.session!.merchantId = user?.business?.merchantId
 			req.session!.userId = user.id
 
 			const data = {
