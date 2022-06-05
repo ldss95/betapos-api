@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { UniqueConstraintError } from 'sequelize'
+import { Op, UniqueConstraintError } from 'sequelize'
 import { Business } from '../business/model'
 
 import { Os } from '../operative-systems/model'
@@ -8,7 +8,7 @@ import { Device } from './model'
 export default {
 	create: async (req: Request, res: Response) => {
 		try {
-			const { merchantId } = req.body
+			const { merchantId, release, code } = req.body
 
 			const business = await Business.findOne({ where: { merchantId } })
 			if (!business) {
@@ -17,7 +17,17 @@ export default {
 				})
 			}
 
-			await Device.create({ ...req.body, businessId: business.id })
+			const os = await Os.findOne({
+				where: {
+					[Op.and]: [{ release }, { code }]
+				}
+			})
+
+			await Device.create({
+				...req.body,
+				businessId: business.id,
+				...(os && { osId: os.id })
+			})
 			res.sendStatus(201)
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
