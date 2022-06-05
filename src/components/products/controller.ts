@@ -1,4 +1,9 @@
 import { Request, Response } from 'express'
+import { Op } from 'sequelize'
+import moment from 'moment'
+import firebase from 'firebase-admin'
+
+import { db } from '../../database/firebase'
 import { deleteFile } from '../../helpers'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
@@ -6,45 +11,74 @@ import { Category } from '../categories/model'
 // import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize'
 
 import { Product } from './model'
+import { Business } from '../business/model'
 
 export default {
-	create: (req: Request, res: Response) => {
-		const { businessId } = req.session!
+	create: async (req: Request, res: Response) => {
+		try {
+			const { businessId, merchantId } = req.session!
 
-		Product.create(
-			{ ...req.body, businessId },
-			{
-				include: {
-					model: Barcode,
-					as: 'barcodes'
+			const { id } = await Product.create(
+				{ ...req.body, businessId },
+				{
+					include: {
+						model: Barcode,
+						as: 'barcodes'
+					}
 				}
-			}
-		)
-			.then(({ id }) => res.status(201).send({ id }))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
-	},
-	update: (req: Request, res: Response) => {
-		const { id } = req.body
+			)
 
-		Product.update(req.body, { where: { id } })
-			.then(() => res.sendStatus(204))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
-	},
-	delete: (req: Request, res: Response) => {
-		const { id } = req.params
+			await db
+				.collection(merchantId)
+				.doc('products')
+				.update({
+					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+				})
 
-		Product.destroy({ where: { id } })
-			.then(() => res.sendStatus(204))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			res.status(201).send({ id })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	update: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.body
+			const { merchantId } = req.session!
+
+			Product.update(req.body, { where: { id } })
+			await db
+				.collection(merchantId)
+				.doc('products')
+				.update({
+					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+				})
+
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	delete: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			const { merchantId } = req.session!
+
+			await Product.destroy({ where: { id } })
+
+			await db
+				.collection(merchantId)
+				.doc('products')
+				.update({
+					deleted: firebase.firestore.FieldValue.arrayUnion(id)
+				})
+
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	getAll: (req: Request, res: Response) => {
 		Product.findAll({
@@ -106,6 +140,52 @@ export default {
 
 			await product!.update({ photoUrl: location })
 			res.status(200).send({ photoUrl: location })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getUpdates: async (req: Request, res: Response) => {
+		try {
+			const { date } = req.params
+			const merchantId = req.header('merchantId')
+
+			const business = await Business.findOne({
+				where: {
+					merchantId
+				}
+			})
+
+			if (!business || !business.isActive) {
+				return res.sendStatus(400)
+			}
+
+			const created = await Product.findAll({
+				where: {
+					...(date != 'ALL' && {
+						createdAt: { [Op.gte]: date }
+					}),
+					businessId: business.id
+				},
+				include: {
+					model: Barcode,
+					as: 'barcodes'
+				}
+			})
+			const updated = await Product.findAll({
+				where: {
+					...(date != 'ALL' && {
+						updatedAt: { [Op.gte]: date }
+					}),
+					businessId: business.id
+				},
+				raw: true
+			})
+
+			res.status(200).send({
+				created: created.map((product) => product.toJSON()),
+				updated
+			})
 		} catch (error) {
 			res.sendStatus(500)
 			throw error

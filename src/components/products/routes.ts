@@ -11,6 +11,8 @@ routes
 	.post(isLoggedin, tokenIsValid, controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
 
+routes.get('/updates/:date', controller.getUpdates)
+
 routes
 	.route('/:id')
 	.get(isLoggedin, tokenIsValid, controller.getOne)

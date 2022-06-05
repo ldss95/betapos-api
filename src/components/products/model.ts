@@ -52,6 +52,7 @@ const Product = db.define<ProductAttr>('product', {
 })
 
 Product.hasMany(Barcode, { foreignKey: 'productId', as: 'barcodes' })
+Barcode.belongsTo(Product, { foreignKey: 'productId', as: 'product' })
 Product.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
 Product.belongsTo(Brand, { foreignKey: 'brandId', as: 'brand' })
 Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' })
