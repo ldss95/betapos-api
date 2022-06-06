@@ -16,10 +16,16 @@ export default {
 
 			const user = await User.findOne({
 				where: { email },
-				include: {
-					model: Business,
-					as: 'business'
-				}
+				include: [
+					{
+						model: Business,
+						as: 'business'
+					},
+					{
+						model: Role,
+						as: 'role'
+					}
+				]
 			})
 
 			if (!user) {
@@ -42,6 +48,7 @@ export default {
 			req.session!.photo = user.photoUrl
 			req.session!.email = user.email
 			req.session!.roleId = user.roleId
+			req.session!.roleCode = user.role.code
 			req.session!.businessId = user.businessId
 			req.session!.merchantId = user?.business?.merchantId
 			req.session!.userId = user.id
@@ -54,6 +61,7 @@ export default {
 					id: user.id,
 					name: req.session!.name,
 					email: user.email,
+					roleCode: user.role.code,
 					createdAt: user.createdAt
 				}
 			}
@@ -72,7 +80,8 @@ export default {
 					roleId: user.roleId,
 					id: user.id,
 					businessId: user.businessId,
-					photoUrl: user.photoUrl
+					photoUrl: user.photoUrl,
+					roleCode: user.role.code
 				}
 			})
 		} catch (error) {
