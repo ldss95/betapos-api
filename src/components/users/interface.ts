@@ -1,6 +1,7 @@
 import { Model } from 'sequelize'
 
 import { BusinessAttr } from '../business/interface'
+import { RoleAttr } from '../roles/interface'
 
 export interface UserAttr extends Model {
 	id: string;
@@ -15,6 +16,7 @@ export interface UserAttr extends Model {
 	address: string;
 	photoUrl: string;
 	roleId: string;
+	role: RoleAttr;
 	businessId: string;
 	business: BusinessAttr;
 	isActive: boolean;
