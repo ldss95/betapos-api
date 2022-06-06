@@ -47,6 +47,9 @@ export default {
 	},
 	getAll: (req: Request, res: Response) => {
 		User.findAll({
+			attributes: {
+				exclude: ['password']
+			},
 			include: {
 				model: Role,
 				as: 'role'
