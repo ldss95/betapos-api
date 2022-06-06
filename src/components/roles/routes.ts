@@ -1,10 +1,9 @@
 import { Router } from 'express'
-import controller from './controller'
 
+import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import controller from './controller'
 const router: Router = Router()
 
-router.route('/').get(controller.getAll).post(controller.create).put(controller.update)
-
-router.route('/:id').get(controller.getOne).delete(controller.delete)
+router.get('/', isLoggedin, tokenIsValid, controller.getAll)
 
 export default router
