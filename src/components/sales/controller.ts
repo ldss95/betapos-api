@@ -32,7 +32,12 @@ export default {
 			})
 	},
 	getAll: (req: Request, res: Response) => {
-		Sale.findAll()
+		Sale.findAll({
+			where: {
+				businessId: req.session!.businessId
+			},
+			order: [['createdAt', 'DESC']]
+		})
 			.then((Sale) => res.status(200).send(Sale))
 			.catch((error) => {
 				res.sendStatus(500)
