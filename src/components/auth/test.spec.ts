@@ -29,7 +29,7 @@ describe('Auth', () => {
 				.expect(401)
 				.then(({ body }) => {
 					expect(body).toHaveProperty('message')
-					expect(body.message).toBe('Email incorrecto.')
+					expect(body.message).toBe('Email o contraseña incorrecta.')
 
 					done()
 				})
@@ -43,7 +43,7 @@ describe('Auth', () => {
 				.expect(401)
 				.then(({ body }) => {
 					expect(body).toHaveProperty('message')
-					expect(body.message).toBe('Contraseña incorrecta.')
+					expect(body.message).toBe('Email o contraseña incorrecta.')
 
 					done()
 				})

@@ -29,18 +29,18 @@ export default {
 			})
 
 			if (!user) {
-				res.status(401).send({
-					message: 'Email incorrecto.'
+				return res.status(401).send({
+					message: 'Email o contraseña incorrecta.'
 				})
-				return
 			}
 
 			const passwordMatch = bcrypt.compareSync(password, user.password)
 			if (!passwordMatch) {
-				res.status(401).send({
-					message: 'Contraseña incorrecta.'
+				return res.status(401).send({
+					message: 'Email o contraseña incorrecta.'
 				})
-				return
+			}
+
 			if (user.role.code == 'SELLER') {
 				return res.status(401).send({
 					message: 'Email o contraseña incorrecta.'
