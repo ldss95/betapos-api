@@ -11,7 +11,7 @@ const Payment = db.define<PaymentAttr>('payment', {
 		defaultValue: DataTypes.UUIDV4
 	},
 	saleId: {
-		type: DataTypes.UUIDV4,
+		type: DataTypes.UUID,
 		allowNull: false
 	},
 	typeId: {
@@ -27,6 +27,6 @@ const Payment = db.define<PaymentAttr>('payment', {
 	}
 })
 
-Payment.hasOne(PaymentType, { foreignKey: 'typeId', as: 'type' })
+Payment.belongsTo(PaymentType, { foreignKey: 'typeId', as: 'type' })
 
 export { Payment }
