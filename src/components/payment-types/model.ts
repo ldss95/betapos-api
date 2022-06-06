@@ -17,4 +17,11 @@ const PaymentType = db.define<PaymentTypeAttr>('payment_types', {
 	description: DataTypes.STRING
 })
 
+PaymentType.sync().then(() => {
+	PaymentType.bulkCreate(
+		[{ name: 'Efectivo' }, { name: 'Cupón' }, { name: 'Tarjeta' }, { name: 'Nota de credito' }],
+		{ ignoreDuplicates: true }
+	)
+})
+
 export { PaymentType }
