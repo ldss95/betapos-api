@@ -41,6 +41,10 @@ export default {
 					message: 'Contraseña incorrecta.'
 				})
 				return
+			if (user.role.code == 'SELLER') {
+				return res.status(401).send({
+					message: 'Email o contraseña incorrecta.'
+				})
 			}
 
 			req.session!.loggedin = true
