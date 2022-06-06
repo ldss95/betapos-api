@@ -26,4 +26,6 @@ router.post(
 	controller.setProfileImage
 )
 
+router.post('/photo', isLoggedin, tokenIsValid, uploadSingle('images/users/'), controller.addPhoto)
+
 export default router

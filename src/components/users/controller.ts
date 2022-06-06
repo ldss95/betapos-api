@@ -201,6 +201,32 @@ export default {
 			throw error
 		}
 	},
+	addPhoto: async (req: any, res: Response) => {
+		try {
+			const { file } = req
+			let { location } = file
+			if (location.substr(0, 8) != 'https://') {
+				location = `https://${location}`
+			}
+
+			const { id } = req.body
+
+			const user = await User.findOne({ where: { id } })
+
+			// Delte current photo if exists
+			if (user?.photoUrl && user.photoUrl != location) {
+				let key = user.photoUrl.split('/images/').pop()
+				key = 'images/' + key
+				deleteFile(key)
+			}
+
+			await user!.update({ photoUrl: location })
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
 	getUpdates: async (req: Request, res: Response) => {
 		try {
 			const { date } = req.params
