@@ -148,6 +148,42 @@ export default {
 					required: false
 				}
 			],
+			attributes: {
+				include: [
+					[
+						literal(`
+							ROUND(
+								(
+									product.initialStock -
+									(
+										SELECT
+											COUNT(sp.quantity)
+										FROM
+											sale_products sp
+										JOIN
+											sales s ON s.id = sp.saleId
+										JOIN
+											sale_statuses ss ON ss.id = s.statusId
+										WHERE
+											sp.productId = product.id AND
+											ss.name = 'Cerrada'
+									) +
+									(
+										SELECT
+											COUNT(quantity)
+										FROM
+											purchase_products
+										WHERE
+											productId = product.id
+									)
+								),
+								2
+							)
+						`),
+						'stock'
+					]
+				]
+			},
 			where: {
 				businessId: req.session!.businessId
 			}
