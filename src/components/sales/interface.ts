@@ -2,7 +2,7 @@ import { Model } from 'sequelize'
 
 export interface SaleAttr extends Model {
 	id: string;
-	ticketId: number;
+	ticketNumber: string;
 	businessId: string;
 	clientId: string;
 	sellerId: string;
@@ -10,7 +10,7 @@ export interface SaleAttr extends Model {
 	amount: number;
 	discount: number;
 	shiftId: string;
-	statusId: string;
+	status: 'DONE' | 'CANCELLED';
 	createdAt: string;
 	updatedAt: string;
 }

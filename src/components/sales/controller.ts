@@ -1,10 +1,18 @@
 import { Request, Response } from 'express'
 
-import { Sale, SaleStatus } from './model'
+import { Sale } from './model'
+import { SaleProduct } from '../sale-products/model'
 
 export default {
 	create: (req: Request, res: Response) => {
-		Sale.create(req.body)
+		const { ticket } = req.body
+		console.log(ticket)
+		Sale.create(ticket, {
+			include: {
+				model: SaleProduct,
+				as: 'products'
+			}
+		})
 			.then(() => res.sendStatus(201))
 			.catch((error) => {
 				res.sendStatus(500)
@@ -49,14 +57,6 @@ export default {
 
 		Sale.findOne({ where: { id } })
 			.then((Sale) => res.status(200).send(Sale))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
-	},
-	statusList: (req: Request, res: Response) => {
-		SaleStatus.findAll()
-			.then((status) => res.status(200).send(status))
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error

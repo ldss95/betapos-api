@@ -8,10 +8,8 @@ const routes: Router = Router()
 routes
 	.route('/')
 	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, controller.create)
+	.post(controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
-
-routes.get('/status-list', isLoggedin, tokenIsValid, controller.statusList)
 
 routes
 	.route('/:id')
