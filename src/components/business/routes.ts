@@ -20,7 +20,7 @@ router.post(
 )
 
 router.get('/confirm', controller.confirm)
-router.get('/get-pos-data', controller.getPosData)
+router.get('/by-merchant-id', controller.getByMerchantId)
 
 router.route('/:id').get(isLoggedin, tokenIsValid, controller.getOne)
 
