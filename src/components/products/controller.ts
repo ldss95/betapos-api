@@ -162,11 +162,9 @@ export default {
 											sale_products sp
 										JOIN
 											sales s ON s.id = sp.saleId
-										JOIN
-											sale_statuses ss ON ss.id = s.statusId
 										WHERE
 											sp.productId = product.id AND
-											ss.name = 'Cerrada'
+											s.status = 'DONE'
 									) +
 									(
 										SELECT
