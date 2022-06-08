@@ -19,6 +19,7 @@ import provinces from './components/provinces/routes'
 import providers from './components/providers/routes'
 import banks from './components/banks/routes'
 import sales from './components/sales/routes'
+import shifts from './components/shifts/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -37,6 +38,7 @@ router.use('/devices', devices)
 router.use('/providers', providers)
 router.use('/provinces', provinces)
 router.use('/sales', sales)
+router.use('/shifts', shifts)
 
 router.all('*', (req, res) => res.sendStatus(404))
 
