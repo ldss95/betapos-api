@@ -34,6 +34,18 @@ export default {
 				throw error
 			})
 	},
+	getByMerchantId: (req: Request, res: Response) => {
+		const merchantId = req.header('merchantId')
+
+		Business.findOne({
+			where: { merchantId }
+		})
+			.then((business) => res.status(200).send(business?.toJSON()))
+			.catch((error) => {
+				res.sendStatus(500)
+				throw error
+			})
+	},
 	getAll: (req: Request, res: Response) => {
 		Business.findAll()
 			.then((business) => res.status(200).send(business))
