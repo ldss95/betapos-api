@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Op } from 'sequelize'
+import { Op, literal } from 'sequelize'
 import moment from 'moment'
 import firebase from 'firebase-admin'
 
@@ -12,6 +12,7 @@ import { Category } from '../categories/model'
 
 import { Product } from './model'
 import { Business } from '../business/model'
+import { BarcodeAttr } from '../barcodes/interface'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -43,13 +44,61 @@ export default {
 	},
 	update: async (req: Request, res: Response) => {
 		try {
-			const { id } = req.body
+			const { id, barcodes } = req.body
 			const { merchantId } = req.session!
 
+			/**
+			 * Actualizar producto
+			 */
 			Product.update(req.body, { where: { id } })
 			await db
 				.collection(merchantId)
 				.doc('products')
+				.update({
+					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+				})
+
+			/**
+			 * Actualizar los codigos de barras
+			 */
+			// Eliminados
+			await Barcode.destroy({
+				where: {
+					[Op.and]: [
+						{ productId: id },
+						{
+							id: {
+								[Op.notIn]: barcodes?.map(({ id }: BarcodeAttr) => id) || []
+							}
+						}
+					]
+				}
+			})
+
+			// Nuevos
+			await Barcode.bulkCreate(
+				barcodes
+					.filter(({ id }: BarcodeAttr) => !id)
+					.map(({ barcode }: BarcodeAttr) => ({
+						barcode,
+						productId: id
+					}))
+			)
+
+			// Modificados
+			const oldBarcodes = barcodes.filter(({ id }: BarcodeAttr) => id)
+			for (const { id, barcode } of oldBarcodes) {
+				await Barcode.update(
+					{ barcode },
+					{
+						where: { id }
+					}
+				)
+			}
+
+			await db
+				.collection(merchantId)
+				.doc('barcodes')
 				.update({
 					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
 				})
