@@ -2,22 +2,41 @@ import { Request, Response } from 'express'
 
 import { Sale } from './model'
 import { SaleProduct } from '../sale-products/model'
+import { Business } from '../business/model'
 
 export default {
-	create: (req: Request, res: Response) => {
-		const { ticket } = req.body
-		console.log(ticket)
-		Sale.create(ticket, {
-			include: {
-				model: SaleProduct,
-				as: 'products'
-			}
-		})
-			.then(() => res.sendStatus(201))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
+	create: async (req: Request, res: Response) => {
+		try {
+			const { ticket } = req.body
+			const merchantId = req.header('merchantId')
+			const business = await Business.findOne({
+				where: { merchantId }
 			})
+
+			if (!business) {
+				return res.status(400).send({
+					message: 'Invalida MERCHANT ID'
+				})
+			}
+
+			await Sale.create(
+				{
+					...ticket,
+					businessId: business.id,
+					sellerId: ticket.userId
+				},
+				{
+					include: {
+						model: SaleProduct,
+						as: 'products'
+					}
+				}
+			)
+			res.sendStatus(201)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	update: (req: Request, res: Response) => {
 		const { id } = req.body

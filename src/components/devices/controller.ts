@@ -125,7 +125,7 @@ export default {
 				return res.sendStatus(400)
 			}
 
-			const device= await Device.findOne({
+			const device = await Device.findOne({
 				where: {
 					[Op.and]: [
 						{ businessId: business.id },
