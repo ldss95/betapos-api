@@ -20,6 +20,7 @@ import providers from './components/providers/routes'
 import banks from './components/banks/routes'
 import sales from './components/sales/routes'
 import shifts from './components/shifts/routes'
+import inventoryAdjustments from './components/inventory-adjustments/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -39,6 +40,7 @@ router.use('/providers', providers)
 router.use('/provinces', provinces)
 router.use('/sales', sales)
 router.use('/shifts', shifts)
+router.use('/inventory-adjustments', inventoryAdjustments)
 
 router.all('*', (req, res) => res.sendStatus(404))
 
