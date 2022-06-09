@@ -1,9 +1,12 @@
 import { Request, Response } from 'express'
 import { Op, UniqueConstraintError } from 'sequelize'
 import { Business } from '../business/model'
+import moment from 'moment'
+import firebase from 'firebase-admin'
 
 import { Os } from '../operative-systems/model'
 import { Device } from './model'
+import { db } from '../../database/firebase'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -40,6 +43,7 @@ export default {
 					return res.sendStatus(201)
 				}
 
+				console.log('Registered With: ', merchantId, ' Sended Merchat ID: ', req.body.merchantId)
 				return res.status(400).send({
 					message: 'Esta PC se encuentra conectada con otra cuenta de negocios.'
 				})
@@ -49,25 +53,45 @@ export default {
 			throw error
 		}
 	},
-	update: (req: Request, res: Response) => {
-		const { id } = req.body
+	update: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.body
+			const { merchantId } = req.session!
 
-		Device.update(req.body, { where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			await Device.update(req.body, { where: { id } })
+
+			await db
+				.collection(merchantId)
+				.doc('devices')
+				.update({
+					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+				})
+
+			res.sendStatus(200)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
-	delete: (req: Request, res: Response) => {
-		const { id } = req.params
+	delete: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			const { merchantId } = req.session!
 
-		Device.destroy({ where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			await Device.destroy({ where: { id } })
+
+			await db
+				.collection(merchantId)
+				.doc('devices')
+				.update({
+					deleted: firebase.firestore.FieldValue.arrayUnion(id)
+				})
+
+			res.sendStatus(200)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	getAll: (req: Request, res: Response) => {
 		const { businessId } = req.session!
@@ -84,5 +108,41 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
+	},
+	getUpdates: async (req: Request, res: Response) => {
+		try {
+			const { date } = req.params
+			const merchantId = req.header('merchantId')
+			const deviceId = req.header('deviceId')
+
+			const business = await Business.findOne({
+				where: {
+					merchantId
+				}
+			})
+
+			if (!business || !business.isActive) {
+				return res.sendStatus(400)
+			}
+
+			const device= await Device.findOne({
+				where: {
+					[Op.and]: [
+						{ businessId: business.id },
+						{ deviceId },
+						{
+							updatedAt: {
+								[Op.gte]: date
+							}
+						}
+					]
+				}
+			})
+
+			res.status(200).send(device?.toJSON())
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	}
 }

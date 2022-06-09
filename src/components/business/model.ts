@@ -95,6 +95,13 @@ const Business = db.define<BusinessAttr>(
 					.set({
 						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
 					})
+
+				firebaseCon
+					.collection(merchantId)
+					.doc('devices')
+					.set({
+						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+					})
 			}
 		}
 	}

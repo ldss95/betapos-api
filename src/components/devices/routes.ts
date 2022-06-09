@@ -10,6 +10,8 @@ routes
 	.get(isLoggedin, tokenIsValid, controller.getAll)
 	.put(isLoggedin, tokenIsValid, controller.update)
 
+routes.get('/updates/:date', controller.getUpdates)
+
 routes.route('/:id').delete(controller.delete)
 
 export default routes
