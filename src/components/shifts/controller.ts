@@ -2,16 +2,26 @@ import { Request, Response } from 'express'
 
 import { Shift } from './model'
 import { User } from '../users/model'
+import { Device } from '../devices/model'
 
 export default {
-	create: (req: Request, res: Response) => {
-		const { shift } = req.body
-		Shift.create(shift)
-			.then(() => res.sendStatus(201))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+	create: async (req: Request, res: Response) => {
+		try {
+			const { shift } = req.body
+			const deviceId = req.header('deviceId')
+			const device = await Device.findOne({ where: { deviceId } })
+			if (!device || !device.isActive) {
+				return res.status(401).send({
+					message: 'Unauthorized device'
+				})
+			}
+
+			await Shift.create({ ...shift, deviceId: device.id })
+			res.sendStatus(201)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	getAll: (req: Request, res: Response) => {
 		const { businessId } = req.session!

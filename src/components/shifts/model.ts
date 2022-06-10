@@ -3,6 +3,7 @@ import { DataTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { ShiftAttr } from './interface'
 import { User } from '../users/model'
+import { Device } from '../devices/model'
 
 const Shift = db.define<ShiftAttr>(
 	'shift',
@@ -15,6 +16,10 @@ const Shift = db.define<ShiftAttr>(
 			unique: true
 		},
 		userId: {
+			type: DataTypes.UUID,
+			allowNull: false
+		},
+		deviceId: {
 			type: DataTypes.UUID,
 			allowNull: false
 		},
@@ -49,5 +54,6 @@ const Shift = db.define<ShiftAttr>(
 )
 
 Shift.belongsTo(User, { foreignKey: 'userId' })
+Shift.belongsTo(Device, { foreignKey: 'deviceId' })
 
 export { Shift }
