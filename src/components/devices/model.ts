@@ -24,6 +24,7 @@ const Device = db.define<DeviceAttr>('device', {
 		type: DataTypes.STRING,
 		allowNull: false
 	},
+	pushNotificationsToken: DataTypes.STRING,
 	isActive: {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,

@@ -9,6 +9,7 @@ export interface DeviceAttr extends Model {
 	os: OsAttr;
 	businessId: string;
 	name: string;
+	pushNotificationsToken: string;
 	isActive: boolean;
 	createdAt: string;
 	updatedAt: string;
