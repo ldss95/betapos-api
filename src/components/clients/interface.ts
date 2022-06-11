@@ -10,6 +10,7 @@ export interface ClientAttr extends Model {
 	birthDate: string;
 	address: string;
 	businessId: string;
+	hasCredit: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

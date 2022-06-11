@@ -47,6 +47,11 @@ const Client = db.define<ClientAttr>('client', {
 	businessId: {
 		type: DataTypes.UUID,
 		allowNull: false
+	},
+	hasCredit: {
+		type: DataTypes.BOOLEAN,
+		defaultValue: false,
+		allowNull: false
 	}
 })
 
