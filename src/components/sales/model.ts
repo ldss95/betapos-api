@@ -2,9 +2,9 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { SaleAttr } from './interface'
-import { Payment } from '../payments/model'
+import { SalePayment } from '../sales-payments/model'
 import { Device } from '../devices/model'
-import { SaleProduct } from '../sale-products/model'
+import { SaleProduct } from '../sales-products/model'
 import { User } from '../users/model'
 import { Shift } from '../shifts/model'
 
@@ -45,6 +45,11 @@ const Sale = db.define<SaleAttr>(
 			type: DataTypes.UUID,
 			allowNull: false
 		},
+		orderType: {
+			type: DataTypes.ENUM('DELIVERY', 'PICKUP'),
+			allowNull: false
+		},
+		shippingAddress: DataTypes.STRING,
 		status: {
 			type: DataTypes.ENUM('DONE', 'CANCELLED'),
 			allowNull: false,
@@ -61,7 +66,7 @@ const Sale = db.define<SaleAttr>(
 )
 
 Sale.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' })
-Sale.hasMany(Payment, { foreignKey: 'saleId', as: 'payments' })
+Sale.hasMany(SalePayment, { foreignKey: 'saleId', as: 'payments' })
 Sale.hasMany(SaleProduct, { foreignKey: 'saleId', as: 'products' })
 Sale.belongsTo(User, { foreignKey: 'sellerId', as: 'seller' })
 Sale.belongsTo(Shift, { foreignKey: 'shiftId', as: 'shift' })
