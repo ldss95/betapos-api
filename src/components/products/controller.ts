@@ -44,8 +44,9 @@ export default {
 	},
 	update: async (req: Request, res: Response) => {
 		try {
-			const { id, barcodes } = req.body
+			const { id } = req.body
 			const { merchantId } = req.session!
+			const barcodes = req.body?.barcodes || []
 
 			/**
 			 * Actualizar producto
