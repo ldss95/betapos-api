@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface PaymentAttr extends Model {
+export interface SalePaymentAttr extends Model {
 	id: string;
 	saleId: string;
 	typeId: string;
@@ -10,7 +10,7 @@ export interface PaymentAttr extends Model {
 	updatedAt: string;
 }
 
-export interface PaymentStatusAttr extends Model {
+export interface SalePaymentStatusAttr extends Model {
 	id: string;
 	name: string;
 	description: string;

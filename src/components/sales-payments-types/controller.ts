@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
 
-import { PaymentType } from './model'
+import { SalePaymentType } from './model'
 
 export default {
 	getAll: (req: Request, res: Response) => {
-		PaymentType.findAll()
+		SalePaymentType.findAll()
 			.then((types) => res.status(200).send(types))
 			.catch((error) => {
 				res.sendStatus(500)
@@ -14,7 +14,7 @@ export default {
 	getOne: (req: Request, res: Response) => {
 		const { id } = req.params
 
-		PaymentType.findOne({ where: { id } })
+		SalePaymentType.findOne({ where: { id } })
 			.then((type) => res.status(200).send(type))
 			.catch((error) => {
 				res.sendStatus(500)

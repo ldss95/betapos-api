@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 import { Sale } from './model'
-import { SaleProduct } from '../sale-products/model'
+import { SaleProduct } from '../sales-products/model'
 import { Business } from '../business/model'
 
 export default {

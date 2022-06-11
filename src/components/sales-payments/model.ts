@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { PaymentAttr } from './interface'
-import { PaymentType } from '../payment-types/model'
+import { SalePaymentAttr } from './interface'
+import { SalePaymentType } from '../sales-payments-types/model'
 
-const Payment = db.define<PaymentAttr>('payment', {
+const SalePayment = db.define<SalePaymentAttr>('sales_payment', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,
@@ -27,6 +27,6 @@ const Payment = db.define<PaymentAttr>('payment', {
 	}
 })
 
-Payment.belongsTo(PaymentType, { foreignKey: 'typeId', as: 'type' })
+SalePayment.belongsTo(SalePaymentType, { foreignKey: 'typeId', as: 'type' })
 
-export { Payment }
+export { SalePayment }
