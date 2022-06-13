@@ -26,10 +26,10 @@ beforeAll((done) => {
 })
 
 describe('Payment Types', () => {
-	describe('GET /payment-types', () => {
+	describe('GET /sales-payment-types', () => {
 		it('Deberia obtener una lista con los tipos de pago', (done) => {
 			http(app)
-				.get('/payment-types')
+				.get('/sales-payment-types')
 				.set('Authorization', `Bearer ${token}`)
 				.set('Cookie', session)
 				.expect(200)

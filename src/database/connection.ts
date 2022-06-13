@@ -6,7 +6,8 @@ const db = new Sequelize({
 	dialect: 'mysql',
 	dialectOptions: {
 		dateStrings: true,
-		typeCast: true
+		typeCast: true,
+		decimalNumbers: true
 	},
 	define: {
 		charset: 'utf8',

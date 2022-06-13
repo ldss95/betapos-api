@@ -1,8 +1,10 @@
 import { Request, Response } from 'express'
 
 import { Sale } from './model'
-import { SaleProduct } from '../sale-products/model'
+import { SaleProduct } from '../sales-products/model'
 import { Business } from '../business/model'
+import { SalePayment } from '../sales-payments/model'
+import { Device } from '../devices/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -13,9 +15,19 @@ export default {
 				where: { merchantId }
 			})
 
-			if (!business) {
+			if (!business || !business.isActive) {
 				return res.status(400).send({
 					message: 'Invalida MERCHANT ID'
+				})
+			}
+
+			const device = await Device.findOne({
+				where: { deviceId: req.header('deviceId') }
+			})
+
+			if (!device || !device.isActive) {
+				return res.status(400).send({
+					message: 'Device not allowed'
 				})
 			}
 
@@ -23,13 +35,20 @@ export default {
 				{
 					...ticket,
 					businessId: business.id,
-					sellerId: ticket.userId
+					sellerId: ticket.userId,
+					deviceId: device.id
 				},
 				{
-					include: {
-						model: SaleProduct,
-						as: 'products'
-					}
+					include: [
+						{
+							model: SaleProduct,
+							as: 'products'
+						},
+						{
+							model: SalePayment,
+							as: 'payments'
+						}
+					]
 				}
 			)
 			res.sendStatus(201)

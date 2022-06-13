@@ -9,7 +9,7 @@ import barcodes from './components/barcodes/routes'
 import businessTypes from './components/business-types/routes'
 import categories from './components/categories/routes'
 import brands from './components/brands/routes'
-import paymentTypes from './components/payment-types/routes'
+import salesPaymentTypes from './components/sales-payments-types/routes'
 import coupons from './components/coupons/routes'
 import roles from './components/roles/routes'
 import products from './components/products/routes'
@@ -30,7 +30,7 @@ router.use('/business-types', businessTypes)
 router.use('/categories', categories)
 router.use('/brands', brands)
 router.use('/barcodes', barcodes)
-router.use('/payment-types', paymentTypes)
+router.use('/sales-payment-types', salesPaymentTypes)
 router.use('/coupons', coupons)
 router.use('/roles', roles)
 router.use('/banks', banks)

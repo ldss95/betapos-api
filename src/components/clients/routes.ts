@@ -5,6 +5,8 @@ import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
 import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 
+routes.get('/updates/:date', controller.getUpdates)
+
 routes
 	.route('/')
 	.get(isLoggedin, tokenIsValid, controller.getAll)
