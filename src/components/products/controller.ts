@@ -8,8 +8,6 @@ import { deleteFile } from '../../helpers'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
-// import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize'
-
 import { Product } from './model'
 import { Business } from '../business/model'
 import { BarcodeAttr } from '../barcodes/interface'
@@ -161,9 +159,9 @@ export default {
 							ROUND(
 								(
 									product.initialStock -
-									(
+									COALESCE((
 										SELECT
-											COUNT(sp.quantity)
+											SUM(sp.quantity)
 										FROM
 											sale_products sp
 										JOIN
@@ -171,15 +169,37 @@ export default {
 										WHERE
 											sp.productId = product.id AND
 											s.status = 'DONE'
-									) +
-									(
+									), 0) +
+									COALESCE((
 										SELECT
-											COUNT(quantity)
+											SUM(pp.quantity)
 										FROM
-											purchase_products
+											purchase_products pp
+										JOIN
+											purchases p ON p.id = pp.purchaseId
 										WHERE
-											productId = product.id
-									)
+											pp.productId = product.id AND
+											p.status = 'DONE' AND
+											p.affectsExistence = 1
+									), 0) +
+									COALESCE((
+										SELECT
+											SUM(quantity)
+										FROM
+											inventory_adjustments
+										WHERE
+											productId = product.id AND
+											type = 'IN'
+									), 0) -
+									COALESCE((
+										SELECT
+											SUM(quantity)
+										FROM
+											inventory_adjustments
+										WHERE
+											productId = product.id AND
+											type = 'OUT'
+									), 0)
 								),
 								2
 							)
