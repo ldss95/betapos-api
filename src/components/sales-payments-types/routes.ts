@@ -4,7 +4,7 @@ const routes: Router = Router()
 import controller from './controller'
 import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
 
-routes.route('/').get(isLoggedin, tokenIsValid, controller.getAll)
+routes.route('/').get(controller.getAll)
 
 routes.route('/:id').get(isLoggedin, tokenIsValid, controller.getOne)
 
