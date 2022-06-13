@@ -68,6 +68,7 @@ const Sale = db.define<SaleAttr>(
 Sale.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' })
 Sale.hasMany(SalePayment, { foreignKey: 'saleId', as: 'payments' })
 Sale.hasMany(SaleProduct, { foreignKey: 'saleId', as: 'products' })
+SaleProduct.belongsTo(Sale, { foreignKey: 'saleId', as: 'sale' })
 Sale.belongsTo(User, { foreignKey: 'sellerId', as: 'seller' })
 Sale.belongsTo(Shift, { foreignKey: 'shiftId', as: 'shift' })
 
