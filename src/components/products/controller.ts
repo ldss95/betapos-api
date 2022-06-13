@@ -13,6 +13,11 @@ import { Category } from '../categories/model'
 import { Product } from './model'
 import { Business } from '../business/model'
 import { BarcodeAttr } from '../barcodes/interface'
+import { SaleProduct } from '../sales-products/model'
+import { Sale } from '../sales/model'
+import { PurchaseProduct } from '../purchase-products/model'
+import { Purchase } from '../purchases/model'
+import { InventoryAdjustment } from '../inventory-adjustments/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -192,6 +197,128 @@ export default {
 				res.sendStatus(500)
 				throw error
 			})
+	},
+	getTransactions: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			const product = await Product.findOne({
+				where: { id }
+			})
+
+			if (!product) {
+				return res.status(400).send({
+					message: 'Producto no encontrado'
+				})
+			}
+
+			let transactions = [
+				{
+					id: '1',
+					description: 'Creacion del producto',
+					stock: product.initialStock,
+					quantity: product.initialStock,
+					date: product.createdAt,
+					type: 'INITIAL_STOCK'
+				}
+			]
+
+			/**
+			 * Obtener las ventas
+			 */
+			const sales = await SaleProduct.findAll({
+				where: {
+					productId: id
+				},
+				include: {
+					model: Sale,
+					as: 'sale'
+				}
+			})
+
+			if (sales.length > 0) {
+				transactions.push(
+					...sales.map(({ quantity, sale, id }) => ({
+						id,
+						description: 'Venta #' + sale.ticketNumber,
+						stock: 0,
+						quantity: quantity * -1,
+						date: sale.createdAt,
+						type: 'SALE'
+					}))
+				)
+			}
+
+			/**
+			 * Obtener las compras
+			 */
+			const purchases = await PurchaseProduct.findAll({
+				where: {
+					productId: id
+				},
+				include: {
+					model: Purchase,
+					as: 'purchase',
+					where: {
+						affectsExistence: true,
+						status: 'DONE'
+					},
+					required: true
+				}
+			})
+
+			if (purchases.length > 0) {
+				transactions.push(
+					...purchases.map(({ quantity, purchase, id }) => ({
+						id,
+						description: 'Compra #' + purchase.documentId,
+						stock: 0,
+						quantity,
+						date: purchase.createdAt,
+						type: 'PURCHASE'
+					}))
+				)
+			}
+
+			/**
+			 * Obtener ajustes de inventario
+			 */
+			const adjustments = await InventoryAdjustment.findAll({
+				where: {
+					productId: id
+				}
+			})
+
+			if (adjustments.length > 0) {
+				transactions.push(
+					...adjustments.map(({ quantity, createdAt, description, type, id }) => ({
+						id,
+						description,
+						stock: 0,
+						quantity: type === 'IN' ? quantity : quantity * -1,
+						date: createdAt,
+						type: 'INVENTORY_ADJUSTMENT'
+					}))
+				)
+			}
+
+			// Ordena por fecha
+			transactions = transactions.sort(
+				(a, b) => moment(a.date).toDate().getTime() - moment(b.date).toDate().getTime()
+			)
+			// Asigna el stock
+			transactions.forEach((transaction, index) => {
+				if (index === 0) {
+					return
+				}
+
+				transaction.stock = transactions[index - 1].stock + transaction.quantity
+			})
+
+			res.status(200).send(transactions)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	getOne: (req: Request, res: Response) => {
 		const { id } = req.params

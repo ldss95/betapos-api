@@ -12,6 +12,7 @@ routes
 	.put(isLoggedin, tokenIsValid, controller.update)
 
 routes.get('/updates/:date', controller.getUpdates)
+routes.get('/transactions/:id', isLoggedin, tokenIsValid, controller.getTransactions)
 
 routes
 	.route('/:id')
