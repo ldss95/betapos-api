@@ -82,6 +82,9 @@ export default {
 			include: {
 				model: Bank,
 				as: 'bank'
+			},
+			where: {
+				businessId: req.session!.businessId
 			}
 		})
 			.then((providers) => res.status(200).send(providers.map((provider) => provider.toJSON())))
