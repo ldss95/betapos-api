@@ -73,5 +73,6 @@ SaleProduct.belongsTo(Sale, { foreignKey: 'saleId', as: 'sale' })
 Sale.belongsTo(Client, { foreignKey: 'clientId', as: 'client' })
 Sale.belongsTo(User, { foreignKey: 'sellerId', as: 'seller' })
 Sale.belongsTo(Shift, { foreignKey: 'shiftId', as: 'shift' })
+Shift.hasMany(Sale, { foreignKey: 'shiftId', as: 'sales' })
 
 export { Sale }

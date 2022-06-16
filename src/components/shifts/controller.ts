@@ -1,8 +1,10 @@
 import { Request, Response } from 'express'
+import { literal } from 'sequelize'
 
 import { Shift } from './model'
 import { User } from '../users/model'
 import { Device } from '../devices/model'
+import { Sale } from '../sales/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -26,13 +28,22 @@ export default {
 	getAll: (req: Request, res: Response) => {
 		const { businessId } = req.session!
 		Shift.findAll({
+			attributes: {
+				include: [
+					[
+						literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id)'),
+						'totalSold'
+					]
+				]
+			},
 			include: {
 				model: User,
 				as: 'user',
 				where: {
 					businessId
 				}
-			}
+			},
+			order: [['date', 'DESC']]
 		})
 			.then((shifts) => res.status(200).send(shifts))
 			.catch((error) => {
