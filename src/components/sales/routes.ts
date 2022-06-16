@@ -5,11 +5,9 @@ import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
 
 const routes: Router = Router()
 
-routes
-	.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(controller.create)
-	.put(isLoggedin, tokenIsValid, controller.update)
+routes.route('/').post(controller.create).put(isLoggedin, tokenIsValid, controller.update)
+
+routes.post('/get-sales-for-table', isLoggedin, tokenIsValid, controller.getAll)
 
 routes
 	.route('/:id')

@@ -7,6 +7,7 @@ import { Device } from '../devices/model'
 import { SaleProduct } from '../sales-products/model'
 import { User } from '../users/model'
 import { Shift } from '../shifts/model'
+import { Client } from '../clients/model'
 
 const Sale = db.define<SaleAttr>(
 	'sale',
@@ -69,6 +70,7 @@ Sale.belongsTo(Device, { foreignKey: 'deviceId', as: 'device' })
 Sale.hasMany(SalePayment, { foreignKey: 'saleId', as: 'payments' })
 Sale.hasMany(SaleProduct, { foreignKey: 'saleId', as: 'products' })
 SaleProduct.belongsTo(Sale, { foreignKey: 'saleId', as: 'sale' })
+Sale.belongsTo(Client, { foreignKey: 'clientId', as: 'client' })
 Sale.belongsTo(User, { foreignKey: 'sellerId', as: 'seller' })
 Sale.belongsTo(Shift, { foreignKey: 'shiftId', as: 'shift' })
 

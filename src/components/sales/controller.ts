@@ -1,10 +1,13 @@
 import { Request, Response } from 'express'
+import { Op } from 'sequelize'
 
 import { Sale } from './model'
 import { SaleProduct } from '../sales-products/model'
 import { Business } from '../business/model'
 import { SalePayment } from '../sales-payments/model'
 import { Device } from '../devices/model'
+import { Client } from '../clients/model'
+import { User } from '../users/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -77,18 +80,96 @@ export default {
 				throw error
 			})
 	},
-	getAll: (req: Request, res: Response) => {
-		Sale.findAll({
-			where: {
-				businessId: req.session!.businessId
-			},
-			order: [['createdAt', 'DESC']]
-		})
-			.then((Sale) => res.status(200).send(Sale))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
+	getAll: async (req: Request, res: Response) => {
+		try {
+			const { pagination, filters, sorter, search } = req.body
+			const currentPage = pagination.current || 1
+			const pageSize = pagination.pageSize || 100
+
+			const where = {
+				[Op.and]: [
+					{ businessId: req.session!.businessId },
+					{
+						...(filters.orderType && {
+							orderType: {
+								[Op.in]: filters.orderType
+							}
+						})
+					},
+					{
+						...(filters.status && {
+							status: {
+								[Op.in]: filters.status
+							}
+						})
+					},
+					{
+						...(search &&
+							search !== '' &&
+							Number(search) && {
+							ticketNumber: {
+								[Op.like]: `%${search}%`
+							}
+						})
+					},
+					{
+						...(search &&
+							isNaN(search) && {
+							[Op.or]: [
+								{
+									'$client.name$': {
+										[Op.like]: `%${search}%`
+									}
+								},
+								{
+									'$seller.lastName$': {
+										[Op.like]: `%${search}%`
+									}
+								},
+								{
+									'$seller.firstName$': {
+										[Op.like]: `%${search}%`
+									}
+								}
+							]
+						})
+					}
+				]
+			}
+
+			const include = [
+				{
+					model: Client,
+					as: 'client',
+					required: false
+				},
+				{
+					model: User,
+					as: 'seller'
+				}
+			]
+
+			const total = await Sale.count({ where, include })
+			const sales = await Sale.findAll({
+				where,
+				include,
+				order: [['createdAt', 'DESC']],
+				limit: pageSize,
+				offset: (currentPage - 1) * pageSize,
+				...(sorter &&
+					sorter.field && {
+					order: [[sorter.field, sorter.order == 'ascend' ? 'ASC' : 'DESC']]
+				})
 			})
+
+			res.status(200).send({
+				total,
+				data: sales
+			})
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	getOne: (req: Request, res: Response) => {
 		const { id } = req.params
