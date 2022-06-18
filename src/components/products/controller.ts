@@ -16,6 +16,7 @@ import { Sale } from '../sales/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { Purchase } from '../purchases/model'
 import { InventoryAdjustment } from '../inventory-adjustments/model'
+import { User } from '../users/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -238,7 +239,9 @@ export default {
 					stock: product.initialStock,
 					quantity: product.initialStock,
 					date: product.createdAt,
-					type: 'INITIAL_STOCK'
+					type: 'INITIAL_STOCK',
+					user: '',
+					transactionId: ''
 				}
 			]
 
@@ -251,7 +254,17 @@ export default {
 				},
 				include: {
 					model: Sale,
-					as: 'sale'
+					as: 'sale',
+					include: [
+						{
+							model: User,
+							as: 'seller'
+						}
+					],
+					where: {
+						status: 'DONE'
+					},
+					required: true
 				}
 			})
 
@@ -263,7 +276,9 @@ export default {
 						stock: 0,
 						quantity: quantity * -1,
 						date: sale.createdAt,
-						type: 'SALE'
+						type: 'SALE',
+						user: sale.seller.firstName + ' ' + sale.seller.lastName,
+						transactionId: sale.id
 					}))
 				)
 			}
@@ -294,7 +309,9 @@ export default {
 						stock: 0,
 						quantity,
 						date: purchase.createdAt,
-						type: 'PURCHASE'
+						type: 'PURCHASE',
+						user: '',
+						transactionId: purchase.id
 					}))
 				)
 			}
@@ -305,18 +322,24 @@ export default {
 			const adjustments = await InventoryAdjustment.findAll({
 				where: {
 					productId: id
+				},
+				include: {
+					model: User,
+					as: 'user'
 				}
 			})
 
 			if (adjustments.length > 0) {
 				transactions.push(
-					...adjustments.map(({ quantity, createdAt, description, type, id }) => ({
+					...adjustments.map(({ quantity, createdAt, description, type, id, user }) => ({
 						id,
 						description,
 						stock: 0,
 						quantity: type === 'IN' ? quantity : quantity * -1,
 						date: createdAt,
-						type: 'INVENTORY_ADJUSTMENT'
+						type: 'INVENTORY_ADJUSTMENT',
+						user: user.firstName + ' ' + user.lastName,
+						transactionId: id
 					}))
 				)
 			}
