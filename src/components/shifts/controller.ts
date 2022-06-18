@@ -29,12 +29,7 @@ export default {
 		const { businessId } = req.session!
 		Shift.findAll({
 			attributes: {
-				include: [
-					[
-						literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id)'),
-						'totalSold'
-					]
-				]
+				include: [[literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id)'), 'totalSold']]
 			},
 			include: {
 				model: User,
