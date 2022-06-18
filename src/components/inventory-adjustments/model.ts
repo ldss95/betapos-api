@@ -3,6 +3,7 @@ import { DataTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { InventoryAdjustmentAttr } from './interface'
 import { Product } from '../products/model'
+import { User } from '../users/model'
 
 const InventoryAdjustment = db.define<InventoryAdjustmentAttr>('inventory_adjustment', {
 	id: {
@@ -22,9 +23,14 @@ const InventoryAdjustment = db.define<InventoryAdjustmentAttr>('inventory_adjust
 	quantity: {
 		type: DataTypes.INTEGER,
 		allowNull: false
+	},
+	userId: {
+		type: DataTypes.UUID,
+		allowNull: false
 	}
 })
 
 InventoryAdjustment.belongsTo(Product, { foreignKey: 'productId', as: 'product' })
+InventoryAdjustment.belongsTo(User, { foreignKey: 'userId', as: 'user' })
 
 export { InventoryAdjustment }
