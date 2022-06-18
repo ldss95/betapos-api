@@ -8,6 +8,7 @@ import { SalePayment } from '../sales-payments/model'
 import { Device } from '../devices/model'
 import { Client } from '../clients/model'
 import { User } from '../users/model'
+import { Product } from '../products/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -174,8 +175,32 @@ export default {
 	getOne: (req: Request, res: Response) => {
 		const { id } = req.params
 
-		Sale.findOne({ where: { id } })
-			.then((Sale) => res.status(200).send(Sale))
+		Sale.findOne({
+			where: {
+				[Op.and]: [{ id }, { businessId: req.session!.businessId }]
+			},
+			include: [
+				{
+					model: Client,
+					as: 'client'
+				},
+				{
+					model: User,
+					as: 'seller'
+				},
+				{
+					model: SaleProduct,
+					as: 'products',
+					include: [
+						{
+							model: Product,
+							as: 'product'
+						}
+					]
+				}
+			]
+		})
+			.then((sale) => res.status(200).send(sale?.toJSON()))
 			.catch((error) => {
 				res.sendStatus(500)
 				throw error

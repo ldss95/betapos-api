@@ -1,6 +1,7 @@
 import { Model } from 'sequelize'
 
 import { ClientAttr } from '../clients/interface'
+import { UserAttr } from '../users/interface'
 
 export interface SaleAttr extends Model {
 	id: string;
@@ -9,6 +10,7 @@ export interface SaleAttr extends Model {
 	clientId: string;
 	client: ClientAttr;
 	sellerId: string;
+	seller: UserAttr;
 	deviceId: string;
 	amount: number;
 	discount: number;
