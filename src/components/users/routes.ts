@@ -13,6 +13,8 @@ router
 	.post(isLoggedin, tokenIsValid, controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
 
+router.get('/list', isLoggedin, tokenIsValid, controller.getList)
+
 router
 	.route('/:id')
 	.get(isLoggedin, tokenIsValid, controller.getOne)

@@ -64,6 +64,19 @@ export default {
 				throw error
 			})
 	},
+	getList: (req: Request, res: Response) => {
+		User.findAll({
+			attributes: ['id', 'firstName', 'lastName'],
+			where: {
+				businessId: req.session!.businessId
+			}
+		})
+			.then((users) => res.status(200).send(users))
+			.catch((error) => {
+				res.sendStatus(500)
+				throw error
+			})
+	},
 	update: async (req: Request, res: Response) => {
 		try {
 			const { id } = req.body
