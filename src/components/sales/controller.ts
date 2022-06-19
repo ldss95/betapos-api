@@ -83,14 +83,16 @@ export default {
 	},
 	getAll: async (req: Request, res: Response) => {
 		try {
-			const { pagination, filters, sorter, search, dateFrom, dateTo } = req.body
+			const { pagination, filters, sorter, search, dateFrom, dateTo, shiftId } = req.body
 			const currentPage = pagination.current || 1
 			const pageSize = pagination.pageSize || 100
 
-			console.log(dateFrom, dateTo)
 			const where = {
 				[Op.and]: [
 					{ businessId: req.session!.businessId },
+					{
+						...(shiftId && { shiftId })
+					},
 					{
 						...(filters.orderType && {
 							orderType: {
