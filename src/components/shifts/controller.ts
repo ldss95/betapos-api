@@ -1,10 +1,9 @@
 import { Request, Response } from 'express'
-import { literal } from 'sequelize'
+import { literal, Op } from 'sequelize'
 
 import { Shift } from './model'
 import { User } from '../users/model'
 import { Device } from '../devices/model'
-import { Sale } from '../sales/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -25,26 +24,39 @@ export default {
 			throw error
 		}
 	},
-	getAll: (req: Request, res: Response) => {
-		const { businessId } = req.session!
-		Shift.findAll({
-			attributes: {
-				include: [[literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id)'), 'totalSold']]
-			},
-			include: {
-				model: User,
-				as: 'user',
+	getAll: async (req: Request, res: Response) => {
+		try {
+			const { businessId } = req.session!
+			const { date, userId } = req.query
+
+			const shifts = await Shift.findAll({
+				attributes: {
+					include: [[literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id)'), 'totalSold']]
+				},
+				include: {
+					model: User,
+					as: 'user',
+					where: {
+						businessId
+					}
+				},
+				order: [['date', 'DESC']],
 				where: {
-					businessId
+					[Op.and]: [
+						{
+							...(date && { date })
+						},
+						{
+							...(userId && { userId })
+						}
+					]
 				}
-			},
-			order: [['date', 'DESC']]
-		})
-			.then((shifts) => res.status(200).send(shifts))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
 			})
+			res.status(200).send(shifts)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	}
 	// getOne: (req: Request, res: Response) => {
 	// 	const { id } = req.params;
