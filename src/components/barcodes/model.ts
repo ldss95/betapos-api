@@ -10,7 +10,7 @@ const Barcode = db.define<BarcodeAttr>('barcode', {
 		primaryKey: true
 	},
 	barcode: {
-		type: DataTypes.STRING(30),
+		type: DataTypes.STRING(60),
 		allowNull: false,
 		unique: true
 	},
