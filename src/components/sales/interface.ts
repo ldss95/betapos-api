@@ -16,6 +16,8 @@ export interface SaleAttr extends Model {
 	discount: number;
 	shiftId: string;
 	orderType: 'DELIVERY' | 'PICKUP';
+	paymentTypeId: string;
+	paymentType: string;
 	shippingAddress?: string;
 	status: 'DONE' | 'CANCELLED';
 	createdAt: string;

@@ -8,6 +8,7 @@ import { SaleProduct } from '../sales-products/model'
 import { User } from '../users/model'
 import { Shift } from '../shifts/model'
 import { Client } from '../clients/model'
+import { SalePaymentType } from '../sales-payments-types/model'
 
 const Sale = db.define<SaleAttr>(
 	'sale',
@@ -51,6 +52,10 @@ const Sale = db.define<SaleAttr>(
 			allowNull: false
 		},
 		shippingAddress: DataTypes.STRING,
+		paymentTypeId: {
+			type: DataTypes.UUID,
+			allowNull: false
+		},
 		status: {
 			type: DataTypes.ENUM('DONE', 'CANCELLED'),
 			allowNull: false,
@@ -73,6 +78,7 @@ SaleProduct.belongsTo(Sale, { foreignKey: 'saleId', as: 'sale' })
 Sale.belongsTo(Client, { foreignKey: 'clientId', as: 'client' })
 Sale.belongsTo(User, { foreignKey: 'sellerId', as: 'seller' })
 Sale.belongsTo(Shift, { foreignKey: 'shiftId', as: 'shift' })
+Sale.belongsTo(SalePaymentType, { foreignKey: 'paymentTypeId', as: 'paymentType' })
 Shift.hasMany(Sale, { foreignKey: 'shiftId', as: 'sales' })
 
 export { Sale }

@@ -9,6 +9,7 @@ import { Device } from '../devices/model'
 import { Client } from '../clients/model'
 import { User } from '../users/model'
 import { Product } from '../products/model'
+import { SalePaymentType } from '../sales-payments-types/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -174,6 +175,10 @@ export default {
 				{
 					model: User,
 					as: 'seller'
+				},
+				{
+					model: SalePaymentType,
+					as: 'paymentType'
 				}
 			]
 
