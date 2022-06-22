@@ -31,7 +31,13 @@ export default {
 
 			const shifts = await Shift.findAll({
 				attributes: {
-					include: [[literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id)'), 'totalSold']]
+					include: [
+						[
+							literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id AND status = \'DONE\')'),
+							'totalSold'
+						],
+						[literal('(SELECT SUM(amount) FROM cash_flows WHERE shiftId = shift.id)'), 'cashFlow']
+					]
 				},
 				include: {
 					model: User,
