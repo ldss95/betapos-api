@@ -7,6 +7,9 @@ import { db } from '../../database/firebase'
 import { Client } from './model'
 import { Business } from '../business/model'
 import { deleteFile } from '../../helpers'
+import { Sale } from '../sales/model'
+import { SalePaymentType } from '../sales-payments-types/model'
+import { ClientPayment } from '../clients-payments/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -148,6 +151,47 @@ export default {
 			})
 
 			res.status(200).send({ created, updated })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getPending: async (req: Request, res: Response) => {
+		try {
+			const { businessId } = req.session!
+			const payentType = await SalePaymentType.findOne({
+				where: {
+					name: 'Fiao'
+				}
+			})
+
+			if (!payentType) {
+				res.sendStatus(500)
+				throw new Error('Tipo de pago "Fiao" no encontrado')
+			}
+
+			const clients = await Client.findAll({
+				where: {
+					businessId
+				},
+				include: [
+					{
+						model: Sale,
+						as: 'sales',
+						where: {
+							[Op.and]: [{ status: 'DONE' }, { paymentTypeId: payentType.id }]
+						},
+						required: true
+					},
+					{
+						model: ClientPayment,
+						as: 'payments',
+						separate: true
+					}
+				]
+			})
+
+			res.status(200).send(clients)
 		} catch (error) {
 			res.sendStatus(500)
 			throw error

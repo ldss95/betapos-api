@@ -43,7 +43,6 @@ export default {
 					return res.sendStatus(201)
 				}
 
-				console.log('Registered With: ', merchantId, ' Sended Merchat ID: ', req.body.merchantId)
 				return res.status(400).send({
 					message: 'Esta PC se encuentra conectada con otra cuenta de negocios.'
 				})

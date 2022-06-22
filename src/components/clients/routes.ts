@@ -13,6 +13,8 @@ routes
 	.post(isLoggedin, tokenIsValid, controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
 
+routes.get('/pending', isLoggedin, tokenIsValid, controller.getPending)
+
 routes
 	.route('/:id')
 	.get(isLoggedin, tokenIsValid, controller.getOne)

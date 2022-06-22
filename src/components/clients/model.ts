@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
+import { ClientPayment } from '../clients-payments/model'
 import { ClientAttr } from './interface'
 
 const Client = db.define<ClientAttr>('client', {
@@ -56,5 +57,6 @@ const Client = db.define<ClientAttr>('client', {
 })
 
 Client.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
+Client.hasMany(ClientPayment, { foreignKey: 'clientId', as: 'payments' })
 
 export { Client }
