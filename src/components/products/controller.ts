@@ -164,7 +164,7 @@ export default {
 										SELECT
 											SUM(sp.quantity)
 										FROM
-											sale_products sp
+											sales_products sp
 										JOIN
 											sales s ON s.id = sp.saleId
 										WHERE
