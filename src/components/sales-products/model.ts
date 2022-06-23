@@ -5,7 +5,7 @@ import { SaleProductAttr } from './interface'
 import { Product } from '../products/model'
 
 const SaleProduct = db.define<SaleProductAttr>(
-	'sale_product',
+	'sales_product',
 	{
 		id: {
 			type: DataTypes.UUID,
@@ -26,6 +26,10 @@ const SaleProduct = db.define<SaleProductAttr>(
 			validate: {
 				min: 0.01
 			}
+		},
+		cost: {
+			type: DataTypes.DOUBLE,
+			allowNull: false
 		},
 		price: {
 			type: DataTypes.DOUBLE,

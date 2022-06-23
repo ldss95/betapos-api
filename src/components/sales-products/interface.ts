@@ -7,5 +7,6 @@ export interface SaleProductAttr extends Model {
 	sale: SaleAttr;
 	productId: string;
 	quantity: number;
+	cost: number;
 	price: number;
 }
