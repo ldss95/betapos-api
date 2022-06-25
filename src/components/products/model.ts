@@ -44,6 +44,10 @@ const Product = db.define<ProductAttr>('product', {
 			isUrl: true
 		}
 	},
+	isFractionable: {
+		type: DataTypes.BOOLEAN,
+		defaultValue: false
+	},
 	isActive: {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
