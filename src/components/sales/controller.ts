@@ -95,6 +95,13 @@ export default {
 						...(shiftId && { shiftId })
 					},
 					{
+						...(filters.paymentType && {
+							paymentTypeId: {
+								[Op.in]: filters.paymentType
+							}
+						})
+					},
+					{
 						...(filters.orderType && {
 							orderType: {
 								[Op.in]: filters.orderType
