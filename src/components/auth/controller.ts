@@ -109,7 +109,8 @@ export default {
 				return
 			}
 
-			user?.update({ password: newPassword })
+			const encryptedPassword = bcrypt.hashSync(newPassword, 13)
+			user?.update({ password: encryptedPassword })
 
 			const { merchantId } = req.session!
 			if (merchantId) {
@@ -120,7 +121,7 @@ export default {
 						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
 					})
 			}
-	
+
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
