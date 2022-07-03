@@ -2,8 +2,10 @@ import { Request, Response } from 'express'
 import { UniqueConstraintError } from 'sequelize'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import moment from 'moment'
 
 import { db } from '../../database/connection'
+import { db as firebase } from '../../database/firebase'
 import { User } from '../users/model'
 import { Business } from '../business/model'
 import { generateMerchantId } from '../business/controller'
@@ -108,6 +110,17 @@ export default {
 			}
 
 			user?.update({ password: newPassword })
+
+			const { merchantId } = req.session!
+			if (merchantId) {
+				await firebase
+					.collection(merchantId)
+					.doc('users')
+					.update({
+						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+					})
+			}
+	
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
