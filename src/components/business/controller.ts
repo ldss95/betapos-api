@@ -1,14 +1,11 @@
 import { Request, Response } from 'express'
 import { UniqueConstraintError } from 'sequelize'
-import { deleteFile } from '../../helpers'
-import { Barcode } from '../barcodes/model'
-import { Brand } from '../brands/model'
-import { BusinessType } from '../business-types/model'
-import { Category } from '../categories/model'
-import { Product } from '../products/model'
-import { Province } from '../provinces/model'
-import { User } from '../users/model'
+import moment from 'moment'
 
+import { db } from '../../database/firebase'
+import { deleteFile } from '../../helpers'
+import { BusinessType } from '../business-types/model'
+import { Province } from '../provinces/model'
 import { Business } from './model'
 
 export default {
@@ -73,23 +70,35 @@ export default {
 			throw error
 		}
 	},
-	update: (req: Request, res: Response) => {
-		const { id } = req.body
-		Business.update(req.body, { where: { id } })
-			.then(() => res.sendStatus(204))
-			.catch((error) => {
-				if (error instanceof UniqueConstraintError) {
-					const { email, rnc } = req.body
+	update: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.body
 
-					res.status(400).send({
-						message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`
+			await Business.update(req.body, { where: { id } })
+			const { merchantId } = req.session!
+			if (merchantId) {
+				await db
+					.collection(merchantId)
+					.doc('business')
+					.update({
+						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
 					})
-					return
-				}
+			}
 
-				res.sendStatus(500)
-				throw error
-			})
+			res.sendStatus(204)
+		} catch (error) {
+			if (error instanceof UniqueConstraintError) {
+				const { email, rnc } = req.body
+
+				res.status(400).send({
+					message: `El email: "${email}" o el RNC: "${rnc}" ya esta en uso.`
+				})
+				return
+			}
+
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	setLogoImage: async (req: any, res: Response) => {
 		try {
