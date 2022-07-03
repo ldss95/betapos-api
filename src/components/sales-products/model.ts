@@ -29,7 +29,8 @@ const SaleProduct = db.define<SaleProductAttr>(
 		},
 		cost: {
 			type: DataTypes.DOUBLE,
-			allowNull: false
+			allowNull: false,
+			defaultValue: 0
 		},
 		price: {
 			type: DataTypes.DOUBLE,
