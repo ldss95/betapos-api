@@ -21,6 +21,34 @@ export default {
 			res.sendStatus(201)
 		} catch (error) {
 			res.sendStatus(500)
+
+			throw error
+		}
+	},
+	update: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.body.shift
+			const deviceId = req.header('deviceId')
+			const device = await Device.findOne({ where: { deviceId } })
+			if (!device || !device.isActive) {
+				return res.status(401).send({
+					message: 'Unauthorized device'
+				})
+			}
+
+			const shift = await Shift.findByPk(id)
+
+			if (!shift) {
+				return res.status(400).send({
+					message: 'Turno no encontrado'
+				})
+			}
+
+			await shift.update(req.body.shift)
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+
 			throw error
 		}
 	},
