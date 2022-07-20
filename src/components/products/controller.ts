@@ -433,7 +433,8 @@ export default {
 					}),
 					businessId: business.id
 				},
-				raw: true
+				raw: true,
+				paranoid: false
 			})
 
 			res.status(200).send({
