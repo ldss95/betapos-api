@@ -1,5 +1,6 @@
 import { Model } from 'sequelize'
 import { BusinessTypeAttr } from '../business-types/interface'
+import { DeviceAttr } from '../devices/interface'
 import { ProvinceAttr } from '../provinces/interface'
 
 export interface BusinessAttr extends Model {
@@ -15,6 +16,7 @@ export interface BusinessAttr extends Model {
 	type?: BusinessTypeAttr;
 	provinceId: string;
 	province?: ProvinceAttr;
+	devices: DeviceAttr[];
 	isActive: boolean;
 	createdAt: string;
 	updatedAt: string;

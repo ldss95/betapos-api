@@ -9,5 +9,5 @@ export interface ShiftAttr extends Model {
 	endAmount?: number;
 	cashDetails: { type: number; quantity: number }[];
 	endTime?: string;
-	date?: string;
+	date: string;
 }

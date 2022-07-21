@@ -6,6 +6,7 @@ import { Province } from '../provinces/model'
 import { BusinessAttr } from './interface'
 import { db as firebaseCon } from '../../database/firebase'
 import moment from 'moment'
+import { Device } from '../devices/model'
 
 const Business = db.define<BusinessAttr>(
 	'business',
@@ -116,5 +117,7 @@ const Business = db.define<BusinessAttr>(
 
 Business.belongsTo(BusinessType, { foreignKey: 'typeId', as: 'type' })
 Business.belongsTo(Province, { foreignKey: 'provinceId', as: 'province' })
+
+Business.hasMany(Device, { foreignKey: 'businessId', as: 'devices' })
 
 export { Business }

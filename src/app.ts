@@ -10,6 +10,7 @@ import * as Sentry from '@sentry/node'
 import * as Tracing from '@sentry/tracing'
 import 'dotenv/config'
 
+import { startBillGenerator } from './helpers'
 import routes from './routes'
 
 const { PORT, DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER, SECRET_SESSION, NODE_ENV, SENTRY_DSN } = process.env
@@ -83,6 +84,9 @@ const specs = swaggerJsDoc({
 	},
 	apis: ['./src/components/**/docs.ts']
 })
+
+// Genera facturas de los clientes todos los dias 1 de cada mes.
+startBillGenerator()
 
 app.use(Sentry.Handlers.requestHandler())
 app.use(Sentry.Handlers.tracingHandler())
