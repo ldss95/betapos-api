@@ -16,6 +16,7 @@ export interface ProductAttr extends Model {
 	itbis: boolean;
 	isFractionable: boolean;
 	isActive: boolean;
+	deletedAt: string;
 	createdAt: string;
 	updatedAt: string;
 }
