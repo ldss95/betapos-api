@@ -1,9 +1,11 @@
 import { Request, Response } from 'express'
-import { literal, Op } from 'sequelize'
+import { literal, Op, fn, col } from 'sequelize'
 
 import { Shift } from './model'
 import { User } from '../users/model'
 import { Device } from '../devices/model'
+import { Sale } from '../sales/model'
+import { SalePaymentType } from '../sales-payments-types/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -91,6 +93,26 @@ export default {
 			res.sendStatus(500)
 			throw error
 		}
+	},
+	getSoldDetails: (req: Request, res: Response) => {
+		const { shiftId } = req.params
+
+		Sale.findAll({
+			attributes: [[fn('sum', col('amount')), 'total']],
+			where: {
+				shiftId
+			},
+			include: {
+				model: SalePaymentType,
+				as: 'paymentType'
+			},
+			group: 'paymentTypeId'
+		})
+			.then((results) => res.status(200).send(results))
+			.catch((error) => {
+				res.sendStatus(500)
+				throw error
+			})
 	}
 	// getOne: (req: Request, res: Response) => {
 	// 	const { id } = req.params;
