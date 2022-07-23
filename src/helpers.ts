@@ -28,7 +28,7 @@ function deleteFile(Key: string) {
 }
 
 function startBillGenerator() {
-	new CronJob('0 0 8 1 * *', generateBills, null, true, 'America/Santo_Domingo')
+	new CronJob('0 0 8 28 * *', generateBills, null, true, 'America/Santo_Domingo')
 }
 
 async function generateBills() {
