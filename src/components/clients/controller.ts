@@ -10,6 +10,8 @@ import { deleteFile } from '../../helpers'
 import { Sale } from '../sales/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { ClientPayment } from '../clients-payments/model'
+import { SalePayment } from '../sales-payments/model'
+import { User } from '../users/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -192,6 +194,52 @@ export default {
 			})
 
 			res.status(200).send(clients)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getPendingDetails: async (req: Request, res: Response) => {
+		try {
+			const { clientId } = req.params
+
+			const sales = await Sale.findAll({
+				where: { clientId },
+				include: [
+					{
+						model: SalePayment,
+						include: [
+							{
+								model: SalePaymentType,
+								as: 'type',
+								where: {
+									name: 'Fiao'
+								},
+								required: true
+							}
+						],
+						as: 'payments',
+						required: true
+					},
+					{
+						model: User,
+						as: 'seller'
+					}
+				]
+			})
+
+			const payments = await ClientPayment.findAll({
+				where: { clientId },
+				include: {
+					model: User,
+					as: 'user'
+				}
+			})
+
+			res.status(200).send({
+				payments,
+				sales
+			})
 		} catch (error) {
 			res.sendStatus(500)
 			throw error

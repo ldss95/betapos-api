@@ -14,6 +14,7 @@ routes
 	.put(isLoggedin, tokenIsValid, controller.update)
 
 routes.get('/pending', isLoggedin, tokenIsValid, controller.getPending)
+routes.get('/pending-details/:clientId', isLoggedin, tokenIsValid, controller.getPendingDetails)
 
 routes
 	.route('/:id')
