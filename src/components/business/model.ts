@@ -41,7 +41,7 @@ const Business = db.define<BusinessAttr>(
 			}
 		},
 		rnc: {
-			type: DataTypes.CHAR(9),
+			type: DataTypes.CHAR(11),
 			unique: true,
 			set: function (value: string) {
 				if (!value || value == '') {
