@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
+import { User } from '../users/model'
 import { ClientPaymentAttr } from './interface'
 
 const ClientPayment = db.define<ClientPaymentAttr>('clients_payment', {
@@ -21,10 +22,9 @@ const ClientPayment = db.define<ClientPaymentAttr>('clients_payment', {
 		type: DataTypes.DECIMAL(10, 2),
 		allowNull: false
 	},
-	description: {
-		type: DataTypes.STRING,
-		allowNull: false
-	}
+	description: DataTypes.STRING
 })
+
+ClientPayment.belongsTo(User, { foreignKey: 'userId', as: 'user' })
 
 export { ClientPayment }

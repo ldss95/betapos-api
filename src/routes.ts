@@ -4,6 +4,7 @@ const router: Router = Router()
 
 import users from './components/users/routes'
 import clients from './components/clients/routes'
+import clientsPayments from './components/clients-payments/routes'
 import business from './components/business/routes'
 import barcodes from './components/barcodes/routes'
 import businessTypes from './components/business-types/routes'
@@ -28,6 +29,7 @@ import billing from './components/billing/routes'
 router.use('/auth', auth)
 router.use('/users', users)
 router.use('/clients', clients)
+router.use('/clients-payments', clientsPayments)
 router.use('/business', business)
 router.use('/business-types', businessTypes)
 router.use('/categories', categories)
