@@ -8,6 +8,7 @@ const routes: Router = Router()
 routes.route('/').post(controller.create).put(controller.update)
 
 routes.post('/get-sales-for-table', isLoggedin, tokenIsValid, controller.getAll)
+routes.delete('/product/:id', controller.removeProduct)
 
 routes
 	.route('/:id')

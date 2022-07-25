@@ -235,14 +235,47 @@ export default {
 							model: Product,
 							as: 'product'
 						}
-					]
+					],
+					paranoid: false
 				}
 			]
 		})
 			.then((sale) => res.status(200).send(sale?.toJSON()))
 			.catch((error) => {
 				res.sendStatus(500)
-				throw error
+				// throw error
+				console.log(JSON.stringify(error))
 			})
+	},
+	removeProduct: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			const config = {
+				where: {
+					id
+				}
+			}
+
+			const product = await SaleProduct.findOne(config)
+			if (!product) {
+				return res.sendStatus(204)
+			}
+
+			await product.destroy()
+			const sale = await Sale.findOne({
+				where: {
+					id: product.saleId
+				}
+			})
+
+			await sale?.update({
+				amount: sale.amount - product.quantity * product.price
+			})
+
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	}
 }
