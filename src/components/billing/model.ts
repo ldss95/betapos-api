@@ -32,6 +32,13 @@ const Bill = db.define<BillAttr>('bill', {
 			isUrl: true
 		}
 	},
+	transferVoucherUrl: {
+		type: DataTypes.STRING,
+		allowNull: true,
+		validate: {
+			isUrl: true
+		}
+	},
 	amount: {
 		type: DataTypes.MEDIUMINT,
 		allowNull: false,
@@ -47,7 +54,8 @@ const Bill = db.define<BillAttr>('bill', {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
 		defaultValue: false
-	}
+	},
+	payedAt: DataTypes.DATE
 })
 
 Bill.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })

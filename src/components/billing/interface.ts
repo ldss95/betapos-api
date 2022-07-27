@@ -10,6 +10,7 @@ export interface BillAttr extends Model {
 	amount: number;
 	description: string;
 	payed: boolean;
+	payedAt: string;
 	createdAt: string;
 	updatedAt: string;
 }
