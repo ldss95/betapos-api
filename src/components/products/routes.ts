@@ -20,5 +20,6 @@ routes
 	.delete(isLoggedin, tokenIsValid, controller.delete)
 
 routes.post('/photo', isLoggedin, tokenIsValid, uploadSingle('images/products/'), controller.addPhoto)
+routes.post('/export', isLoggedin, tokenIsValid, controller.export)
 
 export default routes
