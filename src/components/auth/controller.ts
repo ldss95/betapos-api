@@ -174,5 +174,12 @@ export default {
 
 			res.sendStatus(204)
 		})
+	},
+	getCurrentSession: (req: Request, res: Response) => {
+		if (!req.session!.loggedin) {
+			return res.status(200).send({ session: null })
+		}
+
+		res.status(200).send({ session: req.session })
 	}
 }
