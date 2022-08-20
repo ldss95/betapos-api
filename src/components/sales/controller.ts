@@ -239,14 +239,17 @@ export default {
 						}
 					],
 					paranoid: false
+				},
+				{
+					model: SalePaymentType,
+					as: 'paymentType'
 				}
 			]
 		})
 			.then((sale) => res.status(200).send(sale?.toJSON()))
 			.catch((error) => {
 				res.sendStatus(500)
-				// throw error
-				console.log(JSON.stringify(error))
+				throw error
 			})
 	},
 	removeProduct: async (req: Request, res: Response) => {
