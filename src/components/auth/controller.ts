@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { UniqueConstraintError } from 'sequelize'
+import { UniqueConstraintError, Op } from 'sequelize'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
@@ -17,7 +17,9 @@ export default {
 			const { email, password } = req.body
 
 			const user = await User.findOne({
-				where: { email },
+				where: {
+					[Op.or]: [{ email }, { nickName: email }]
+				},
 				include: [
 					{
 						model: Business,
