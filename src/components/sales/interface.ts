@@ -22,6 +22,7 @@ export interface SaleAttr extends Model {
 	paymentType: string;
 	shippingAddress?: string;
 	status: 'DONE' | 'CANCELLED';
+	cashReceived?: number;
 	createdAt: string;
 	updatedAt: string;
 }

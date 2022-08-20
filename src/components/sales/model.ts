@@ -56,6 +56,7 @@ const Sale = db.define<SaleAttr>(
 			type: DataTypes.UUID,
 			allowNull: false
 		},
+		cashReceived: DataTypes.DOUBLE,
 		status: {
 			type: DataTypes.ENUM('DONE', 'CANCELLED'),
 			allowNull: false,
