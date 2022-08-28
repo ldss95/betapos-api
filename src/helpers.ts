@@ -52,7 +52,7 @@ async function generateBills() {
 			orderNumber: `${+lastOrderNumber + 1}`.padStart(8, '0'),
 			amount,
 			description: `Pago por uso Beta POS ${moment().format('MMMM YYYY')}`
-		})
+		}, { ignoreDuplicates: true })
 	}
 }
 

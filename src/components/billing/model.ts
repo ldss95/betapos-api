@@ -56,6 +56,13 @@ const Bill = db.define<BillAttr>('bill', {
 		defaultValue: false
 	},
 	payedAt: DataTypes.DATE
+}, {
+	indexes: [
+		{
+			unique: true,
+			fields: ['businessId', 'createdAt']
+		}
+	]
 })
 
 Bill.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
