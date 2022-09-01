@@ -12,6 +12,8 @@ import { SalePaymentType } from '../sales-payments-types/model'
 import { ClientPayment } from '../clients-payments/model'
 import { SalePayment } from '../sales-payments/model'
 import { User } from '../users/model'
+import { ClientPaymentAttr } from '../clients-payments/interface'
+import { SaleAttr } from '../sales/interface'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -236,10 +238,35 @@ export default {
 				}
 			})
 
-			res.status(200).send({
-				payments,
-				sales
-			})
+			const data: any = [...payments, ...sales]
+				.sort((a: SaleAttr | ClientPaymentAttr, b: SaleAttr | ClientPaymentAttr) => {
+					return moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime()
+				})
+				.reverse()
+				
+			let lastPending = 0
+			for (let i = 0; i < data.length; i++) {
+				const item = data[i]
+				const type: 'SALE' | 'PAYMENT' = item?.ticketNumber ? 'SALE' : 'PAYMENT'
+
+				if (type == 'PAYMENT') {
+					lastPending -= item.amount
+					data[i] = {
+						...item.toJSON(),
+						pending: lastPending
+					}
+				}
+
+				if (type == 'SALE') {
+					lastPending += item.amount
+					data[i] = {
+						...item.toJSON(),
+						pending: lastPending
+					}
+				}
+			}
+
+			res.status(200).send(data.reverse())
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
