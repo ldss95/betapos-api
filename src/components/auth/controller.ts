@@ -16,6 +16,12 @@ export default {
 		try {
 			const { email, password } = req.body
 
+			if (!email || !password) {
+				return res.status(400).send({
+					message: 'Missin property `email` or `password`'
+				})
+			}
+
 			const user = await User.findOne({
 				where: {
 					[Op.or]: [{ email }, { nickName: email }]
