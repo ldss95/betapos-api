@@ -26,6 +26,7 @@ import cashFlow from './components/cash-flow/routes'
 import profits from './components/profits/routes'
 import billing from './components/billing/routes'
 import settings from './components/settings/routes'
+import ncf from './components/ncf/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -51,6 +52,7 @@ router.use('/cash-flow', cashFlow)
 router.use('/profits', profits)
 router.use('/billing', billing)
 router.use('/settings', settings)
+router.use('/ncf', ncf)
 
 router.all('*', (req, res) => res.sendStatus(404))
 

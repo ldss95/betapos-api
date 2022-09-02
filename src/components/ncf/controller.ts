@@ -1,0 +1,93 @@
+import { Request, Response } from 'express'
+import { NcfStatusName } from './interface'
+
+import { Ncf, NcfStatus } from './model'
+
+export default {
+	uploadNcfFile: async (req: Request, res: Response) => {
+		try {
+			const { file } = req
+
+			if (!file) {
+				return res.sendStatus(400)
+			}
+
+			const text = file.buffer.toString('utf-8')
+			const data = await txtToJson(text)
+
+			if (data.length == 0) {
+				return res.sendStatus(400)
+			}
+
+			res.sendStatus(100)
+			await Ncf.truncate()
+			for (let i = 0; i < data.length / 10000; i++) {
+				await Ncf.bulkCreate(data.slice(i * 10000, (i + 1) * 10000), { ignoreDuplicates: true })
+			}
+
+			console.log('Se ha cargado todo el archivo de RNC')
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getAll: async (req: Request, res: Response) => {
+		try {
+			const ncfs = await Ncf.findAll({
+				include: {
+					model: NcfStatus,
+					as: 'status'
+				},
+				raw: true
+				// limit: 1000
+			})
+
+			res.status(200).send(ncfs)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	}
+}
+
+interface BusinessProps {
+	rnc: string;
+	statusName: NcfStatusName;
+	businessName: string;
+	statusId: string;
+}
+
+async function txtToJson(text: string): Promise<BusinessProps[]> {
+	// Divide en lineas
+	const rows = text.split('\n')
+
+	// Lista estados posibles
+	const statuses = await NcfStatus.findAll({ raw: true })
+	const STATUS: { [key: string]: string } = {}
+	for (const { name, id } of statuses) {
+		STATUS[name] = id
+	}
+
+	// Conviernte en array de objeto solo con info necesaria
+	const businesses: BusinessProps[] = rows.map((row) => {
+		const cols = row.split('|')
+		const statusName: NcfStatusName = cols[9]?.replace('\r', '')
+
+		return {
+			rnc: cols[0],
+			businessName: cols[1],
+			statusId: STATUS[statusName],
+			statusName
+		}
+	})
+
+	const filterBusiness = ({ rnc, statusName, businessName }: BusinessProps) => {
+		if (!Number(rnc)) {
+			return false
+		}
+
+		return rnc && statusName && businessName && rnc != '' && businessName != ''
+	}
+
+	return businesses.filter(filterBusiness)
+}
