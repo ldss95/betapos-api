@@ -140,7 +140,21 @@ export default {
 		const transaction = await db.transaction()
 
 		try {
-			const { user, business } = req.body
+			const { user, business, partnerCode } = req.body
+
+			if (partnerCode) {
+				const partner = await User.findOne({
+					where: { partnerCode }
+				})
+
+				if (!partner) {
+					return res.status(400).send({
+						message: 'Codigo Partner incorrecto'
+					})
+				}
+
+				business.referredBy = partner.id
+			}
 
 			const merchantId = await generateMerchantId()
 			const role = await Role.findOne({ where: { code: 'BIOWNER' } })
