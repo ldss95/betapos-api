@@ -63,6 +63,10 @@ const User = db.define<UserAttr>(
 			allowNull: false
 		},
 		businessId: DataTypes.UUID,
+		partnerCode: {
+			type: DataTypes.CHAR(4),
+			unique: true
+		},
 		isActive: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
@@ -75,7 +79,8 @@ const User = db.define<UserAttr>(
 				unique: true,
 				fields: ['nickname', 'businessId']
 			}
-		]
+		],
+		paranoid: true
 	}
 )
 

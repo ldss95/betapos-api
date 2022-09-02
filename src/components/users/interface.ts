@@ -19,6 +19,7 @@ export interface UserAttr extends Model {
 	role: RoleAttr;
 	businessId: string;
 	business: BusinessAttr;
+	partnerCode: string;
 	isActive: boolean;
 	createdAt: string;
 	updatedAt: string;

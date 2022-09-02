@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { format } from '@ldss95/helpers'
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, Op } from 'sequelize'
-import firebase from 'firebase-admin'
 import moment from 'moment'
 import bcrypt from 'bcrypt'
 
@@ -80,23 +79,15 @@ export default {
 	update: async (req: Request, res: Response) => {
 		try {
 			const { id } = req.body
+			const session = req.session!
 
 			const [updated] = await User.update(req.body, { where: { id } })
-			if (updated) {
-				return res.sendStatus(204)
+			if (!updated) {
+				return res.status(404).send({ message: 'Usuario no encontrado' })
 			}
 
-			const { merchantId } = req.session!
-			if (merchantId) {
-				await db
-					.collection(merchantId)
-					.doc('users')
-					.update({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-			}
-
-			res.status(404).send({ message: 'Usuario no encontrado' })
+			handleUpdate(session?.merchantId)
+			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
 				const { fields } = error
@@ -116,20 +107,14 @@ export default {
 	delete: async (req: Request, res: Response) => {
 		try {
 			const { id } = req.params
-			const deleted = await User.destroy({ where: { id } })
+			const session = req.session!
+
+			const deleted = await User.destroy({ where: { id }, force: true })
 			if (!deleted) {
 				return res.status(404).send({ message: 'Usuario no encontrado' })
 			}
 
-			const { merchantId } = req.session!
-			if (merchantId) {
-				await db
-					.collection(merchantId)
-					.doc('users')
-					.update({
-						deleted: firebase.firestore.FieldValue.arrayUnion(id)
-					})
-			}
+			handleUpdate(session?.merchantId)
 			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof ForeignKeyConstraintError) {
@@ -147,40 +132,46 @@ export default {
 	create: async (req: Request, res: Response) => {
 		const user = req.body
 		try {
+			const role = await Role.findByPk(user.roleId)
+			const session = req.session!
+
+			if (role?.code == 'PARTNER') {
+				user.partnerCode = await getPartnerCode()
+			}
+
 			const password = await bcrypt.hashSync(user.password, 13)
+			const businessId = session?.businessId
+
 			const { id } = await User.create({
-				...req.body,
+				...user,
 				password,
-				...(req.session!.businessId && {
-					businessId: req.session!.businessId
-				})
+				businessId
 			})
 
-			const { merchantId } = req.session!
-			if (merchantId) {
-				await db
-					.collection(merchantId)
-					.doc('users')
-					.update({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-			}
+			handleUpdate(session?.merchatId)
 			res.status(201).send({ id })
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
 				const { fields } = error
 				const { email, dui, nickName } = user
 
-				let message = ''
 				if (fields['users.email']) {
-					message = `El email '${email}' ya está en uso.`
-				} else if (fields['users.dui']) {
-					message = `La cedula '${format.dui(dui)}' ya está en uso.`
-				} else if (fields['users.nickName']) {
-					message = `El nombre de usuario '${nickName}' ya está en uso.`
+					return res.status(400).send({
+						message: `El email '${email}' ya está en uso.`
+					})
 				}
 
-				return res.status(400).send({ message })
+				if (fields['users.dui']) {
+					return res.status(400).send({
+						message: `La cédula '${format.dui(dui)}' ya está en uso.`
+					})
+				}
+
+				if (fields['users.nickName']) {
+					return res.status(400).send({
+						message: `El nombre de usuario '${nickName}' ya está en uso.`
+					})
+				}
 			}
 
 			if (error instanceof ValidationError) {
@@ -265,7 +256,10 @@ export default {
 					}),
 					businessId: business.id
 				},
-				raw: true
+				include: {
+					model: Role,
+					as: 'role'
+				}
 			})
 			const updated = await User.findAll({
 				where: {
@@ -274,13 +268,59 @@ export default {
 					}),
 					businessId: business.id
 				},
-				raw: true
+				include: {
+					model: Role,
+					as: 'role'
+				}
 			})
 
-			res.status(200).send({ created, updated })
+			res.status(200).send({
+				created: created.map((user) => ({
+					...user.toJSON(),
+					role: user.role.code == 'BIOWNER' ? 'ADMIN' : 'SELLER'
+				})),
+				updated: updated.map((user) => ({
+					...user.toJSON(),
+					role: user.role.code == 'BIOWNER' ? 'ADMIN' : 'SELLER'
+				}))
+			})
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
 		}
 	}
+}
+
+// Asigna un codigo unico de 4 digitos
+async function getPartnerCode(): Promise<string> {
+	const MAX = 9999
+	const MIN = 1
+	const DIF = MAX - MIN
+	const random = Math.random()
+	const intCode = (Math.floor(random * DIF) + MIN).toString()
+	const code = intCode.length == 4 ? intCode : intCode.padStart(4, intCode)
+
+	const user = await User.findOne({
+		where: {
+			partnerCode: code
+		}
+	})
+
+	if (user) {
+		return await getPartnerCode()
+	}
+
+	return code
+}
+
+function handleUpdate(merchantId: string) {
+	if (!merchantId) {
+		return
+	}
+
+	db.collection(merchantId)
+		.doc('users')
+		.update({
+			lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+		})
 }
