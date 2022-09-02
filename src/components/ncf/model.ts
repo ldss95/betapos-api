@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize'
 import { NcfAttr, NcfStatusAttr } from './interface'
 import { db } from '../../database/connection'
 
-const Ncf = db.define<NcfAttr>('ncf', {
+export const Ncf = db.define<NcfAttr>('ncf', {
 	rnc: {
 		type: DataTypes.STRING(11),
 		primaryKey: true,
@@ -21,7 +21,7 @@ const Ncf = db.define<NcfAttr>('ncf', {
 	}
 })
 
-const NcfStatus = db.define<NcfStatusAttr>('ncf_status', {
+export const NcfStatus = db.define<NcfStatusAttr>('ncf_status', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
@@ -53,5 +53,3 @@ NcfStatus.sync().then(() => {
 })
 
 Ncf.belongsTo(NcfStatus, { foreignKey: 'statusId', as: 'status' })
-
-export { Ncf, NcfStatus }
