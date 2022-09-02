@@ -36,7 +36,13 @@ async function generateBills() {
 		include: {
 			model: Device,
 			as: 'devices',
-			required: true
+			required: true,
+			where: {
+				isActive: true
+			}
+		},
+		where: {
+			isActive: true
 		}
 	})
 
