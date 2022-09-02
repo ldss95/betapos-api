@@ -1,11 +1,23 @@
 import { Request, Response } from 'express'
 
+import { Business } from '../business/model'
 import { Bill } from './model'
 
 export default {
 	getAll: (req: Request, res: Response) => {
-		const { roleCode, businessId } = req.session!
+		const { roleCode, businessId, id } = req.session!
+
 		Bill.findAll({
+			include: {
+				model: Business,
+				as: 'business',
+				required: true,
+				where: {
+					...(roleCode == 'PARTNER' && {
+						referredBy: id
+					})
+				}
+			},
 			where: {
 				...(roleCode == 'BIOWNER' && {
 					businessId
