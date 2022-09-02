@@ -17,6 +17,7 @@ export interface BusinessAttr extends Model {
 	provinceId: string;
 	province?: ProvinceAttr;
 	devices: DeviceAttr[];
+	referredBy: string;
 	isActive: boolean;
 	createdAt: string;
 	updatedAt: string;

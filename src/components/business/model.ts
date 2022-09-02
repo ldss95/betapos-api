@@ -1,11 +1,11 @@
 import { DataTypes } from 'sequelize'
+import moment from 'moment'
 
 import { db } from '../../database/connection'
 import { BusinessType } from '../business-types/model'
 import { Province } from '../provinces/model'
 import { BusinessAttr } from './interface'
 import { db as firebaseCon } from '../../database/firebase'
-import moment from 'moment'
 import { Device } from '../devices/model'
 
 const Business = db.define<BusinessAttr>(
@@ -60,6 +60,7 @@ const Business = db.define<BusinessAttr>(
 			type: DataTypes.UUID,
 			allowNull: false
 		},
+		referredBy: DataTypes.UUID,
 		isActive: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true,
