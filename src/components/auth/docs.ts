@@ -85,3 +85,32 @@
  *          204: OK
  *          500: Error del servidor
  */
+
+/**
+ * @swagger
+ * /auth/change-password:
+ *  post:
+ *      tags: [Auth]
+ *      summary: Cambia la contraseña del usuario logueado
+ *      parameters:
+ *          - in: body
+ *            name: oldPassword
+ *            description: Contraseña vieja
+ *            required: true
+ *            schema:
+ *                type: string
+ *          - in: body
+ *            name: newPassword
+ *            description: Contraseña nueva
+ *            required: true
+ *            schema:
+ *                type: string
+ *      security:
+ *          type: http
+ *          scheme: bearer
+ *          bearerFormat: JWT
+ *      responses:
+ *        401: Contraseña incorrecta.
+ *        204: OK
+ *        500: Error del servidor
+ */
