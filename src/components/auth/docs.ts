@@ -97,8 +97,10 @@
  *          scheme: bearer
  *          bearerFormat: JWT
  *      responses:
- *          204: OK
- *          500: Error del servidor
+ *          204:
+ *              description: OK
+ *          500:
+ *              description: Error del servidor
  */
 
 /**
@@ -107,25 +109,87 @@
  *  post:
  *      tags: [Auth]
  *      summary: Cambia la contraseña del usuario logueado
- *      parameters:
- *          - in: body
- *            name: oldPassword
- *            description: Contraseña vieja
- *            required: true
- *            schema:
- *                type: string
- *          - in: body
- *            name: newPassword
- *            description: Contraseña nueva
- *            required: true
- *            schema:
- *                type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          oldPassword:
+ *                              description: Contraseña vieja
+ *                              required: true
+ *                              type: string
+ *                              example: current-password
+ *                          newPassword:
+ *                              description: Contraseña nueva
+ *                              required: true
+ *                              type: string
+ *                              example: new-password
  *      security:
  *          type: http
  *          scheme: bearer
  *          bearerFormat: JWT
  *      responses:
- *        401: Contraseña incorrecta.
- *        204: OK
- *        500: Error del servidor
+ *          401:
+ *              description: Contraseña incorrecta.
+ *          204:
+ *              description: OK
+ *          500:
+ *              description: Error del servidor
+ */
+
+/**
+ * @swagger
+ * /auth/current-session:
+ *  get:
+ *      tags: [Auth]
+ *      summary: Obtiene los datos de la sesion
+ *      responses:
+ *        200:
+ *            description: OK
+ *            content:
+ *                application/json:
+ *                    schema:
+ *                        type: object
+ *                        properties:
+ *                            session:
+ *                                type: object
+ *                                description: Sesion actual
+ *                                properties:
+ *                                    loggedin:
+ *                                        type: boolean
+ *                                        description: Indica si hay una sesion iniciada
+ *                                    name:
+ *                                        type: string
+ *                                        descriptin: Nombre del usuario logueado
+ *                                        example: Jhon Doe
+ *                                    photo:
+ *                                        type: string
+ *                                        description: Url de la foto del usuario logueado
+ *                                        example: https://dl.memuplay.com/new_market/img/com.vicman.newprofilepic.icon.2022-06-07-21-33-07.png
+ *                                    email:
+ *                                        type: string
+ *                                        description: Correo electronico del usuario logueado
+ *                                        example: jdoe@local.com
+ *                                    roleId:
+ *                                        type: string
+ *                                        description: Id del rol del usuario
+ *                                        example: 93aa8def-1eae-4c84-956b-ed19051b7b68
+ *                                    roleCode:
+ *                                        type: string
+ *                                        description: Codigo del rol del usuario
+ *                                        example: ADMIN
+ *                                    businessId:
+ *                                        type: string
+ *                                        description: Id de la empresa a la que pertenece el usuario
+ *                                        example: 93aa8def-1eae-4c84-956b-ed19051b7b68
+ *                                    merchantId:
+ *                                        type: string
+ *                                        description: Merchant ID de la empresa a la que pertenece el usuario
+ *                                        example: AA0000
+ *                                    userId:
+ *                                        type: string
+ *                                        description: Id del usuario
+ *                                        example: 93aa8def-1eae-4c84-956b-ed19051b7b68
  */
