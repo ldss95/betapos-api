@@ -62,7 +62,7 @@ const specs = swaggerJsDoc({
 		openapi: '3.0.1',
 		info: {
 			title: 'BETA POS API',
-			version: '0.0.1',
+			version: '1.0.1',
 			description: 'API para las aplicaciones de BETA POS'
 		},
 		securityDefinitions: {
@@ -78,7 +78,7 @@ const specs = swaggerJsDoc({
 		],
 		servers: [
 			{
-				url: 'http://localhost:3000'
+				url: 'https://betapos.com.do/api'
 			}
 		]
 	},

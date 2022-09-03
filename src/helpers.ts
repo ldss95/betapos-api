@@ -53,12 +53,15 @@ async function generateBills() {
 
 		const lastOrderNumber: number = await Bill.max('orderNumber')
 
-		await Bill.create({
-			businessId: client.id,
-			orderNumber: `${+lastOrderNumber + 1}`.padStart(8, '0'),
-			amount,
-			description: `Pago por uso Beta POS ${moment().format('MMMM YYYY')}`
-		}, { ignoreDuplicates: true })
+		await Bill.create(
+			{
+				businessId: client.id,
+				orderNumber: `${+lastOrderNumber + 1}`.padStart(8, '0'),
+				amount,
+				description: `Pago por uso Beta POS ${moment().format('MMMM YYYY')}`
+			},
+			{ ignoreDuplicates: true }
+		)
 	}
 }
 

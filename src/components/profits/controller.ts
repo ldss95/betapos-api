@@ -165,7 +165,7 @@ export default {
 			}
 		} catch (error) {
 			res.sendStatus(500)
-			console.log(JSON.stringify(error))
+			throw error
 		}
 	}
 }

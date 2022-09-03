@@ -243,7 +243,7 @@ export default {
 					return moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime()
 				})
 				.reverse()
-				
+
 			let lastPending = 0
 			for (let i = 0; i < data.length; i++) {
 				const item = data[i]
