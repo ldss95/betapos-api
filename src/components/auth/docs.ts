@@ -11,21 +11,23 @@
  *  post:
  *      tags: [Auth]
  *      summary: Iniciar sesion
- *      parameters:
- *          - in: body
- *            name: email
- *            description: Correo electronico o nickname
- *            required: true
- *            example: miemail@local.com
- *            schema:
- *                type: string
- *          - in: body
- *            name: password
- *            description: Contraseña
- *            example: super-stron*pass_2
- *            required: true
- *            schema:
- *                type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          email:
+ *                              description: Correo electronico o nickname
+ *                              required: true
+ *                              example: miemail@local.com
+ *                              type: string
+ *                          password:
+ *                              description: Contraseña
+ *                              example: super-stron*pass_2
+ *                              required: true
+ *                              type: string
  *      responses:
  *          200:
  *              description: OK
@@ -60,8 +62,24 @@
  *                                          example: miemail@local.com
  *                                      roleId:
  *                                          type: string
- *                                          description: Nombres
+ *                                          description: Id del rol del usuario
  *                                          example: 45fe6ce9-d851-4f3d-8cc5-4c96b9f527bc
+ *                                      id:
+ *                                          type: string
+ *                                          description: Id del usuario
+ *                                          example: 7db3422d-3f8b-4138-a4f8-2297d6fb0ea9
+ *                                      businessId:
+ *                                          type: string
+ *                                          description: Id de la empresa a la que pertenece el usuario (si aplica)
+ *                                          example: 2c688872-1fd6-48e2-8dd0-ee490e8b1b48
+ *                                      photoUrl:
+ *                                          type: string
+ *                                          description: URL de la foto del usuario
+ *                                          example: https://dl.memuplay.com/new_market/img/com.vicman.newprofilepic.icon.2022-06-07-21-33-07.png
+ *                                      roleCode:
+ *                                          type: string
+ *                                          description: Codigo que indica el rol del usuario
+ *                                          example: BIOWNER
  *          401:
  *              description: Email o Contraseña incorrecta
  *          500:
