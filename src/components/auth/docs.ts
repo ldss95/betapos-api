@@ -13,22 +13,19 @@
  *      summary: Iniciar sesion
  *      parameters:
  *          - in: body
- *            name: user
- *            description: Credencuales de usuario
+ *            name: email
+ *            description: Correo electronico o nickname
+ *            required: true
+ *            example: miemail@local.com
  *            schema:
- *                type: object
- *                required:
- *                    - email
- *                    - password
- *                properties:
- *                    email:
- *                        type: string
- *                        description: Correo electronico
- *                        example: miemail@local.com
- *                    password:
- *                        type: string
- *                        description: Contraseña
- *                        example: super-stron*pass_2
+ *                type: string
+ *          - in: body
+ *            name: password
+ *            description: Contraseña
+ *            example: super-stron*pass_2
+ *            required: true
+ *            schema:
+ *                type: string
  *      responses:
  *          200:
  *              description: OK
