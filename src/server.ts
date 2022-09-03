@@ -12,8 +12,8 @@ function runServer() {
 
 //Funcion anonima, para poder usar el return
 (() => {
-	const isDevelopment = ['dev', 'development'].includes(process.env.NODE_ENV!)
-	if (isDevelopment) {
+	const isProd = ['prod', 'production'].includes(process.env.NODE_ENV!)
+	if (!isProd) {
 		return runServer()
 	}
 
