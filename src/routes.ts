@@ -54,6 +54,6 @@ router.use('/billing', billing)
 router.use('/settings', settings)
 router.use('/ncf', ncf)
 
-router.all('*', (req, res) => res.sendStatus(404))
+router.all('*', (req, res) => res.status(404).sendFile(join(__dirname, '404.html')))
 
 export default router
