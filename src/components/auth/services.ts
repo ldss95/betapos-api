@@ -111,7 +111,28 @@ interface CreateAccountRes {
 	error?: string;
 }
 
-export async function createAccount(user: any, business: any, partnerCode: string): Promise<CreateAccountRes> {
+interface CreateAccountUserProps {
+	email: string;
+	password: string;
+	firstName: string;
+	lastName: string;
+	gender: 'M' | 'F' | 'O';
+	birthDate: string;
+}
+
+interface CreateAccountBusinessProps {
+	name: string;
+	typeId: string;
+	provinceId: string;
+	phone?: string;
+	referredBy?: string;
+}
+
+export async function createAccount(
+	user: CreateAccountUserProps,
+	business: CreateAccountBusinessProps,
+	partnerCode: string
+): Promise<CreateAccountRes> {
 	const transaction = await db.transaction()
 
 	try {
