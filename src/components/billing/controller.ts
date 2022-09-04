@@ -1,56 +1,23 @@
 import { Request, Response } from 'express'
 
-import { Business } from '../business/model'
-import { Bill } from './model'
+import { listAllInvoices, markInvoiceAsPayed } from './service'
 
 export default {
-	getAll: (req: Request, res: Response) => {
-		const { roleCode, businessId, id } = req.session!
+	getAll: async (req: Request, res: Response) => {
+		try {
+			const { roleCode, businessId, id } = req.session!
+			const invoices = await listAllInvoices(roleCode, businessId, id)
 
-		Bill.findAll({
-			include: {
-				model: Business,
-				as: 'business',
-				required: true,
-				where: {
-					...(roleCode == 'PARTNER' && {
-						referredBy: id
-					})
-				}
-			},
-			where: {
-				...(roleCode == 'BIOWNER' && {
-					businessId
-				})
-			},
-			order: [['createdAt', 'DESC']]
-		})
-			.then((bills) => res.status(200).send(bills))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			res.status(200).send(invoices)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	markAsPayed: async (req: any, res: Response) => {
 		try {
-			let location = req?.file?.location
-			if (location && location.substr(0, 8) != 'https://') {
-				location = `https://${location}`
-			}
-
 			const { id, date } = req.body
-			await Bill.update(
-				{
-					payed: true,
-					payedAt: date,
-					...(location && {
-						transferVoucherUrl: location
-					})
-				},
-				{
-					where: { id }
-				}
-			)
+			await markInvoiceAsPayed(id, date, req?.file?.location)
 
 			res.sendStatus(204)
 		} catch (error) {
