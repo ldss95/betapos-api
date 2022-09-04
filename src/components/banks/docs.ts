@@ -2,7 +2,6 @@
  * @swagger
  * tags:
  *  name: Bancos
- *  description: Endpoints de bancos
  */
 
 /**

@@ -2,7 +2,6 @@
  * @swagger
  * tags:
  *  name: Usuarios
- *  description: Endpoints para los usuarios
  */
 
 /**

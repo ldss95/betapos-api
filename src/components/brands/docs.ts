@@ -2,7 +2,6 @@
  * @swagger
  * tags:
  *  name: Marcas
- *  description: Endpoints para las marcas
  */
 
 /**
