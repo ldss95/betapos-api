@@ -1,17 +1,15 @@
 import { Request, Response } from 'express'
 
-import { Bank } from './model'
+import { getAllBanks } from './services'
 
 export default {
-	getAll: (req: Request, res: Response) => {
-		Bank.findAll({
-			order: [['name', 'ASC']],
-			raw: true
-		})
-			.then((banks) => res.status(200).send(banks))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+	getAll: async (req: Request, res: Response) => {
+		try {
+			const banks = await getAllBanks()
+			res.status(200).send(banks)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	}
 }
