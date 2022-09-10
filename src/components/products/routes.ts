@@ -4,6 +4,7 @@ const routes: Router = Router()
 import controller from './controller'
 import { uploadSingle } from '../../middlewares/files'
 import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { validateGetUpdates } from './middlewares'
 
 routes
 	.route('/')
@@ -11,7 +12,7 @@ routes
 	.post(isLoggedin, tokenIsValid, controller.create)
 	.put(isLoggedin, tokenIsValid, controller.update)
 
-routes.get('/updates/:date', controller.getUpdates)
+routes.get('/updates/:date', validateGetUpdates, controller.getUpdates)
 routes.get('/transactions/:id', isLoggedin, tokenIsValid, controller.getTransactions)
 
 routes
