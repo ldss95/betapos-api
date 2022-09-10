@@ -14,10 +14,11 @@ export default {
 			throw error
 		}
 	},
-	markAsPayed: async (req: any, res: Response) => {
+	markAsPayed: async (req: Request, res: Response) => {
 		try {
 			const { id, date } = req.body
-			await markInvoiceAsPayed(id, date, req?.file?.location)
+			const file = req.file as Express.MulterS3.File
+			await markInvoiceAsPayed(id, date, file.location)
 
 			res.sendStatus(204)
 		} catch (error) {
