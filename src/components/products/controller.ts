@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import { Op, literal } from 'sequelize'
 import moment from 'moment'
 import firebase from 'firebase-admin'
-import json2Csv from 'json2csv'
 
 import { db } from '../../database/firebase'
 import { deleteFile } from '../../helpers'
@@ -18,6 +17,7 @@ import { PurchaseProduct } from '../purchase-products/model'
 import { Purchase } from '../purchases/model'
 import { InventoryAdjustment } from '../inventory-adjustments/model'
 import { User } from '../users/model'
+import { createExcelFile, getUpdates } from './services'
 
 export default {
 	create: async (req: Request, res: Response) => {

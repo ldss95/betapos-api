@@ -1,9 +1,10 @@
 import xlsx from 'json-as-xlsx'
-import { literal } from 'sequelize'
+import { Op, literal } from 'sequelize'
 
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
+import { ProductAttr } from './interface'
 import { Product } from './model'
 
 export async function createExcelFile(businessId: string): Promise<Buffer | undefined> {
@@ -81,7 +82,7 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 				as: 'category'
 			}
 		],
-		order:[['name', 'ASC']]
+		order: [['name', 'ASC']]
 	})
 
 	const categories = await Category.findAll({
@@ -131,7 +132,7 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 		},
 		{
 			label: 'Estado',
-			value: (product: any): string => product.isActive ? 'Activo' : 'Inactivo'
+			value: (product: any): string => (product.isActive ? 'Activo' : 'Inactivo')
 		}
 	]
 
@@ -139,14 +140,12 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 		{
 			sheet: 'Todos los Productos',
 			columns,
-			content: products.map(product => product.toJSON())
+			content: products.map((product) => product.toJSON())
 		},
 		...categories.map(({ name, id }) => ({
 			sheet: name.replace(/[^a-zA-Z0-9 ]/g, ''),
 			columns,
-			content: products
-				.filter(({ categoryId }) => categoryId == id)
-				.map(product => product.toJSON())
+			content: products.filter(({ categoryId }) => categoryId == id).map((product) => product.toJSON())
 		}))
 	]
 
@@ -159,7 +158,12 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 	})
 }
 
-export async function getUpdates(businessId: string, date: string): Promise<{ created: ProductAttr[]; updated: ProductAttr[] }> {
+interface GetUpdatesResponse {
+	created: ProductAttr[];
+	updated: ProductAttr[];
+}
+
+export async function getUpdates(businessId: string, date: string): Promise<GetUpdatesResponse> {
 	const created = await Product.findAll({
 		where: {
 			...(date != 'ALL' && {
