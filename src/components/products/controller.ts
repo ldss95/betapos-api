@@ -1,10 +1,8 @@
 import { Request, Response } from 'express'
 import { Op, literal } from 'sequelize'
 import moment from 'moment'
-import firebase from 'firebase-admin'
 
-import { db } from '../../database/firebase'
-import { deleteFile } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../helpers'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
@@ -34,12 +32,7 @@ export default {
 				}
 			)
 
-			await db
-				.collection(merchantId)
-				.doc('products')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('products', merchantId)
 
 			res.status(201).send({ id })
 		} catch (error) {
@@ -57,12 +50,7 @@ export default {
 			 * Actualizar producto
 			 */
 			Product.update(req.body, { where: { id } })
-			await db
-				.collection(merchantId)
-				.doc('products')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('products', merchantId)
 
 			/**
 			 * Actualizar los codigos de barras
@@ -101,13 +89,7 @@ export default {
 					}
 				)
 			}
-
-			await db
-				.collection(merchantId)
-				.doc('barcodes')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('products', merchantId)
 
 			res.sendStatus(204)
 		} catch (error) {
@@ -121,13 +103,7 @@ export default {
 			const { merchantId } = req.session!
 
 			await Product.destroy({ where: { id } })
-
-			await db
-				.collection(merchantId)
-				.doc('products')
-				.update({
-					deleted: firebase.firestore.FieldValue.arrayUnion(id)
-				})
+			notifyUpdate('products', merchantId)
 
 			res.sendStatus(204)
 		} catch (error) {

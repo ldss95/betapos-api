@@ -1,10 +1,7 @@
 import AWS from 'aws-sdk'
-import { CronJob } from 'cron'
 import moment from 'moment'
 
-import { Bill } from './components/billing/model'
-import { Business } from './components/business/model'
-import { Device } from './components/devices/model'
+import { db } from './database/firebase'
 
 function deleteFile(Key: string) {
 	return new Promise((resolve, reject) => {
@@ -27,42 +24,17 @@ function deleteFile(Key: string) {
 	})
 }
 
-function startBillGenerator() {
-	new CronJob('0 0 8 28 * *', generateBills, null, true, 'America/Santo_Domingo')
-}
-
-async function generateBills() {
-	const clients = await Business.findAll({
-		include: {
-			model: Device,
-			as: 'devices',
-			required: true,
-			where: {
-				isActive: true
-			}
-		},
-		where: {
-			isActive: true
-		}
-	})
-
-	for (const client of clients) {
-		const devices = client.devices.length
-
-		const amount = devices > 2 ? 1000 + (devices - 2) * 1000 : 1000
-
-		const lastOrderNumber: number = await Bill.max('orderNumber')
-
-		await Bill.create(
-			{
-				businessId: client.id,
-				orderNumber: `${+lastOrderNumber + 1}`.padStart(8, '0'),
-				amount,
-				description: `Pago por uso Beta POS ${moment().format('MMMM YYYY')}`
-			},
-			{ ignoreDuplicates: true }
-		)
+type Table = 'users' | 'barcodes' | 'clients' | 'business' | 'products' | 'devices' | 'settings';
+function notifyUpdate(table: Table, merchantId?: string) {
+	if (!merchantId) {
+		return
 	}
+
+	db.collection(merchantId)
+		.doc(table)
+		.update({
+			lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
+		})
 }
 
-export { deleteFile, startBillGenerator }
+export { deleteFile, notifyUpdate }
