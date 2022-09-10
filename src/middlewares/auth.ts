@@ -68,6 +68,21 @@ export function isAdmin(req: Request, res: Response, next: NextFunction): Respon
 }
 
 /**
+ * Valida que el usuario logueado sea administrador de negocio
+ */
+export function isBusinessAdmin(req: Request, res: Response, next: NextFunction): Response | void {
+	const role = req.session!.roleCode
+
+	if (role != 'BIOWNER') {
+		return res.status(403).send({
+			message: 'No posee privilegios suficientes'
+		})
+	}
+
+	next()
+}
+
+/**
  * Valida que exista el header merchantId
  */
 export function hasMerchantId(req: Request, res: Response, next: NextFunction): Response | void {
