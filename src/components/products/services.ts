@@ -158,3 +158,33 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 		}
 	})
 }
+
+export async function getUpdates(businessId: string, date: string): Promise<{ created: ProductAttr[]; updated: ProductAttr[] }> {
+	const created = await Product.findAll({
+		where: {
+			...(date != 'ALL' && {
+				createdAt: { [Op.gte]: date }
+			}),
+			businessId
+		},
+		include: {
+			model: Barcode,
+			as: 'barcodes'
+		}
+	})
+	const updated = await Product.findAll({
+		where: {
+			...(date != 'ALL' && {
+				updatedAt: { [Op.gte]: date }
+			}),
+			businessId
+		},
+		raw: true,
+		paranoid: false
+	})
+
+	return {
+		updated,
+		created: created.map((product) => product.toJSON())
+	}
+}

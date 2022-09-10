@@ -415,33 +415,9 @@ export default {
 				return res.sendStatus(400)
 			}
 
-			const created = await Product.findAll({
-				where: {
-					...(date != 'ALL' && {
-						createdAt: { [Op.gte]: date }
-					}),
-					businessId: business.id
-				},
-				include: {
-					model: Barcode,
-					as: 'barcodes'
-				}
-			})
-			const updated = await Product.findAll({
-				where: {
-					...(date != 'ALL' && {
-						updatedAt: { [Op.gte]: date }
-					}),
-					businessId: business.id
-				},
-				raw: true,
-				paranoid: false
-			})
+			const results = await getUpdates(business.id, date)
 
-			res.status(200).send({
-				created: created.map((product) => product.toJSON()),
-				updated
-			})
+			res.status(200).send(results)
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
