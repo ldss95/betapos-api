@@ -1,12 +1,11 @@
 import { DataTypes } from 'sequelize'
-import moment from 'moment'
 
 import { db } from '../../database/connection'
 import { BusinessType } from '../business-types/model'
 import { Province } from '../provinces/model'
 import { BusinessAttr } from './interface'
-import { db as firebaseCon } from '../../database/firebase'
 import { Device } from '../devices/model'
+import { notifyUpdate } from '../../helpers'
 
 const Business = db.define<BusinessAttr>(
 	'business',
@@ -70,54 +69,13 @@ const Business = db.define<BusinessAttr>(
 	{
 		hooks: {
 			afterCreate: async ({ merchantId }) => {
-				firebaseCon
-					.collection(merchantId)
-					.doc('products')
-					.set({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-
-				firebaseCon
-					.collection(merchantId)
-					.doc('barcodes')
-					.set({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-
-				firebaseCon
-					.collection(merchantId)
-					.doc('users')
-					.set({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-
-				firebaseCon
-					.collection(merchantId)
-					.doc('business')
-					.set({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-
-				firebaseCon
-					.collection(merchantId)
-					.doc('devices')
-					.set({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-
-				firebaseCon
-					.collection(merchantId)
-					.doc('clients')
-					.set({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-
-				firebaseCon
-					.collection(merchantId)
-					.doc('settings')
-					.set({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
+				notifyUpdate('products', merchantId)
+				notifyUpdate('barcodes', merchantId)
+				notifyUpdate('users', merchantId)
+				notifyUpdate('business', merchantId)
+				notifyUpdate('devices', merchantId)
+				notifyUpdate('clients', merchantId)
+				notifyUpdate('settings', merchantId)
 			}
 		}
 	}

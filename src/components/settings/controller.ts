@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import moment from 'moment'
 
 import { db } from '../../database/firebase'
+import { notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
 import { Setting } from './model'
 
@@ -30,13 +31,7 @@ export default {
 					businessId
 				}
 			})
-
-			await db
-				.collection(merchantId)
-				.doc('settings')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('settings', merchantId)
 		} catch (error) {
 			res.sendStatus(500)
 			throw error

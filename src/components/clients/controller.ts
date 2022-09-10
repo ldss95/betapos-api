@@ -1,12 +1,10 @@
 import { Request, Response } from 'express'
 import moment from 'moment'
-import firebase from 'firebase-admin'
 import { Op } from 'sequelize'
 
-import { db } from '../../database/firebase'
 import { Client } from './model'
 import { Business } from '../business/model'
-import { deleteFile } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../helpers'
 import { Sale } from '../sales/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { ClientPayment } from '../clients-payments/model'
@@ -21,12 +19,8 @@ export default {
 			const { businessId, merchantId } = req.session!
 
 			const { id } = await Client.create({ ...req.body, businessId })
-			await db
-				.collection(merchantId)
-				.doc('clients')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('clients', merchantId)
+
 			res.status(201).send({ id })
 		} catch (error) {
 			res.sendStatus(500)
@@ -39,12 +33,8 @@ export default {
 			const { merchantId } = req.session!
 
 			await Client.update(req.body, { where: { id } })
-			await db
-				.collection(merchantId)
-				.doc('clients')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('clients', merchantId)
+
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
@@ -56,13 +46,8 @@ export default {
 			const { id } = req.params
 			const { merchantId } = req.session!
 
-			await Client.destroy({ where: { id } })
-			await db
-				.collection(merchantId)
-				.doc('clients')
-				.update({
-					deleted: firebase.firestore.FieldValue.arrayUnion(id)
-				})
+			await Client.destroy({ where: { id }, force: true })
+			notifyUpdate('clients', merchantId)
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
@@ -108,12 +93,7 @@ export default {
 			}
 
 			await client!.update({ photoUrl: location })
-			await db
-				.collection(merchantId)
-				.doc('clients')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('clients', merchantId)
 			res.status(200).send({ photoUrl: location })
 		} catch (error) {
 			res.sendStatus(500)

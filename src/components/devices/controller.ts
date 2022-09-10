@@ -1,12 +1,10 @@
 import { Request, Response } from 'express'
 import { Op, UniqueConstraintError } from 'sequelize'
 import { Business } from '../business/model'
-import moment from 'moment'
-import firebase from 'firebase-admin'
 
 import { Os } from '../operative-systems/model'
 import { Device } from './model'
-import { db } from '../../database/firebase'
+import { notifyUpdate } from '../../helpers'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -58,13 +56,7 @@ export default {
 			const { merchantId } = req.session!
 
 			await Device.update(req.body, { where: { id } })
-
-			await db
-				.collection(merchantId)
-				.doc('devices')
-				.update({
-					lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-				})
+			notifyUpdate('devices', merchantId)
 
 			res.sendStatus(200)
 		} catch (error) {
@@ -78,13 +70,7 @@ export default {
 			const { merchantId } = req.session!
 
 			await Device.destroy({ where: { id } })
-
-			await db
-				.collection(merchantId)
-				.doc('devices')
-				.update({
-					deleted: firebase.firestore.FieldValue.arrayUnion(id)
-				})
+			notifyUpdate('devices', merchantId)
 
 			res.sendStatus(200)
 		} catch (error) {

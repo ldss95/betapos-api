@@ -1,13 +1,11 @@
 import { Request, Response } from 'express'
 import { format } from '@ldss95/helpers'
 import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, Op } from 'sequelize'
-import moment from 'moment'
 import bcrypt from 'bcrypt'
 
 import { User } from './model'
 import { Role } from '../roles/model'
-import { deleteFile } from '../../helpers'
-import { db } from '../../database/firebase'
+import { deleteFile, notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
 
 export default {
@@ -86,7 +84,7 @@ export default {
 				return res.status(404).send({ message: 'Usuario no encontrado' })
 			}
 
-			handleUpdate(session?.merchantId)
+			notifyUpdate('users', session?.merchantId)
 			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
@@ -114,7 +112,7 @@ export default {
 				return res.status(404).send({ message: 'Usuario no encontrado' })
 			}
 
-			handleUpdate(session?.merchantId)
+			notifyUpdate('users', session?.merchantId)
 			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof ForeignKeyConstraintError) {
@@ -148,7 +146,7 @@ export default {
 				businessId
 			})
 
-			handleUpdate(session?.merchatId)
+			notifyUpdate('users', session?.merchantId)
 			res.status(201).send({ id })
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
@@ -311,16 +309,4 @@ async function getPartnerCode(): Promise<string> {
 	}
 
 	return code
-}
-
-function handleUpdate(merchantId: string) {
-	if (!merchantId) {
-		return
-	}
-
-	db.collection(merchantId)
-		.doc('users')
-		.update({
-			lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-		})
 }

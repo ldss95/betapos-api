@@ -1,9 +1,7 @@
 import { Request, Response } from 'express'
 import { UniqueConstraintError } from 'sequelize'
-import moment from 'moment'
 
-import { db } from '../../database/firebase'
-import { deleteFile } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../helpers'
 import { BusinessType } from '../business-types/model'
 import { Province } from '../provinces/model'
 import { Business } from './model'
@@ -76,14 +74,7 @@ export default {
 
 			await Business.update(req.body, { where: { id } })
 			const { merchantId } = req.session!
-			if (merchantId) {
-				await db
-					.collection(merchantId)
-					.doc('business')
-					.update({
-						lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
-					})
-			}
+			notifyUpdate('business', merchantId)
 
 			res.sendStatus(204)
 		} catch (error) {
