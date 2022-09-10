@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 /**
  * Verifica si hay una sesion iniciada, de lo contrario devuelve un estado 401
  */
-function isLoggedin(req: Request, res: Response, next: NextFunction): void {
+export function isLoggedin(req: Request, res: Response, next: NextFunction): Response | void {
 	if (req.session?.loggedin) {
 		return next()
 	}
@@ -18,7 +18,7 @@ function isLoggedin(req: Request, res: Response, next: NextFunction): void {
  * Verifica que el usuario logueado tenga los permisos necesarios.
  * De lo contrario devuelve un estado 403
  */
-function havePermissions(req: Request, res: Response, next: NextFunction): void {
+export function havePermissions(req: Request, res: Response, next: NextFunction): Response | void {
 	if (req && res) {
 		next()
 	}
@@ -27,7 +27,7 @@ function havePermissions(req: Request, res: Response, next: NextFunction): void 
 /**
  * Verifica si hay token y es valido, de lo contrario devuelve un estado 403
  */
-function tokenIsValid(req: Request, res: Response, next: NextFunction): void {
+export function tokenIsValid(req: Request, res: Response, next: NextFunction): Response | void {
 	const bearerHeader = req.headers.authorization
 
 	if (!bearerHeader) {
@@ -52,4 +52,31 @@ function tokenIsValid(req: Request, res: Response, next: NextFunction): void {
 	})
 }
 
-export { isLoggedin, havePermissions, tokenIsValid }
+/**
+ * Valida que el usuario logueado sea administrador
+ */
+export function isAdmin(req: Request, res: Response, next: NextFunction): Response | void {
+	const role = req.session!.roleCode
+
+	if (role != 'ADMIN') {
+		return res.status(403).send({
+			message: 'No posee privilegios suficientes'
+		})
+	}
+
+	next()
+}
+
+/**
+ * Valida que exista el header merchantId
+ */
+export function hasMerchantId(req: Request, res: Response, next: NextFunction): Response | void {
+	const merchantId = req.header('merchantId')
+	if (!merchantId) {
+		return res.status(400).send({
+			message: 'Missing header `merchantId`'
+		})
+	}
+
+	next()
+}
