@@ -72,11 +72,10 @@ export default {
 				throw error
 			})
 	},
-	addPhoto: async (req: any, res: Response) => {
+	addPhoto: async (req: Request, res: Response) => {
 		try {
-			const { file } = req
+			let { location } = req.file as Express.MulterS3.File
 			const { merchantId } = req.session!
-			let { location } = file
 			if (location.substr(0, 8) != 'https://') {
 				location = `https://${location}`
 			}

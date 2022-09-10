@@ -72,10 +72,9 @@ export default {
 			throw error
 		}
 	},
-	setLogoImage: async (req: any, res: Response) => {
+	setLogoImage: async (req: Request, res: Response) => {
 		try {
-			const { file } = req
-			let { location } = file
+			let { location } = req.file as Express.MulterS3.File
 			if (location.substr(0, 8) != 'https://') {
 				location = `https://${location}`
 			}
