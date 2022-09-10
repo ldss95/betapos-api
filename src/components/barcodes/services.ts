@@ -1,36 +1,22 @@
 import { Op } from 'sequelize'
 
 import { Barcode } from './model'
-import { Business } from '../business/model'
 import { Product } from '../products/model'
 
 interface UpdatesResponseProps {
-	error?: string;
-	created?: {
+	created: {
 		id: string;
 		barcode: string;
 		productId: string;
 	}[];
-	updated?: {
+	updated: {
 		id: string;
 		barcode: string;
 		productId: string;
 	}[];
 }
 
-export async function getUpdates(date: string, merchantId: string): Promise<UpdatesResponseProps> {
-	const business = await Business.findOne({
-		where: {
-			merchantId
-		}
-	})
-
-	if (!business || !business.isActive) {
-		return {
-			error: 'Cliente desabilitado'
-		}
-	}
-
+export async function getUpdates(date: string, businessId: string): Promise<UpdatesResponseProps> {
 	const created = await Barcode.findAll({
 		attributes: ['id', 'barcode', 'productId'],
 		where: {
@@ -42,7 +28,7 @@ export async function getUpdates(date: string, merchantId: string): Promise<Upda
 			model: Product,
 			as: 'product',
 			where: {
-				businessId: business.id
+				businessId
 			},
 			required: true
 		},
@@ -59,7 +45,7 @@ export async function getUpdates(date: string, merchantId: string): Promise<Upda
 			model: Product,
 			as: 'product',
 			where: {
-				businessId: business.id
+				businessId
 			},
 			required: true
 		},

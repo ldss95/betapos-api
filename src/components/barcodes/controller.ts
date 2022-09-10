@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { Business } from '../business/model'
 
 import { getUpdates } from './services'
 
@@ -7,13 +8,20 @@ export default {
 		try {
 			const { date } = req.params
 			const merchantId = req.header('merchantId')
-			const { error, updated, created } = await getUpdates(date, merchantId!)
 
-			if (error) {
+			const business = await Business.findOne({
+				where: {
+					merchantId
+				}
+			})
+
+			if (!business || !business.isActive) {
 				return res.status(400).send({
-					message: error
+					message: 'Cliente desabilitado'
 				})
 			}
+
+			const { updated, created } = await getUpdates(date, business.id)
 
 			res.status(200).send({ created, updated })
 		} catch (error) {
