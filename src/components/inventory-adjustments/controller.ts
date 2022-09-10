@@ -11,7 +11,7 @@ export default {
 			const { type, productId, quantity, description } = req.body
 
 			if (type == 'X') {
-				const [{ stock }] = await db.query(
+				const [{ stock }] = await db.query<{ stock: number }>(
 					`
 					SELECT
 						ROUND(

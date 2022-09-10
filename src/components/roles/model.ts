@@ -11,8 +11,7 @@ const Role = db.define<RoleAttr>('role', {
 	},
 	clientName: {
 		type: DataTypes.STRING(50),
-		unique: true,
-		allowNull: false
+		unique: true
 	},
 	adminName: {
 		type: DataTypes.STRING(50),

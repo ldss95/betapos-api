@@ -31,6 +31,8 @@ const sessionStore = new MySqlStore({
 	port: Number(DB_PORT)
 })
 
+app.use(Sentry.Handlers.requestHandler())
+app.use(Sentry.Handlers.tracingHandler())
 app.set('port', PORT || 3000)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -79,6 +81,9 @@ const specs = swaggerJsDoc({
 		servers: [
 			{
 				url: 'https://betapos.com.do/api'
+			},
+			{
+				url: 'http://localhost:4012'
 			}
 		]
 	},
@@ -86,14 +91,12 @@ const specs = swaggerJsDoc({
 })
 
 // Genera facturas de los clientes todos los dias 1 de cada mes.
-startBillGenerator()
-
-app.use(Sentry.Handlers.requestHandler())
-app.use(Sentry.Handlers.tracingHandler())
+if (NODE_ENV == 'prod') {
+	startBillGenerator()
+}
 
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs))
 app.use(routes)
-
 app.use(Sentry.Handlers.errorHandler())
 
 export { app }
