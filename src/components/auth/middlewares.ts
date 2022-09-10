@@ -63,7 +63,7 @@ export function validSignup(req: Request, res: Response, next: NextFunction): Re
 		if (error instanceof ZodError) {
 			return res.status(400).send({
 				errors: error.issues,
-				message: 'Algo salió mal'
+				message: 'Informacion incompleta o incorrecta'
 			})
 		}
 	}
