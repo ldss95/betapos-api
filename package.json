@@ -16,8 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "@ldss95/helpers": "^0.1.4",
-    "@sentry/node": "^7.3.0",
-    "@sentry/tracing": "^7.3.0",
+    "@sentry/node": "^7.12.1",
+    "@sentry/tracing": "^7.12.1",
     "aws-sdk": "^2.1066.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
@@ -27,6 +27,7 @@
     "express-mysql-session": "2.1.0",
     "express-session": "1.17.0",
     "firebase-admin": "^10.2.0",
+    "json-as-xlsx": "^2.4.2",
     "json2csv": "^5.0.7",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
@@ -35,7 +36,8 @@
     "mysql2": "^2.3.3",
     "sequelize": "^6.13.0",
     "swagger-jsdoc": "6.1.0",
-    "swagger-ui-express": "^4.3.0"
+    "swagger-ui-express": "^4.3.0",
+    "zod": "^3.18.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
