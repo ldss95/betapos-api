@@ -5,11 +5,7 @@ import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 const router: Router = Router()
 
-router
-	.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, controller.create)
-	.put(isLoggedin, tokenIsValid, controller.update)
+router.route('/').get(isLoggedin, tokenIsValid, controller.getAll).put(isLoggedin, tokenIsValid, controller.update)
 
 router.post(
 	'/set-logo-image',
