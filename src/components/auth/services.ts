@@ -41,7 +41,7 @@ export async function login(email: string, password: string): Promise<LoginResPr
 		]
 	})
 
-	if (!user) {
+	if (!user || !user.isActive) {
 		return { loggedin: false }
 	}
 
