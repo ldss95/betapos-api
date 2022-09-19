@@ -1,0 +1,11 @@
+diff --git a/node_modules/json-as-xlsx/types/index.d.ts b/node_modules/json-as-xlsx/types/index.d.ts
+index 960c896..526390e 100644
+--- a/node_modules/json-as-xlsx/types/index.d.ts
++++ b/node_modules/json-as-xlsx/types/index.d.ts
+@@ -1,5 +1,5 @@
+ import { WritingOptions } from "xlsx"
+-import { utils, WorkBook, WorkSheet } from 'xlsx/dist/xlsx.mini.min'
++import { utils, WorkBook, WorkSheet } from 'xlsx'
+ 
+ export interface IColumn {
+   label: string
