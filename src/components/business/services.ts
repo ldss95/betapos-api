@@ -15,7 +15,14 @@ export async function getOneBusiness({
 }): Promise<BusinessAttr | null | undefined> {
 	const business = await Business.findOne({
 		where: {
-			[Op.or]: [{ id }, { merchantId }]
+			[Op.or]: [
+				{
+					...(id && { id })
+				},
+				{
+					...(merchantId && { merchantId })
+				}
+			]
 		},
 		include: [
 			{
