@@ -1,11 +1,9 @@
 import { Request, Response } from 'express'
-import { Op, literal } from 'sequelize'
+import { Op } from 'sequelize'
 import moment from 'moment'
 
 import { deleteFile, notifyUpdate } from '../../helpers'
 import { Barcode } from '../barcodes/model'
-import { Brand } from '../brands/model'
-import { Category } from '../categories/model'
 import { Product } from './model'
 import { Business } from '../business/model'
 import { BarcodeAttr } from '../barcodes/interface'
@@ -15,7 +13,7 @@ import { PurchaseProduct } from '../purchase-products/model'
 import { Purchase } from '../purchases/model'
 import { InventoryAdjustment } from '../inventory-adjustments/model'
 import { User } from '../users/model'
-import { createExcelFile, getUpdates } from './services'
+import { createExcelFile, getAllProducts, getUpdates } from './services'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -111,90 +109,17 @@ export default {
 			throw error
 		}
 	},
-	getAll: (req: Request, res: Response) => {
-		Product.findAll({
-			include: [
-				{
-					model: Barcode,
-					as: 'barcodes',
-					required: false
-				},
-				{
-					model: Brand,
-					as: 'brand',
-					required: false
-				},
-				{
-					model: Category,
-					as: 'category',
-					required: false
-				}
-			],
-			attributes: {
-				include: [
-					[
-						literal(`
-							ROUND(
-								(
-									product.initialStock -
-									COALESCE((
-										SELECT
-											SUM(sp.quantity)
-										FROM
-											sales_products sp
-										JOIN
-											sales s ON s.id = sp.saleId
-										WHERE
-											sp.productId = product.id AND
-											s.status = 'DONE'
-									), 0) +
-									COALESCE((
-										SELECT
-											SUM(pp.quantity)
-										FROM
-											purchase_products pp
-										JOIN
-											purchases p ON p.id = pp.purchaseId
-										WHERE
-											pp.productId = product.id AND
-											p.status = 'DONE' AND
-											p.affectsExistence = 1
-									), 0) +
-									COALESCE((
-										SELECT
-											SUM(quantity)
-										FROM
-											inventory_adjustments
-										WHERE
-											productId = product.id AND
-											type = 'IN'
-									), 0) -
-									COALESCE((
-										SELECT
-											SUM(quantity)
-										FROM
-											inventory_adjustments
-										WHERE
-											productId = product.id AND
-											type = 'OUT'
-									), 0)
-								),
-								2
-							)
-						`),
-						'stock'
-					]
-				]
-			},
-			where: {
-				businessId: req.session!.businessId
-			}
-		})
-			.then((products) => res.status(200).send(products))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+	getAll: async (req: Request, res: Response) => {
+		try {
+			const businessId = req.session!.businessId
+			const { limit, page, filters, search, sorter } = req.body
+
+			const data = await getAllProducts({ businessId, limit, page, search: `${search}`, filters, sorter })
+			res.status(200).send(data)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	getTransactions: async (req: Request, res: Response) => {
 		try {
