@@ -1,5 +1,5 @@
 import xlsx from 'json-as-xlsx'
-import { Op, literal, col } from 'sequelize'
+import { Op, literal } from 'sequelize'
 
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
@@ -13,11 +13,18 @@ interface GetAllProductsProps {
 	page: number;
 	search: string;
 	filters: {
-		[key: string]: (string | boolean)[]
+		[key: string]: (string | boolean)[];
 	};
 	sorter: [string, 'ASC' | 'DESC'];
 }
-export async function getAllProducts({ businessId, limit, page, search, filters, sorter }: GetAllProductsProps): Promise<{ total: number; products: ProductAttr[]; }> {
+export async function getAllProducts({
+	businessId,
+	limit,
+	page,
+	search,
+	filters,
+	sorter
+}: GetAllProductsProps): Promise<{ total: number; products: ProductAttr[] }> {
 	const stockQuery = `
 		ROUND(
 			(
@@ -72,7 +79,8 @@ export async function getAllProducts({ businessId, limit, page, search, filters,
 		[Op.and]: [
 			{ businessId },
 			{
-				...(search && search.length > 0 && {
+				...(search &&
+					search.length > 0 && {
 					[Op.or]: [
 						{
 							name: {
@@ -98,14 +106,16 @@ export async function getAllProducts({ businessId, limit, page, search, filters,
 				})
 			},
 			{
-				...(filters?.category && filters.category.length > 0 && {
+				...(filters?.category &&
+					filters.category.length > 0 && {
 					categoryId: {
 						[Op.in]: filters.category
 					}
 				})
 			},
 			{
-				...(filters?.brand && filters.brand.length > 0 && {
+				...(filters?.brand &&
+					filters.brand.length > 0 && {
 					brandId: {
 						[Op.in]: filters.brand
 					}
@@ -136,12 +146,7 @@ export async function getAllProducts({ businessId, limit, page, search, filters,
 		subQuery: false,
 		include,
 		attributes: {
-			include: [
-				[
-					literal(stockQuery),
-					'stock'
-				]
-			]
+			include: [[literal(stockQuery), 'stock']]
 		},
 		where,
 		limit,
@@ -154,7 +159,7 @@ export async function getAllProducts({ businessId, limit, page, search, filters,
 	const total = await Product.count({ where, include })
 
 	return {
-		products: products.map(product => product.toJSON()),
+		products: products.map((product) => product.toJSON()),
 		total
 	}
 }

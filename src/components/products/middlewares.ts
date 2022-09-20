@@ -4,11 +4,13 @@ import { z, ZodError } from 'zod'
 const TableRequestSchema = z.object({
 	page: z.number().min(1),
 	limit: z.number(),
-	filters: z.object({
-		isActive: z.array(z.boolean()).nullable(),
-		category: z.array(z.string()).nullable(),
-		brand: z.array(z.string()).nullable()
-	}).optional(),
+	filters: z
+		.object({
+			isActive: z.array(z.boolean()).nullable(),
+			category: z.array(z.string()).nullable(),
+			brand: z.array(z.string()).nullable()
+		})
+		.optional(),
 	sorter: z.array(z.string()).nullable().optional()
 })
 
@@ -24,5 +26,4 @@ export function validateTableRequest(req: Request, res: Response, next: NextFunc
 			})
 		}
 	}
-
 }

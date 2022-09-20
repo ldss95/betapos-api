@@ -114,7 +114,14 @@ export default {
 			const businessId = req.session!.businessId
 			const { limit, page, filters, search, sorter } = req.body
 
-			const data = await getAllProducts({ businessId, limit, page, search: `${search}`, filters, sorter })
+			const data = await getAllProducts({
+				businessId,
+				limit,
+				page,
+				search,
+				filters,
+				sorter
+			})
 			res.status(200).send(data)
 		} catch (error) {
 			res.sendStatus(500)
