@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Op } from 'sequelize'
+import { Op, UniqueConstraintError } from 'sequelize'
 
 import { Sale } from './model'
 import { SaleProduct } from '../sales-products/model'
@@ -58,6 +58,10 @@ export default {
 			)
 			res.sendStatus(201)
 		} catch (error) {
+			if (error instanceof UniqueConstraintError) {
+				return res.sendStatus(201)
+			}
+
 			res.sendStatus(500)
 			throw error
 		}
