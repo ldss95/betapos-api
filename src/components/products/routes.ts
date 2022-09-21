@@ -20,4 +20,6 @@ routes.post('/photo', isLoggedin, tokenIsValid, uploadSingle('images/products/')
 routes.post('/export', isLoggedin, tokenIsValid, controller.export)
 routes.post('/table', isLoggedin, tokenIsValid, validateTableRequest, controller.getAll)
 
+routes.get('/find-by-barcode/:barcode', isLoggedin, tokenIsValid, controller.findByBarcode)
+
 export default routes

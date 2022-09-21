@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Op } from 'sequelize'
+import { literal, Op } from 'sequelize'
 import moment from 'moment'
 
 import { deleteFile, notifyUpdate } from '../../helpers'
@@ -336,6 +336,84 @@ export default {
 			const doc = await createExcelFile(businessId)
 
 			res.status(200).send(doc)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	findByBarcode: async (req: Request, res: Response) => {
+		try {
+			const { barcode } = req.params
+			const { businessId } = req.session!
+
+			const stockQuery = `
+				ROUND(
+					(
+						product.initialStock -
+						COALESCE((
+							SELECT
+								SUM(sp.quantity)
+							FROM
+								sales_products sp
+							JOIN
+								sales s ON s.id = sp.saleId
+							WHERE
+								sp.productId = product.id AND
+								s.status = 'DONE'
+						), 0) +
+						COALESCE((
+							SELECT
+								SUM(pp.quantity)
+							FROM
+								purchase_products pp
+							JOIN
+								purchases p ON p.id = pp.purchaseId
+							WHERE
+								pp.productId = product.id AND
+								p.status = 'DONE' AND
+								p.affectsExistence = 1
+						), 0) +
+						COALESCE((
+							SELECT
+								SUM(quantity)
+							FROM
+								inventory_adjustments
+							WHERE
+								productId = product.id AND
+								type = 'IN'
+						), 0) -
+						COALESCE((
+							SELECT
+								SUM(quantity)
+							FROM
+								inventory_adjustments
+							WHERE
+								productId = product.id AND
+								type = 'OUT'
+						), 0)
+					),
+					2
+				)
+			`
+
+			const products = await Product.findAll({
+				where: {
+					businessId
+				},
+				attributes: {
+					include: [[literal(stockQuery), 'stock']]
+				},
+				include: {
+					model: Barcode,
+					as: 'barcodes',
+					where: {
+						barcode
+					},
+					required: true
+				}
+			})
+
+			res.status(200).send(products.map((product) => product.toJSON()))
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
