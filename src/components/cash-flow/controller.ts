@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { Shift } from '../shifts/model'
 
 import { User } from '../users/model'
 import { CashFlow } from './model'
@@ -31,15 +32,26 @@ export default {
 			throw error
 		}
 	},
-	getAll: (req: Request, res: Response) => {
-		const { businessId } = req.session!
-		CashFlow.findAll({
-			where: { businessId }
-		})
-			.then((cashFlows) => res.status(200).send(cashFlows))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
+	getAll: async (req: Request, res: Response) => {
+		try {
+			const { businessId } = req.session!
+			const data = await CashFlow.findAll({
+				where: { businessId },
+				include: {
+					model: Shift,
+					as: 'shift',
+					include: [{
+						model: User,
+						as: 'user'
+					}]
+				}
 			})
+
+			res.status(200).send(data.map(item => item.toJSON()))
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+
 	}
 }
