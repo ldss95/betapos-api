@@ -66,7 +66,50 @@ export default {
 							literal('(SELECT SUM(amount) FROM sales WHERE shiftId = shift.id AND status = \'DONE\')'),
 							'totalSold'
 						],
-						[literal('(SELECT SUM(amount) FROM cash_flows WHERE shiftId = shift.id)'), 'cashFlow']
+						[
+							literal(`
+								(
+									SELECT
+										SUM(sp.amount)
+									FROM
+										sales s
+									LEFT JOIN
+										sales_payments sp ON sp.saleId = s.id
+									LEFT JOIN
+										sales_payment_types spt ON spt.id = sp.typeId
+									WHERE
+										shiftId = shift.id AND
+										status = 'DONE' AND
+										spt.name = 'Efectivo'
+								)
+							`),
+							'totalSoldCash'
+						],
+						[
+							literal(`
+								(
+									COALESCE((
+										SELECT
+											SUM(-1 * amount)
+										FROM
+											cash_flows
+										WHERE
+											shiftId = shift.id AND
+											type = 'OUT'
+									), 0) +
+									COALESCE((
+										SELECT
+											SUM(amount)
+										FROM
+											cash_flows
+										WHERE
+											shiftId = shift.id AND
+											type = 'IN'
+									), 0)
+								)
+							`),
+							'cashFlow'
+						]
 					]
 				},
 				include: {
