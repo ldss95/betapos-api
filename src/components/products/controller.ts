@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { literal, Op } from 'sequelize'
 import moment from 'moment'
 
-import { deleteFile, notifyUpdate } from '../../helpers'
+import { deleteFile, notifyUpdate, round } from '../../helpers'
 import { Barcode } from '../barcodes/model'
 import { Product } from './model'
 import { Business } from '../business/model'
@@ -20,8 +20,15 @@ export default {
 		try {
 			const { businessId, merchantId } = req.session!
 
+			const { cost, price } = req.body
+			const profitPercent = (cost && price) ? round(((price - cost) / cost) * 100) : 0
+
 			const { id } = await Product.create(
-				{ ...req.body, businessId },
+				{
+					...req.body,
+					profitPercent,
+					businessId
+				},
 				{
 					include: {
 						model: Barcode,

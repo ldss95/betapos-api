@@ -4,9 +4,9 @@ const routes: Router = Router()
 import controller from './controller'
 import { uploadSingle } from '../../middlewares/files'
 import { isLoggedin, tokenIsValid, hasMerchantId } from '../../middlewares/auth'
-import { validateTableRequest } from './middlewares'
+import { validateCreateProduct, validateTableRequest } from './middlewares'
 
-routes.route('/').post(isLoggedin, tokenIsValid, controller.create).put(isLoggedin, tokenIsValid, controller.update)
+routes.route('/').post(isLoggedin, tokenIsValid, validateCreateProduct, controller.create).put(isLoggedin, tokenIsValid, controller.update)
 
 routes.get('/updates/:date', hasMerchantId, controller.getUpdates)
 routes.get('/transactions/:id', isLoggedin, tokenIsValid, controller.getTransactions)

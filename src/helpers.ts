@@ -3,7 +3,7 @@ import moment from 'moment'
 
 import { db } from './database/firebase'
 
-function deleteFile(Key: string) {
+export function deleteFile(Key: string) {
 	return new Promise((resolve, reject) => {
 		const { S3_ENDPOINT, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, BUCKET_NAME } = process.env
 
@@ -25,7 +25,7 @@ function deleteFile(Key: string) {
 }
 
 type Table = 'users' | 'barcodes' | 'clients' | 'business' | 'products' | 'devices' | 'settings';
-function notifyUpdate(table: Table, merchantId?: string) {
+export function notifyUpdate(table: Table, merchantId?: string) {
 	if (!merchantId) {
 		return
 	}
@@ -37,4 +37,6 @@ function notifyUpdate(table: Table, merchantId?: string) {
 		})
 }
 
-export { deleteFile, notifyUpdate }
+export function round(amount: number) {
+	return Math.round(amount * 100) / 100
+}

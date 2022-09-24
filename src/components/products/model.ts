@@ -50,6 +50,15 @@ const Product = db.define<ProductAttr>(
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
 		},
+		profitPercent: {
+			type: DataTypes.DOUBLE(6, 2),
+			allowNull: false,
+			defaultValue: 20,
+			validate: {
+				min: 0,
+				max: 100
+			}
+		},
 		isActive: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,

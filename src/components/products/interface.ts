@@ -20,6 +20,7 @@ export interface ProductAttr extends Model {
 	photoUrl: string;
 	itbis: boolean;
 	isFractionable: boolean;
+	profitPercent: number;
 	isActive: boolean;
 	deletedAt: string;
 	createdAt: string;

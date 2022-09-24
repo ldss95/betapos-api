@@ -1,6 +1,26 @@
 import { Request, Response, NextFunction } from 'express'
 import { z, ZodError } from 'zod'
 
+export function validateCreateProduct(req: Request, res: Response, next: NextFunction) {
+	try {
+		const { cost, price } = req.body
+		if (cost && price && cost > price) {
+			return res.status(400).send({
+				message: 'El costo no puede ser mayor al precio'
+			})
+		}
+
+		next()
+	} catch (error) {
+		if (error instanceof ZodError) {
+			res.status(400).send({
+				message: 'Solicitud mal formada',
+				errors: error.issues
+			})
+		}
+	}
+}
+
 const TableRequestSchema = z.object({
 	page: z.number().min(1),
 	limit: z.number(),
