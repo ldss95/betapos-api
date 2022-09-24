@@ -21,7 +21,7 @@ export default {
 			const { businessId, merchantId } = req.session!
 
 			const { cost, price } = req.body
-			const profitPercent = (cost && price) ? round(((price - cost) / cost) * 100) : 0
+			const profitPercent = cost && price ? round(((price - cost) / cost) * 100) : 0
 
 			const { id } = await Product.create(
 				{

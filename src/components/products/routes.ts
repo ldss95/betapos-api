@@ -6,7 +6,10 @@ import { uploadSingle } from '../../middlewares/files'
 import { isLoggedin, tokenIsValid, hasMerchantId } from '../../middlewares/auth'
 import { validateCreateProduct, validateTableRequest } from './middlewares'
 
-routes.route('/').post(isLoggedin, tokenIsValid, validateCreateProduct, controller.create).put(isLoggedin, tokenIsValid, controller.update)
+routes
+	.route('/')
+	.post(isLoggedin, tokenIsValid, validateCreateProduct, controller.create)
+	.put(isLoggedin, tokenIsValid, controller.update)
 
 routes.get('/updates/:date', hasMerchantId, controller.getUpdates)
 routes.get('/transactions/:id', isLoggedin, tokenIsValid, controller.getTransactions)
