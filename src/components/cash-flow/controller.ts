@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
-import { Shift } from '../shifts/model'
+import { Op } from 'sequelize'
 
+import { Shift } from '../shifts/model'
 import { User } from '../users/model'
 import { CashFlow } from './model'
 
@@ -35,23 +36,35 @@ export default {
 	getAll: async (req: Request, res: Response) => {
 		try {
 			const { businessId } = req.session!
+			const { shiftId } = req.query
+
 			const data = await CashFlow.findAll({
-				where: { businessId },
+				where: {
+					[Op.and]: [
+						{
+							...(shiftId && {
+								shiftId
+							})
+						},
+						{ businessId }
+					]
+				},
 				include: {
 					model: Shift,
 					as: 'shift',
-					include: [{
-						model: User,
-						as: 'user'
-					}]
+					include: [
+						{
+							model: User,
+							as: 'user'
+						}
+					]
 				}
 			})
 
-			res.status(200).send(data.map(item => item.toJSON()))
+			res.status(200).send(data.map((item) => item.toJSON()))
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
 		}
-
 	}
 }
