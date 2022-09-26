@@ -31,7 +31,7 @@ const TableRequestSchema = z.object({
 			brand: z.array(z.string()).nullable()
 		})
 		.optional(),
-	sorter: z.array(z.string()).nullable().optional()
+	sorter: z.string().nullable().array().optional()
 })
 
 export function validateTableRequest(req: Request, res: Response, next: NextFunction): Response | void {
