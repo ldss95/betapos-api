@@ -4,7 +4,7 @@ import { z, ZodError } from 'zod'
 export function validateCreateProduct(req: Request, res: Response, next: NextFunction) {
 	try {
 		const { cost, price } = req.body
-		if (cost && price && cost > price) {
+		if (+cost && +price && +cost > +price) {
 			return res.status(400).send({
 				message: 'El costo no puede ser mayor al precio'
 			})
