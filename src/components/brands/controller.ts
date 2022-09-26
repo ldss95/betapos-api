@@ -23,6 +23,7 @@ export default {
 		try {
 			const { id } = req.body
 			await updateBrand(id, req.body.name)
+			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
 				return res.status(400).send({
