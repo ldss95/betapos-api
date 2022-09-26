@@ -56,7 +56,7 @@ const Product = db.define<ProductAttr>(
 			defaultValue: 20,
 			validate: {
 				min: 0,
-				max: 100
+				max: 10000
 			}
 		},
 		isActive: {
