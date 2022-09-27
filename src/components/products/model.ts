@@ -51,12 +51,11 @@ const Product = db.define<ProductAttr>(
 			defaultValue: false
 		},
 		profitPercent: {
-			type: DataTypes.DOUBLE(6, 2),
+			type: DataTypes.DOUBLE(10, 2),
 			allowNull: false,
 			defaultValue: 20,
 			validate: {
-				min: 0,
-				max: 10000
+				min: 0
 			}
 		},
 		isActive: {

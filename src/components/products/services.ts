@@ -151,7 +151,8 @@ export async function getAllProducts({
 		where,
 		limit,
 		offset: (page - 1) * limit,
-		...(sorter && sorter[0] && {
+		...(sorter &&
+			sorter[0] && {
 			order: [sorter]
 		})
 	})
