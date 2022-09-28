@@ -18,7 +18,7 @@ export default {
 		try {
 			const { id, date } = req.body
 			const file = req.file as Express.MulterS3.File
-			await markInvoiceAsPayed(id, date, file.location)
+			await markInvoiceAsPayed(id, date, file?.location)
 
 			res.sendStatus(204)
 		} catch (error) {
