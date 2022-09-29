@@ -20,6 +20,7 @@ export default {
 				'lastName',
 				'birthDate',
 				'email',
+				'nickName',
 				'dui',
 				'address',
 				'photoUrl',
