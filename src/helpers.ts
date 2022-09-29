@@ -24,7 +24,7 @@ export function deleteFile(Key: string) {
 	})
 }
 
-type Table = 'users' | 'barcodes' | 'clients' | 'business' | 'products' | 'devices' | 'settings';
+type Table = 'users' | 'barcodes' | 'clients' | 'business' | 'products' | 'devices' | 'settings' | 'sales';
 export function notifyUpdate(table: Table, merchantId?: string) {
 	if (!merchantId) {
 		return

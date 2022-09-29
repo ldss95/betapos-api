@@ -10,6 +10,7 @@ import { Client } from '../clients/model'
 import { User } from '../users/model'
 import { Product } from '../products/model'
 import { SalePaymentType } from '../sales-payments-types/model'
+import { notifyUpdate } from '../../helpers'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -56,6 +57,7 @@ export default {
 					]
 				}
 			)
+			notifyUpdate('sales', merchantId)
 			res.sendStatus(201)
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
