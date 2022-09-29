@@ -10,6 +10,7 @@ import { Client } from '../clients/model'
 import { User } from '../users/model'
 import { Product } from '../products/model'
 import { SalePaymentType } from '../sales-payments-types/model'
+import { getSalesSummary } from './services'
 import { notifyUpdate } from '../../helpers'
 
 export default {
@@ -284,6 +285,26 @@ export default {
 			})
 
 			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	cancel: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			await Sale.update({ status: 'CANCELLED' }, { where: { id } })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getSummary: async (req: Request, res: Response) => {
+		try {
+			const { businessId } = req.session!
+			const summary = await getSalesSummary(businessId)
+
+			res.status(200).send(summary)
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
