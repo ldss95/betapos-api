@@ -85,3 +85,18 @@ export function hasMerchantId(req: Request, res: Response, next: NextFunction): 
 
 	next()
 }
+
+/**
+ * Valida que exista el header merchantId
+ */
+export function hasDeviceId(req: Request, res: Response, next: NextFunction): Response | void {
+	const deviceId = req.header('deviceId')
+	if (!deviceId) {
+		return res.status(400).send({
+			message: 'Missing header `deviceId`'
+		})
+	}
+
+	next()
+}
+
