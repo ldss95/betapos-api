@@ -72,6 +72,21 @@ describe('Users', () => {
 				.set('Cookie', session.session)
 				.expect('Content-Type', /json/)
 				.expect(200)
+
+		it('Deberia obtener un array con todos los usuarios, pero solo con id y nombre', async () => {
+			const { body } = await http(app)
+				.get('/users/list')
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
+				.expect('Content-Type', /json/)
+				.expect(200)
+
+			expect(Array.isArray(body)).toBe(true)
+			const [firstUser] = body
+			expect(Object.keys(firstUser).length).toBe(3)
+			expect(firstUser).toHaveProperty('id')
+			expect(firstUser).toHaveProperty('firstName')
+			expect(firstUser).toHaveProperty('lastName')
 		})
 	})
 
