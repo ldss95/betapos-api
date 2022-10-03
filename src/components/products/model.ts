@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { ProductAttr } from './interface'
+import { ProductAttr, ProductLinkAttr } from './interface'
 import { Barcode } from '../barcodes/model'
 import { Business } from '../business/model'
 import { Brand } from '../brands/model'
@@ -67,7 +67,31 @@ const Product = db.define<ProductAttr>(
 	{ paranoid: true }
 )
 
+export const ProductLink = db.define<ProductLinkAttr>('products_link', {
+	id: {
+		type: DataTypes.UUID,
+		primaryKey: true,
+		defaultValue: DataTypes.UUIDV4
+	},
+	parentProductId: {
+		type: DataTypes.UUID,
+		allowNull: false
+	},
+	childProductId: {
+		type: DataTypes.UUID,
+		allowNull: false
+	},
+	quantityOnParent: {
+		type: DataTypes.DOUBLE(10, 2),
+		validate: {
+			min: 2
+		}
+	}
+})
+
 Product.hasMany(Barcode, { foreignKey: 'productId', as: 'barcodes' })
+Product.hasMany(ProductLink, { foreignKey: 'parentProductId', as: 'linkedProducts' })
+
 Barcode.belongsTo(Product, { foreignKey: 'productId', as: 'product' })
 Product.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
 Product.belongsTo(Brand, { foreignKey: 'brandId', as: 'brand' })

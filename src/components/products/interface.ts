@@ -26,3 +26,14 @@ export interface ProductAttr extends Model {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface ProductLinkAttr extends Model {
+	id: string;
+	parentProductId: string;
+	childProductId: string;
+	quantityOnParent: number;
+	parent: ProductAttr;
+	child: ProductAttr;
+	createdAt: string;
+	updatedAt: string;
+}
