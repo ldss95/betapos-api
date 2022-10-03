@@ -1,5 +1,7 @@
 import AWS from 'aws-sdk'
 import moment from 'moment'
+import http from 'supertest'
+import { Express } from 'express'
 
 import { db } from './database/firebase'
 
@@ -39,4 +41,17 @@ export function notifyUpdate(table: Table, merchantId?: string) {
 
 export function round(amount: number) {
 	return Math.round(amount * 100) / 100
+}
+
+export async function login4Tests(app: Express, session: { session: string; token: string }) {
+	const { body, headers } = await http(app).post('/auth/login').send({
+		email: 'lsantiago@pixnabilab.com',
+		password: '123456'
+	})
+
+	session.token = body.token
+	session.session = headers['set-cookie'][0]
+		.split(',')
+		.map((item: string) => item.split(';')[0])
+		.join(';')
 }
