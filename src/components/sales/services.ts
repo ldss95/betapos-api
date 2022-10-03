@@ -6,15 +6,24 @@ import { SalePaymentType } from '../sales-payments-types/model'
 import { SalePayment } from '../sales-payments/model'
 import { SaleProductAttr } from '../sales-products/interface'
 import { SaleProduct } from '../sales-products/model'
-import { SaleAttr, SalesSummaryProps } from './interface'
+import { SaleAttr } from './interface'
 import { Sale } from './model'
 
-export async function getSalesSummary(businessId: string): Promise<SalesSummaryProps> {
-	return {
-		today: await today(businessId),
-		week: await week(businessId),
-		month: await month(businessId),
-		year: await year(businessId)
+export async function getSalesSummary(businessId: string, type: string) {
+	if (type == 'today') {
+		return await today(businessId)
+	}
+
+	if (type == 'week') {
+		return await week(businessId)
+	}
+
+	if (type == 'month') {
+		return await month(businessId)
+	}
+
+	if (type == 'year') {
+		return await year(businessId)
 	}
 }
 

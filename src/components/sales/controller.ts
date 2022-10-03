@@ -301,8 +301,9 @@ export default {
 	},
 	getSummary: async (req: Request, res: Response) => {
 		try {
+			const { type } = req.params
 			const { businessId } = req.session!
-			const summary = await getSalesSummary(businessId)
+			const summary = await getSalesSummary(businessId, type)
 
 			res.status(200).send(summary)
 		} catch (error) {
