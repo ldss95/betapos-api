@@ -7,6 +7,8 @@ import { User } from './model'
 import { Role } from '../roles/model'
 import { deleteFile, notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
+import { deleteUser } from './services'
+import { CustomError } from '../../errors'
 
 export default {
 	getOne: (req: Request, res: Response) => {
@@ -106,20 +108,23 @@ export default {
 	delete: async (req: Request, res: Response) => {
 		try {
 			const { id } = req.params
+			const { force } = req.body
 			const session = req.session!
+			await deleteUser(id, force, session?.merchantId)
 
-			const deleted = await User.destroy({ where: { id }, force: true })
-			if (!deleted) {
-				return res.status(404).send({ message: 'Usuario no encontrado' })
-			}
-
-			notifyUpdate('users', session?.merchantId)
 			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof ForeignKeyConstraintError) {
 				res.status(400).send({
 					message:
 						'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.'
+				})
+				return
+			}
+
+			if (error instanceof CustomError) {
+				res.status(400).send({
+					message: 'No se puede eliminar este usuario.'
 				})
 				return
 			}
