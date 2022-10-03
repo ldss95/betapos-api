@@ -7,43 +7,19 @@ import { User } from './model'
 import { Role } from '../roles/model'
 import { deleteFile, notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
-import { deleteUser } from './services'
+import { deleteUser, getOneUser } from './services'
 import { CustomError } from '../../errors'
 
 export default {
-	getOne: (req: Request, res: Response) => {
-		const { id } = req.params
-
-		User.findOne({
-			where: { id },
-			attributes: [
-				'id',
-				'firstName',
-				'lastName',
-				'birthDate',
-				'email',
-				'nickName',
-				'dui',
-				'address',
-				'photoUrl',
-				'roleId',
-				'businessId',
-				'isActive',
-				'createdAt',
-				'updatedAt'
-			]
-		})
-			.then((user) => {
-				if (user) return res.status(200).send(user)
-
-				res.status(404).send({
-					message: 'Usuario no encontrado'
-				})
-			})
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+	getOne: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			const user = await getOneUser(id)
+			res.status(200).send(user)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	getAll: (req: Request, res: Response) => {
 		User.findAll({
