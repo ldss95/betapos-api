@@ -1,12 +1,12 @@
 import { Model } from 'sequelize'
 
-import { OsAttr } from '../operative-systems/interface'
+import { OsProps } from '../operative-systems/interface'
 
-export interface DeviceAttr extends Model {
+export interface DeviceProps extends Model {
 	id: string;
 	deviceId: string;
 	osId: string;
-	os: OsAttr;
+	os: OsProps;
 	businessId: string;
 	name: string;
 	pushNotificationsToken: string;

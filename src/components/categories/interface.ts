@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface CategoryAttr extends Model {
+export interface CategoryProps extends Model {
 	id: string;
 	businessId: string;
 	name: string;

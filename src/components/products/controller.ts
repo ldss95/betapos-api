@@ -6,7 +6,7 @@ import { deleteFile, notifyUpdate, round } from '../../helpers'
 import { Barcode } from '../barcodes/model'
 import { Product } from './model'
 import { Business } from '../business/model'
-import { BarcodeAttr } from '../barcodes/interface'
+import { BarcodeProps } from '../barcodes/interface'
 import { SaleProduct } from '../sales-products/model'
 import { Sale } from '../sales/model'
 import { PurchaseProduct } from '../purchase-products/model'
@@ -67,7 +67,7 @@ export default {
 						{ productId: id },
 						{
 							id: {
-								[Op.notIn]: barcodes?.map(({ id }: BarcodeAttr) => id) || []
+								[Op.notIn]: barcodes?.map(({ id }: BarcodeProps) => id) || []
 							}
 						}
 					]
@@ -77,15 +77,15 @@ export default {
 			// Nuevos
 			await Barcode.bulkCreate(
 				barcodes
-					.filter(({ id }: BarcodeAttr) => !id)
-					.map(({ barcode }: BarcodeAttr) => ({
+					.filter(({ id }: BarcodeProps) => !id)
+					.map(({ barcode }: BarcodeProps) => ({
 						barcode,
 						productId: id
 					}))
 			)
 
 			// Modificados
-			const oldBarcodes = barcodes.filter(({ id }: BarcodeAttr) => id)
+			const oldBarcodes = barcodes.filter(({ id }: BarcodeProps) => id)
 			for (const { id, barcode } of oldBarcodes) {
 				await Barcode.update(
 					{ barcode },

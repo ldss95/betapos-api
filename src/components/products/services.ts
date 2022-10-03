@@ -4,7 +4,7 @@ import { Op, literal } from 'sequelize'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
-import { ProductAttr } from './interface'
+import { ProductProps } from './interface'
 import { Product } from './model'
 
 interface GetAllProductsProps {
@@ -24,7 +24,7 @@ export async function getAllProducts({
 	search,
 	filters,
 	sorter
-}: GetAllProductsProps): Promise<{ total: number; products: ProductAttr[] }> {
+}: GetAllProductsProps): Promise<{ total: number; products: ProductProps[] }> {
 	const stockQuery = `
 		ROUND(
 			(
@@ -317,8 +317,8 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 }
 
 interface GetUpdatesResponse {
-	created: ProductAttr[];
-	updated: ProductAttr[];
+	created: ProductProps[];
+	updated: ProductProps[];
 }
 
 export async function getUpdates(businessId: string, date: string): Promise<GetUpdatesResponse> {

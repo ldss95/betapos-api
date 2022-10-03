@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { CategoryAttr } from './interface'
+import { CategoryProps } from './interface'
 import { Business } from '../business/model'
 
-const Category = db.define<CategoryAttr>(
+const Category = db.define<CategoryProps>(
 	'category',
 	{
 		id: {

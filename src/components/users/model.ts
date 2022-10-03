@@ -2,11 +2,11 @@ import { DataTypes } from 'sequelize'
 import { duiIsValid } from '@ldss95/helpers'
 
 import { db } from '../../database/connection'
-import { UserAttr } from './interface'
+import { UserProps } from './interface'
 import { Role } from '../roles/model'
 import { Business } from '../business/model'
 
-const User = db.define<UserAttr>(
+const User = db.define<UserProps>(
 	'user',
 	{
 		id: {

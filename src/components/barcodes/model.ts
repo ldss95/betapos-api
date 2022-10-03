@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { BarcodeAttr } from './interface'
+import { BarcodeProps } from './interface'
 
-const Barcode = db.define<BarcodeAttr>('barcode', {
+const Barcode = db.define<BarcodeProps>('barcode', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

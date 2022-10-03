@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface BarcodeAttr extends Model {
+export interface BarcodeProps extends Model {
 	id: string;
 	barcode: string;
 	productId: string;

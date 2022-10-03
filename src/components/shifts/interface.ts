@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface ShiftAttr extends Model {
+export interface ShiftProps extends Model {
 	id: string;
 	userId: string;
 	deviceId: string;

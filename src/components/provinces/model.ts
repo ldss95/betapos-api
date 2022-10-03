@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { ProvinceAttr } from './interface'
+import { ProvinceProps } from './interface'
 
-const Province = db.define<ProvinceAttr>(
+const Province = db.define<ProvinceProps>(
 	'province',
 	{
 		id: {

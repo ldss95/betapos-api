@@ -1,10 +1,10 @@
 import { Model } from 'sequelize'
-import { PurchaseAttr } from '../purchases/interface'
+import { PurchaseProps } from '../purchases/interface'
 
-export interface PurchaseProductAttr extends Model {
+export interface PurchaseProductProps extends Model {
 	id: string;
 	purchaseId: string;
-	purchase: PurchaseAttr;
+	purchase: PurchaseProps;
 	productId: string;
 	quantity: number;
 	price: number;

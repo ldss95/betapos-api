@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { OsAttr } from './interface'
+import { OsProps } from './interface'
 
-const Os = db.define<OsAttr>('operative_system', {
+const Os = db.define<OsProps>('operative_system', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,

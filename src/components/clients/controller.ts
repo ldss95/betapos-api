@@ -10,8 +10,8 @@ import { SalePaymentType } from '../sales-payments-types/model'
 import { ClientPayment } from '../clients-payments/model'
 import { SalePayment } from '../sales-payments/model'
 import { User } from '../users/model'
-import { ClientPaymentAttr } from '../clients-payments/interface'
-import { SaleAttr } from '../sales/interface'
+import { ClientPaymentProps } from '../clients-payments/interface'
+import { SaleProps } from '../sales/interface'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -218,7 +218,7 @@ export default {
 			})
 
 			const data: any = [...payments, ...sales]
-				.sort((a: SaleAttr | ClientPaymentAttr, b: SaleAttr | ClientPaymentAttr) => {
+				.sort((a: SaleProps | ClientPaymentProps, b: SaleProps | ClientPaymentProps) => {
 					return moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime()
 				})
 				.reverse()

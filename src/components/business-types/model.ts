@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { BusinessTypeAttr } from './interface'
+import { BusinessTypeProps } from './interface'
 
-const BusinessType = db.define<BusinessTypeAttr>('business_types', {
+const BusinessType = db.define<BusinessTypeProps>('business_types', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,

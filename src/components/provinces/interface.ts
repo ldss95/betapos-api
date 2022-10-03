@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface ProvinceAttr extends Model {
+export interface ProvinceProps extends Model {
 	id: string;
 	name: string;
 }

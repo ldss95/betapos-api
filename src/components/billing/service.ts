@@ -2,12 +2,12 @@ import { CronJob } from 'cron'
 import moment from 'moment'
 
 import { Business } from '../business/model'
-import { BillAttr } from './interface'
+import { BillProps } from './interface'
 import { Bill } from './model'
 import { Device } from '../devices/model'
 
 type ROLE_CODE = 'ADMIN' | 'BIOWNER' | 'PARTNER';
-export async function listAllInvoices(roleCode: ROLE_CODE, businessId: string, userId: string): Promise<BillAttr[]> {
+export async function listAllInvoices(roleCode: ROLE_CODE, businessId: string, userId: string): Promise<BillProps[]> {
 	const invoices = await Bill.findAll({
 		include: {
 			model: Business,

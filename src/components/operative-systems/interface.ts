@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface OsAttr extends Model {
+export interface OsProps extends Model {
 	id: string;
 	name: string;
 	code: string;

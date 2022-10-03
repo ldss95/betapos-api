@@ -3,11 +3,11 @@ import { DataTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { BusinessType } from '../business-types/model'
 import { Province } from '../provinces/model'
-import { BusinessAttr } from './interface'
+import { BusinessProps } from './interface'
 import { Device } from '../devices/model'
 import { notifyUpdate } from '../../helpers'
 
-const Business = db.define<BusinessAttr>(
+const Business = db.define<BusinessProps>(
 	'business',
 	{
 		id: {

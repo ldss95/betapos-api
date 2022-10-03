@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface RoleAttr extends Model {
+export interface RoleProps extends Model {
 	id: string;
 	clientName: string;
 	adminName: string;

@@ -1,9 +1,9 @@
 import { Model } from 'sequelize'
 
-export interface ClientAttr extends Model {
+export interface ClientProps extends Model {
 	id: string;
 	groupId: string;
-	group: ClientGroupAttr;
+	group: ClientGroupProps;
 	name: string;
 	dui: string;
 	photoUrl: string;
@@ -18,7 +18,7 @@ export interface ClientAttr extends Model {
 	updatedAt: string;
 }
 
-export interface ClientGroupAttr extends Model {
+export interface ClientGroupProps extends Model {
 	id: string;
 	name: string;
 	createdAt: string;

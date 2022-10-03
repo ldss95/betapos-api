@@ -2,9 +2,9 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { Os } from '../operative-systems/model'
-import { DeviceAttr } from './interface'
+import { DeviceProps } from './interface'
 
-const Device = db.define<DeviceAttr>('device', {
+const Device = db.define<DeviceProps>('device', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,

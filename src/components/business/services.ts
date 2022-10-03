@@ -3,7 +3,7 @@ import { deleteFile, notifyUpdate } from '../../helpers'
 
 import { BusinessType } from '../business-types/model'
 import { Province } from '../provinces/model'
-import { BusinessAttr } from './interface'
+import { BusinessProps } from './interface'
 import { Business } from './model'
 
 export async function getOneBusiness({
@@ -12,7 +12,7 @@ export async function getOneBusiness({
 }: {
 	id?: string;
 	merchantId?: string;
-}): Promise<BusinessAttr | null | undefined> {
+}): Promise<BusinessProps | null | undefined> {
 	const business = await Business.findOne({
 		where: {
 			[Op.or]: [
@@ -39,7 +39,7 @@ export async function getOneBusiness({
 	return business?.toJSON()
 }
 
-export async function getAllBusiness(role: 'ADMIN' | 'PARTNER', userId: string): Promise<BusinessAttr[]> {
+export async function getAllBusiness(role: 'ADMIN' | 'PARTNER', userId: string): Promise<BusinessProps[]> {
 	const where = role == 'PARTNER' ? { referredBy: userId } : {}
 
 	const business = await Business.findAll({ where })
@@ -47,7 +47,7 @@ export async function getAllBusiness(role: 'ADMIN' | 'PARTNER', userId: string):
 	return business.map((business) => business.toJSON())
 }
 
-export async function updateBusiness(data: BusinessAttr, merchantId: string): Promise<void> {
+export async function updateBusiness(data: BusinessProps, merchantId: string): Promise<void> {
 	await Business.update(data, {
 		where: { id: data.id }
 	})

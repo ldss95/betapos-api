@@ -1,9 +1,9 @@
 import { Model } from 'sequelize'
 
-import { BusinessAttr } from '../business/interface'
-import { RoleAttr } from '../roles/interface'
+import { BusinessProps } from '../business/interface'
+import { RoleProps } from '../roles/interface'
 
-export interface UserAttr extends Model {
+export interface UserProps extends Model {
 	id: string;
 	firstName: string;
 	lastName: string;
@@ -16,9 +16,9 @@ export interface UserAttr extends Model {
 	address: string;
 	photoUrl: string;
 	roleId: string;
-	role: RoleAttr;
+	role: RoleProps;
 	businessId: string;
-	business: BusinessAttr;
+	business: BusinessProps;
 	partnerCode: string;
 	isActive: boolean;
 	createdAt: string;

@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { SalePaymentTypeAttr } from './interface'
+import { SalePaymentTypeProps } from './interface'
 
-const SalePaymentType = db.define<SalePaymentTypeAttr>('sales_payment_types', {
+const SalePaymentType = db.define<SalePaymentTypeProps>('sales_payment_types', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,

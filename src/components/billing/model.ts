@@ -2,9 +2,9 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
-import { BillAttr } from './interface'
+import { BillProps } from './interface'
 
-const Bill = db.define<BillAttr>(
+const Bill = db.define<BillProps>(
 	'bill',
 	{
 		id: {

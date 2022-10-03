@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { CouponAttr } from './interface'
+import { CouponProps } from './interface'
 
-const Coupon = db.define<CouponAttr>('coupon', {
+const Coupon = db.define<CouponProps>('coupon', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

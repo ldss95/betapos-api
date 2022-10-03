@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface SalePaymentTypeAttr extends Model {
+export interface SalePaymentTypeProps extends Model {
 	id: string;
 	name: string;
 	description: string;

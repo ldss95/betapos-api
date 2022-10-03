@@ -2,9 +2,9 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { User } from '../users/model'
-import { ClientPaymentAttr } from './interface'
+import { ClientPaymentProps } from './interface'
 
-const ClientPayment = db.define<ClientPaymentAttr>('clients_payment', {
+const ClientPayment = db.define<ClientPaymentProps>('clients_payment', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

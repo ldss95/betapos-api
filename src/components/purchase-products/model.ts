@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize'
 
-import { PurchaseProductAttr } from './interface'
+import { PurchaseProductProps } from './interface'
 import { db } from '../../database/connection'
 import { Product } from '../products/model'
 
-const PurchaseProduct = db.define<PurchaseProductAttr>(
+const PurchaseProduct = db.define<PurchaseProductProps>(
 	'purchase_product',
 	{
 		id: {

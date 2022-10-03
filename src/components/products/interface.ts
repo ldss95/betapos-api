@@ -1,18 +1,18 @@
 import { Model } from 'sequelize'
 
-import { BarcodeAttr } from '../barcodes/interface'
-import { BrandAttr } from '../brands/interface'
-import { CategoryAttr } from '../categories/interface'
+import { BarcodeProps } from '../barcodes/interface'
+import { BrandProps } from '../brands/interface'
+import { CategoryProps } from '../categories/interface'
 
-export interface ProductAttr extends Model {
+export interface ProductProps extends Model {
 	id: string;
 	businessId: string;
 	name: string;
 	categoryId: string;
-	category: CategoryAttr;
+	category: CategoryProps;
 	brandId: string;
-	brand: BrandAttr;
-	barcodes: BarcodeAttr[];
+	brand: BrandProps;
+	barcodes: BarcodeProps[];
 	referenceCode: string;
 	initialStock: number;
 	cost: number;
@@ -27,13 +27,13 @@ export interface ProductAttr extends Model {
 	updatedAt: string;
 }
 
-export interface ProductLinkAttr extends Model {
+export interface ProductLinkProps extends Model {
 	id: string;
 	parentProductId: string;
 	childProductId: string;
 	quantityOnParent: number;
-	parent: ProductAttr;
-	child: ProductAttr;
+	parent: ProductProps;
+	child: ProductProps;
 	createdAt: string;
 	updatedAt: string;
 }

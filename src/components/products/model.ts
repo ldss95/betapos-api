@@ -1,13 +1,13 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { ProductAttr, ProductLinkAttr } from './interface'
+import { ProductProps, ProductLinkProps } from './interface'
 import { Barcode } from '../barcodes/model'
 import { Business } from '../business/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
 
-const Product = db.define<ProductAttr>(
+const Product = db.define<ProductProps>(
 	'product',
 	{
 		id: {
@@ -67,7 +67,7 @@ const Product = db.define<ProductAttr>(
 	{ paranoid: true }
 )
 
-export const ProductLink = db.define<ProductLinkAttr>('products_link', {
+export const ProductLink = db.define<ProductLinkProps>('products_link', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,

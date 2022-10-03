@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface BrandAttr extends Model {
+export interface BrandProps extends Model {
 	id: string;
 	businessId: string;
 	name: string;

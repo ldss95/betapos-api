@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
-import { NcfAttr, NcfStatusAttr } from './interface'
+import { NcfProps, NcfStatusProps } from './interface'
 import { db } from '../../database/connection'
 
-export const Ncf = db.define<NcfAttr>('ncf', {
+export const Ncf = db.define<NcfProps>('ncf', {
 	rnc: {
 		type: DataTypes.STRING(11),
 		primaryKey: true,
@@ -21,7 +21,7 @@ export const Ncf = db.define<NcfAttr>('ncf', {
 	}
 })
 
-export const NcfStatus = db.define<NcfStatusAttr>('ncf_status', {
+export const NcfStatus = db.define<NcfStatusProps>('ncf_status', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

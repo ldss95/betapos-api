@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { SaleAttr } from './interface'
+import { SaleProps } from './interface'
 import { SalePayment } from '../sales-payments/model'
 import { Device } from '../devices/model'
 import { SaleProduct } from '../sales-products/model'
@@ -10,7 +10,7 @@ import { Shift } from '../shifts/model'
 import { Client } from '../clients/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 
-const Sale = db.define<SaleAttr>(
+const Sale = db.define<SaleProps>(
 	'sale',
 	{
 		id: {

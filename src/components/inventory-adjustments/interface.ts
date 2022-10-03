@@ -1,12 +1,12 @@
 import { Model } from 'sequelize'
 
-import { UserAttr } from '../users/interface'
+import { UserProps } from '../users/interface'
 
-export interface InventoryAdjustmentAttr extends Model {
+export interface InventoryAdjustmentProps extends Model {
 	id: string;
 	productId: string;
 	userId: string;
-	user: UserAttr;
+	user: UserProps;
 	type: 'IN' | 'OUT';
 	description: string;
 	quantity: number;

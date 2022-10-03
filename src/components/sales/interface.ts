@@ -1,28 +1,28 @@
 import { Model } from 'sequelize'
 
-import { ClientAttr } from '../clients/interface'
-import { SalePaymentTypeAttr } from '../sales-payments-types/interface'
-import { SalePaymentAttr } from '../sales-payments/interface'
-import { SaleProductAttr } from '../sales-products/interface'
-import { UserAttr } from '../users/interface'
+import { ClientProps } from '../clients/interface'
+import { SalePaymentTypeProps } from '../sales-payments-types/interface'
+import { SalePaymentProps } from '../sales-payments/interface'
+import { SaleProductProps } from '../sales-products/interface'
+import { UserProps } from '../users/interface'
 
-export interface SaleAttr extends Model {
+export interface SaleProps extends Model {
 	id: string;
 	ticketNumber: string;
 	businessId: string;
 	clientId: string;
-	client: ClientAttr;
+	client: ClientProps;
 	sellerId: string;
-	seller: UserAttr;
+	seller: UserProps;
 	deviceId: string;
-	products: SaleProductAttr[];
+	products: SaleProductProps[];
 	amount: number;
 	discount: number;
 	shiftId: string;
 	orderType: 'DELIVERY' | 'PICKUP';
 	paymentTypeId: string;
-	paymentType: SalePaymentTypeAttr;
-	payments: SalePaymentAttr[];
+	paymentType: SalePaymentTypeProps;
+	payments: SalePaymentProps[];
 	shippingAddress?: string;
 	status: 'DONE' | 'CANCELLED';
 	cashReceived?: number;

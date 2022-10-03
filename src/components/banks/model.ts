@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { BankAttr } from './interface'
+import { BankProps } from './interface'
 
-const Bank = db.define<BankAttr>('bank', {
+const Bank = db.define<BankProps>('bank', {
 	id: {
 		type: DataTypes.TINYINT,
 		primaryKey: true,

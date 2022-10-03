@@ -3,9 +3,9 @@ import { DataTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
 import { Shift } from '../shifts/model'
-import { CashFlowAttr } from './interface'
+import { CashFlowProps } from './interface'
 
-const CashFlow = db.define<CashFlowAttr>('cash_flow', {
+const CashFlow = db.define<CashFlowProps>('cash_flow', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

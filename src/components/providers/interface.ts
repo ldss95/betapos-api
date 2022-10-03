@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface ProviderAttr extends Model {
+export interface ProviderProps extends Model {
 	id: string;
 	businessId: string;
 	name: string;

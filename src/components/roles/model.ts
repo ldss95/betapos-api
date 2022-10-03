@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { RoleAttr } from './interface'
+import { RoleProps } from './interface'
 
-const Role = db.define<RoleAttr>('role', {
+const Role = db.define<RoleProps>('role', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

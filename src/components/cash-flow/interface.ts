@@ -1,13 +1,13 @@
 import { Model } from 'sequelize'
-import { BusinessAttr } from '../business/interface'
-import { ShiftAttr } from '../shifts/interface'
+import { BusinessProps } from '../business/interface'
+import { ShiftProps } from '../shifts/interface'
 
-export interface CashFlowAttr extends Model {
+export interface CashFlowProps extends Model {
 	id: string;
 	shiftId: string;
-	sihft: ShiftAttr;
+	sihft: ShiftProps;
 	businessId: string;
-	business: BusinessAttr;
+	business: BusinessProps;
 	amount: number;
 	type: 'IN' | 'OUT';
 	description: string;

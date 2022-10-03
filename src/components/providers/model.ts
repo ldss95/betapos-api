@@ -1,11 +1,11 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { ProviderAttr } from './interface'
+import { ProviderProps } from './interface'
 import { Business } from '../business/model'
 import { Bank } from '../banks/model'
 
-const Provider = db.define<ProviderAttr>(
+const Provider = db.define<ProviderProps>(
 	'provider',
 	{
 		id: {

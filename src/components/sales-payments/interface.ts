@@ -1,12 +1,12 @@
 import { Model } from 'sequelize'
 
-import { SalePaymentTypeAttr } from '../sales-payments-types/interface'
+import { SalePaymentTypeProps } from '../sales-payments-types/interface'
 
-export interface SalePaymentAttr extends Model {
+export interface SalePaymentProps extends Model {
 	id: string;
 	saleId: string;
 	typeId: string;
-	type: SalePaymentTypeAttr;
+	type: SalePaymentTypeProps;
 	amount: number;
 	createdAt: string;
 	updatedAt: string;

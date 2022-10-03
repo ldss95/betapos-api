@@ -1,4 +1,4 @@
-import { BrandAttr } from './interface'
+import { BrandProps } from './interface'
 import { Brand } from './model'
 
 export async function createBrand(name: string, businessId: string): Promise<void> {
@@ -13,7 +13,7 @@ export async function deleteBrand(id: string): Promise<void> {
 	await Brand.destroy({ where: { id } })
 }
 
-export async function listAllBrands(businessId: string): Promise<BrandAttr[]> {
+export async function listAllBrands(businessId: string): Promise<BrandProps[]> {
 	const brands = await Brand.findAll({
 		where: { businessId },
 		order: [['name', 'ASC']],
@@ -23,7 +23,7 @@ export async function listAllBrands(businessId: string): Promise<BrandAttr[]> {
 	return brands
 }
 
-export async function getOneBrand(id: string): Promise<BrandAttr> {
+export async function getOneBrand(id: string): Promise<BrandProps> {
 	const brand = await Brand.findByPk(id)
-	return brand ? brand.toJSON() : ({} as BrandAttr)
+	return brand ? brand.toJSON() : ({} as BrandProps)
 }

@@ -1,13 +1,13 @@
 import { Model } from 'sequelize'
 
-import { ProviderAttr } from '../providers/interface'
-import { PurchaseProductAttr } from '../purchase-products/interface'
+import { ProviderProps } from '../providers/interface'
+import { PurchaseProductProps } from '../purchase-products/interface'
 
-export interface PurchaseAttr extends Model {
+export interface PurchaseProps extends Model {
 	id: string;
 	businessId: string;
 	providerId: string;
-	provider?: ProviderAttr;
+	provider?: ProviderProps;
 	documentId: string;
 	paymentType: 'IMMEDIATE' | 'CREDIT';
 	creditDays: number;
@@ -17,7 +17,7 @@ export interface PurchaseAttr extends Model {
 	status: 'DONE' | 'IN PROGRESS' | 'PAUSED';
 	amount: number;
 	date: string;
-	products: PurchaseProductAttr[];
+	products: PurchaseProductProps[];
 	adjustPrices: boolean;
 	createdAt: string;
 	updatedAt: string;

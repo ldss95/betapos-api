@@ -2,9 +2,9 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
-import { SettingAttr } from './interface'
+import { SettingProps } from './interface'
 
-const Setting = db.define<SettingAttr>('setting', {
+const Setting = db.define<SettingProps>('setting', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

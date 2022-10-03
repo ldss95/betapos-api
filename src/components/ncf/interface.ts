@@ -1,12 +1,12 @@
 import { Model } from 'sequelize'
 
-export interface NcfAttr extends Model {
+export interface NcfProps extends Model {
 	rnc: string;
 	businessName: string;
 	statusId: string;
 }
 
-export interface NcfStatusAttr extends Model {
+export interface NcfStatusProps extends Model {
 	id: string;
 	name: NcfStatusName;
 }

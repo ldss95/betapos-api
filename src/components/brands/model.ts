@@ -1,10 +1,10 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { BrandAttr } from './interface'
+import { BrandProps } from './interface'
 import { Business } from '../business/model'
 
-const Brand = db.define<BrandAttr>(
+const Brand = db.define<BrandProps>(
 	'brand',
 	{
 		id: {

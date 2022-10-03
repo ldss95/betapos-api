@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface SettingAttr extends Model {
+export interface SettingProps extends Model {
 	id: string;
 	businessId: string;
 	allowGeneridProduct: boolean;

@@ -1,11 +1,11 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { InventoryAdjustmentAttr } from './interface'
+import { InventoryAdjustmentProps } from './interface'
 import { Product } from '../products/model'
 import { User } from '../users/model'
 
-const InventoryAdjustment = db.define<InventoryAdjustmentAttr>('inventory_adjustment', {
+const InventoryAdjustment = db.define<InventoryAdjustmentProps>('inventory_adjustment', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

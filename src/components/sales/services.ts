@@ -4,9 +4,9 @@ import { literal, Op, QueryTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { SalePayment } from '../sales-payments/model'
-import { SaleProductAttr } from '../sales-products/interface'
+import { SaleProductProps } from '../sales-products/interface'
 import { SaleProduct } from '../sales-products/model'
-import { SaleAttr } from './interface'
+import { SaleProps } from './interface'
 import { Sale } from './model'
 
 export async function getSalesSummary(businessId: string, type: string) {
@@ -66,11 +66,11 @@ async function today(businessId: string) {
 		]
 	})
 
-	const saleProfit = (total: number, { products }: SaleAttr): number => {
+	const saleProfit = (total: number, { products }: SaleProps): number => {
 		return total + products.reduce(productProfit, 0)
 	}
 
-	const productProfit = (total: number, { cost, price, quantity }: SaleProductAttr): number => {
+	const productProfit = (total: number, { cost, price, quantity }: SaleProductProps): number => {
 		return total + (price - cost) * quantity
 	}
 

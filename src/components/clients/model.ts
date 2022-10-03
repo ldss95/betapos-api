@@ -3,9 +3,9 @@ import { DataTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
 import { ClientPayment } from '../clients-payments/model'
-import { ClientAttr, ClientGroupAttr } from './interface'
+import { ClientProps, ClientGroupProps } from './interface'
 
-const Client = db.define<ClientAttr>(
+const Client = db.define<ClientProps>(
 	'client',
 	{
 		id: {
@@ -66,7 +66,7 @@ const Client = db.define<ClientAttr>(
 	{ paranoid: true }
 )
 
-const ClientGroup = db.define<ClientGroupAttr>('client_group', {
+const ClientGroup = db.define<ClientGroupProps>('client_group', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,

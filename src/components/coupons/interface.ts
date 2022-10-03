@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface CouponAttr extends Model {
+export interface CouponProps extends Model {
 	id: number;
 	businessId: string;
 	type: 'PERCENT' | 'AMOUNT';

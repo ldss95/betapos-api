@@ -1,6 +1,6 @@
 import { Model } from 'sequelize'
 
-export interface BankAttr extends Model {
+export interface BankProps extends Model {
 	id: number;
 	name: string;
 	createdAt: string;

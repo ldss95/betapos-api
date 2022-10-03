@@ -1,11 +1,11 @@
 import { Model } from 'sequelize'
-import { PlanFeatureAttr } from '../plan-features/interface'
+import { PlanFeatureProps } from '../plan-features/interface'
 
-export interface PlanAttr extends Model {
+export interface PlanProps extends Model {
 	id: string;
 	name: string;
 	price: number;
-	features: PlanFeatureAttr[];
+	features: PlanFeatureProps[];
 	isAvailable: boolean;
 	isActive: boolean;
 	createdAt: string;

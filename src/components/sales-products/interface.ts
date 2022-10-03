@@ -1,10 +1,10 @@
 import { Model } from 'sequelize'
-import { SaleAttr } from '../sales/interface'
+import { SaleProps } from '../sales/interface'
 
-export interface SaleProductAttr extends Model {
+export interface SaleProductProps extends Model {
 	id: string;
 	saleId: string;
-	sale: SaleAttr;
+	sale: SaleProps;
 	productId: string;
 	quantity: number;
 	cost: number;

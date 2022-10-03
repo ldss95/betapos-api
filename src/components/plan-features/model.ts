@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
-import { PlanFeatureAttr } from './interface'
+import { PlanFeatureProps } from './interface'
 
-const PlanFeature = db.define<PlanFeatureAttr>('plan_feature', {
+const PlanFeature = db.define<PlanFeatureProps>('plan_feature', {
 	id: {
 		type: DataTypes.UUID,
 		primaryKey: true,

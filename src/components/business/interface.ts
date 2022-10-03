@@ -1,9 +1,9 @@
 import { Model } from 'sequelize'
-import { BusinessTypeAttr } from '../business-types/interface'
-import { DeviceAttr } from '../devices/interface'
-import { ProvinceAttr } from '../provinces/interface'
+import { BusinessTypeProps } from '../business-types/interface'
+import { DeviceProps } from '../devices/interface'
+import { ProvinceProps } from '../provinces/interface'
 
-export interface BusinessAttr extends Model {
+export interface BusinessProps extends Model {
 	id: string;
 	merchantId: string;
 	name: string;
@@ -13,10 +13,10 @@ export interface BusinessAttr extends Model {
 	rnc: string;
 	logoUrl: string;
 	typeId: string;
-	type?: BusinessTypeAttr;
+	type?: BusinessTypeProps;
 	provinceId: string;
-	province?: ProvinceAttr;
-	devices: DeviceAttr[];
+	province?: ProvinceProps;
+	devices: DeviceProps[];
 	referredBy: string;
 	isActive: boolean;
 	createdAt: string;
