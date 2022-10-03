@@ -1,6 +1,7 @@
 import { CustomError } from '../../errors'
 import { notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
+import { Role } from '../roles/model'
 import { UserProps } from './interface'
 import { User } from './model'
 
@@ -54,5 +55,24 @@ export async function getOneUser(id: string): Promise<UserProps | null> {
 		]
 	})
 
-	return user
+	if (!user) {
+		return null
+	}
+
+	return user.toJSON()
+}
+
+export async function getAllUsers(businessId: string): Promise<UserProps[]> {
+	const users = await User.findAll({
+		attributes: {
+			exclude: ['password']
+		},
+		include: {
+			model: Role,
+			as: 'role'
+		},
+		where: { businessId }
+	})
+
+	return users.map(user => user.toJSON())
 }
