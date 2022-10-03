@@ -6,24 +6,24 @@ import { User } from '../users/model'
 import { Device } from '../devices/model'
 import { Sale } from '../sales/model'
 import { SalePaymentType } from '../sales-payments-types/model'
+import { createShift } from './services'
+import { CustomError } from '../../errors'
 
 export default {
 	create: async (req: Request, res: Response) => {
 		try {
 			const { shift } = req.body
 			const deviceId = req.header('deviceId')
-			const device = await Device.findOne({ where: { deviceId } })
-			if (!device || !device.isActive) {
-				return res.status(401).send({
-					message: 'Unauthorized device'
+			await createShift(shift, deviceId!)
+			res.sendStatus(201)
+		} catch (error) {
+			if (error instanceof CustomError) {
+				return res.status(error.status).send({
+					message: error.message
 				})
 			}
 
-			await Shift.create({ ...shift, deviceId: device.id })
-			res.sendStatus(201)
-		} catch (error) {
 			res.sendStatus(500)
-
 			throw error
 		}
 	},
