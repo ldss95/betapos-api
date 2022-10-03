@@ -1,13 +1,11 @@
 import { Request, Response } from 'express'
-import { format } from '@ldss95/helpers'
-import { UniqueConstraintError, ValidationError, Op } from 'sequelize'
-import bcrypt from 'bcrypt'
+import { Op } from 'sequelize'
 
 import { User } from './model'
 import { Role } from '../roles/model'
-import { deleteFile, notifyUpdate } from '../../helpers'
+import { deleteFile } from '../../helpers'
 import { Business } from '../business/model'
-import { deleteUser, getAllUsers, getOneUser, getUsersList, updateUser } from './services'
+import { createUser, deleteUser, getAllUsers, getOneUser, getUsersList, updateUser } from './services'
 import { CustomError } from '../../errors'
 
 export default {
@@ -75,53 +73,15 @@ export default {
 		}
 	},
 	create: async (req: Request, res: Response) => {
-		const user = req.body
 		try {
-			const role = await Role.findByPk(user.roleId)
-			const session = req.session!
-
-			if (role?.code == 'PARTNER') {
-				user.partnerCode = await getPartnerCode()
-			}
-
-			const password = await bcrypt.hashSync(user.password, 13)
-			const businessId = session?.businessId
-
-			const { id } = await User.create({
-				...user,
-				password,
-				businessId
-			})
-
-			notifyUpdate('users', session?.merchantId)
+			const { merchantId, businessId } = req.session!
+			const id = await createUser(req.body, businessId, merchantId)
 			res.status(201).send({ id })
 		} catch (error) {
-			if (error instanceof UniqueConstraintError) {
-				const { fields } = error
-				const { email, dui, nickName } = user
-
-				if (fields['users.email']) {
-					return res.status(400).send({
-						message: `El email '${email}' ya está en uso.`
-					})
-				}
-
-				if (fields['users.dui']) {
-					return res.status(400).send({
-						message: `La cédula '${format.dui(dui)}' ya está en uso.`
-					})
-				}
-
-				if (fields['users.nickName']) {
-					return res.status(400).send({
-						message: `El nombre de usuario '${nickName}' ya está en uso.`
-					})
-				}
-			}
-
-			if (error instanceof ValidationError) {
-				const { message } = error.errors[0]
-				return res.status(400).send({ message })
+			if (error instanceof CustomError) {
+				return res.status(400).send({
+					message: error.message
+				})
 			}
 
 			res.status(500).send(error)
@@ -232,26 +192,4 @@ export default {
 			throw error
 		}
 	}
-}
-
-// Asigna un codigo unico de 4 digitos
-async function getPartnerCode(): Promise<string> {
-	const MAX = 9999
-	const MIN = 1
-	const DIF = MAX - MIN
-	const random = Math.random()
-	const intCode = (Math.floor(random * DIF) + MIN).toString()
-	const code = intCode.length == 4 ? intCode : intCode.padStart(4, intCode)
-
-	const user = await User.findOne({
-		where: {
-			partnerCode: code
-		}
-	})
-
-	if (user) {
-		return await getPartnerCode()
-	}
-
-	return code
 }

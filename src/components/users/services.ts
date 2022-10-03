@@ -1,5 +1,6 @@
-import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize'
+import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from 'sequelize'
 import { format } from '@ldss95/helpers'
+import bcrypt from 'bcrypt'
 
 import { CustomError } from '../../errors'
 import { notifyUpdate } from '../../helpers'
@@ -117,4 +118,80 @@ export async function updateUser({ id, ...props }: UserProps, merchantId: string
 			})
 		}
 	}
+}
+
+export async function createUser(user: UserProps, businessId: string, merchantId: string): Promise<string> {
+	try {
+		const role = await Role.findByPk(user.roleId)
+
+		if (role?.code == 'PARTNER') {
+			user.partnerCode = await getPartnerCode()
+		}
+
+		const password = await bcrypt.hashSync(user.password, 13)
+
+		const { id } = await User.create({
+			...user,
+			password,
+			businessId
+		})
+
+		notifyUpdate('users', merchantId)
+		return id
+	} catch (error) {
+		if (error instanceof UniqueConstraintError) {
+			const { fields } = error
+			const { email, dui, nickName } = user
+
+			if (fields['users.email']) {
+				throw new CustomError({
+					message: `El email '${email}' ya está en uso.`
+				})
+			}
+
+			if (fields['users.dui']) {
+				throw new CustomError({
+					message: `La cédula '${format.dui(dui)}' ya está en uso.`
+				})
+			}
+
+			if (fields['users.nickName']) {
+				throw new CustomError({
+					message: `El nombre de usuario '${nickName}' ya está en uso.`
+				})
+			}
+		}
+
+		if (error instanceof ValidationError) {
+			const { message } = error.errors[0]
+			throw new CustomError({
+				message
+			})
+		}
+
+		throw error
+	}
+}
+
+
+// Asigna un codigo unico de 4 digitos
+async function getPartnerCode(): Promise<string> {
+	const MAX = 9999
+	const MIN = 1
+	const DIF = MAX - MIN
+	const random = Math.random()
+	const intCode = (Math.floor(random * DIF) + MIN).toString()
+	const code = intCode.length == 4 ? intCode : intCode.padStart(4, intCode)
+
+	const user = await User.findOne({
+		where: {
+			partnerCode: code
+		}
+	})
+
+	if (user) {
+		return await getPartnerCode()
+	}
+
+	return code
 }
