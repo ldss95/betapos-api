@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import moment from 'moment'
-import { Op } from 'sequelize'
+import { Op, fn, col } from 'sequelize'
 
 import { Client } from './model'
 import { Business } from '../business/model'
@@ -154,6 +154,11 @@ export default {
 			}
 
 			const clients = await Client.findAll({
+				attributes: {
+					include: [
+						[fn('sum', col('sales->payments.amount')), 'debt']
+					]
+				},
 				where: {
 					businessId
 				},
@@ -162,8 +167,15 @@ export default {
 						model: Sale,
 						as: 'sales',
 						where: {
-							[Op.and]: [{ status: 'DONE' }, { paymentTypeId: payentType.id }]
+							status: 'DONE'
 						},
+						include: [{
+							model: SalePayment,
+							as: 'payments',
+							where: {
+								typeId: payentType.id
+							}
+						}],
 						required: true
 					},
 					{
@@ -171,10 +183,16 @@ export default {
 						as: 'payments',
 						separate: true
 					}
-				]
+				],
+				group: 'client.id'
 			})
 
-			res.status(200).send(clients)
+			res.status(200).send(
+				clients.map((client) => ({
+					...client.toJSON(),
+					payed: client.payments.reduce((total, { amount }) => total + amount, 0)
+				}))
+			)
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
@@ -209,6 +227,7 @@ export default {
 				]
 			})
 
+
 			const payments = await ClientPayment.findAll({
 				where: { clientId },
 				include: {
@@ -237,7 +256,8 @@ export default {
 				}
 
 				if (type == 'SALE') {
-					lastPending += item.amount
+					const [payment] = item.payments
+					lastPending += payment.amount
 					data[i] = {
 						...item.toJSON(),
 						pending: lastPending
