@@ -9,31 +9,41 @@ import { UserProps } from './interface'
 import { User } from './model'
 
 export async function deleteUser(id: string, force: boolean, merchantId: string): Promise<void> {
-	const business = await Business.findOne({
-		where: {
-			merchantId
-		}
-	})
-
-	const user = await User.findOne({
-		where: {
-			id
-		}
-	})
-
-	if (!user) {
-		return
-	}
-
-	if (user.businessId != business!.id) {
-		throw new CustomError({
-			message: 'You are trying to remove users that you do not own'
+	try {
+		const business = await Business.findOne({
+			where: {
+				merchantId
+			}
 		})
-	}
 
-	const deleted = await User.destroy({ where: { id }, force })
-	if (deleted) {
-		notifyUpdate('users', merchantId)
+		const user = await User.findOne({
+			where: {
+				id
+			}
+		})
+
+		if (!user) {
+			return
+		}
+
+		if (user.businessId != business!.id) {
+			throw new CustomError({
+				message: 'You are trying to remove users that you do not own'
+			})
+		}
+
+		const deleted = await User.destroy({ where: { id }, force })
+		if (deleted) {
+			notifyUpdate('users', merchantId)
+		}
+	} catch (error) {
+		if (error instanceof ForeignKeyConstraintError) {
+			throw new CustomError({
+				message: 'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.'
+			})
+		}
+
+		throw error
 	}
 }
 

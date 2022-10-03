@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { format } from '@ldss95/helpers'
-import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, Op } from 'sequelize'
+import { UniqueConstraintError, ValidationError, Op } from 'sequelize'
 import bcrypt from 'bcrypt'
 
 import { User } from './model'
@@ -66,19 +66,8 @@ export default {
 
 			res.sendStatus(204)
 		} catch (error) {
-			if (error instanceof ForeignKeyConstraintError) {
-				res.status(400).send({
-					message:
-						'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.'
-				})
-				return
-			}
-
 			if (error instanceof CustomError) {
-				res.status(400).send({
-					message: 'No se puede eliminar este usuario.'
-				})
-				return
+				return res.status(400).send(error.message)
 			}
 
 			res.sendStatus(500)
