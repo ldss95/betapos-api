@@ -3,10 +3,9 @@ import { literal, Op, fn, col } from 'sequelize'
 
 import { Shift } from './model'
 import { User } from '../users/model'
-import { Device } from '../devices/model'
 import { Sale } from '../sales/model'
 import { SalePaymentType } from '../sales-payments-types/model'
-import { createShift } from './services'
+import { createShift, updateShift } from './services'
 import { CustomError } from '../../errors'
 
 export default {
@@ -31,26 +30,16 @@ export default {
 		try {
 			const { id } = req.body.shift
 			const deviceId = req.header('deviceId')
-			const device = await Device.findOne({ where: { deviceId } })
-			if (!device || !device.isActive) {
-				return res.status(401).send({
-					message: 'Unauthorized device'
-				})
-			}
-
-			const shift = await Shift.findByPk(id)
-
-			if (!shift) {
-				return res.status(400).send({
-					message: 'Turno no encontrado'
-				})
-			}
-
-			await shift.update(req.body.shift)
+			await updateShift(id, deviceId!, req.body.shift)
 			res.sendStatus(204)
 		} catch (error) {
-			res.sendStatus(500)
+			if (error instanceof CustomError) {
+				return res.status(error.status).send({
+					message: error.message
+				})
+			}
 
+			res.sendStatus(500)
 			throw error
 		}
 	},
