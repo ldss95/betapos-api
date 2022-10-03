@@ -1,3 +1,6 @@
+import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize'
+import { format } from '@ldss95/helpers'
+
 import { CustomError } from '../../errors'
 import { notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
@@ -84,4 +87,24 @@ export async function getUsersList(businessId: string): Promise<{ id: string; fi
 	})
 
 	return users.map(user => user.toJSON())
+}
+
+export async function updateUser({ id, ...props }: UserProps, merchantId: string): Promise<void> {
+	try {
+		await User.update(props, { where: { id } })
+		notifyUpdate('users', merchantId)
+	} catch (error) {
+		if (error instanceof UniqueConstraintError) {
+			const { fields } = error
+			const { email, dui } = props
+
+			let message = ''
+			if (fields['users.email']) message = `El email '${email}' ya está en uso.`
+			else if (fields['users.dui']) message = `La cedula '${format.dui(dui)}' ya está en uso.`
+
+			throw new CustomError({
+				message
+			})
+		}
+	}
 }

@@ -7,7 +7,7 @@ import { User } from './model'
 import { Role } from '../roles/model'
 import { deleteFile, notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
-import { deleteUser, getAllUsers, getOneUser, getUsersList } from './services'
+import { deleteUser, getAllUsers, getOneUser, getUsersList, updateUser } from './services'
 import { CustomError } from '../../errors'
 
 export default {
@@ -43,26 +43,14 @@ export default {
 	},
 	update: async (req: Request, res: Response) => {
 		try {
-			const { id } = req.body
-			const session = req.session!
-
-			const [updated] = await User.update(req.body, { where: { id } })
-			if (!updated) {
-				return res.status(404).send({ message: 'Usuario no encontrado' })
-			}
-
-			notifyUpdate('users', session?.merchantId)
+			const { merchantId } = req.session!
+			await updateUser(req.body, merchantId)
 			res.sendStatus(204)
 		} catch (error) {
-			if (error instanceof UniqueConstraintError) {
-				const { fields } = error
-				const { email, dui } = req.body
-
-				let message = ''
-				if (fields['users.email']) message = `El email '${email}' ya está en uso.`
-				else if (fields['users.dui']) message = `La cedula '${format.dui(dui)}' ya está en uso.`
-
-				return res.status(400).send({ message })
+			if (error instanceof CustomError) {
+				return res.status(400).send({
+					message: error.message
+				})
 			}
 
 			res.sendStatus(500)
