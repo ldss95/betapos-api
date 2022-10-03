@@ -89,9 +89,11 @@ describe('Users', () => {
 			expect(body).toHaveProperty('lastName')
 			expect(body).toHaveProperty('birthDate')
 			expect(body).toHaveProperty('email')
+			expect(body).toHaveProperty('nickName')
 			expect(body).toHaveProperty('dui')
 			expect(body).toHaveProperty('address')
 			expect(body).toHaveProperty('photoUrl')
+			expect(body).toHaveProperty('roleId')
 			expect(body).toHaveProperty('businessId')
 			expect(body).toHaveProperty('isActive')
 			expect(body).toHaveProperty('createdAt')
@@ -100,12 +102,12 @@ describe('Users', () => {
 			expect(body).not.toHaveProperty('password')
 		}, 10000)
 
-		it('Deberia obtener un error 404 al intentar obtener los datos de un usuario inexistente', async () => {
+		it('Deberia obtener un error 200 con contenido null al intentar obtener los datos de un usuario inexistente', async () => {
 			await http(app)
 				.get('/users/inexistent-user')
 				.set('Authorization', `Bearer ${session.token}`)
 				.set('Cookie', session.session)
-				.expect(404)
+				.expect(200)
 		})
 	})
 
