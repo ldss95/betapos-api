@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
 import { ClientPayment } from '../clients-payments/model'
-import { ClientAttr } from './interface'
+import { ClientAttr, ClientGroupAttr } from './interface'
 
 const Client = db.define<ClientAttr>(
 	'client',
@@ -13,6 +13,7 @@ const Client = db.define<ClientAttr>(
 			defaultValue: DataTypes.UUIDV4,
 			primaryKey: true
 		},
+		groupId: DataTypes.UUID,
 		name: {
 			type: DataTypes.STRING,
 			allowNull: false
@@ -55,12 +56,30 @@ const Client = db.define<ClientAttr>(
 			type: DataTypes.BOOLEAN,
 			defaultValue: false,
 			allowNull: false
+		},
+		creditLimit: {
+			type: DataTypes.MEDIUMINT,
+			allowNull: false,
+			defaultValue: 0
 		}
 	},
 	{ paranoid: true }
 )
 
+const ClientGroup = db.define<ClientGroupAttr>('client_group', {
+	id: {
+		type: DataTypes.UUID,
+		defaultValue: DataTypes.UUIDV4,
+		primaryKey: true
+	},
+	name: {
+		type: DataTypes.STRING,
+		allowNull: false
+	}
+})
+
 Client.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
+Client.belongsTo(ClientGroup, { foreignKey: 'groupId', as: 'group' })
 Client.hasMany(ClientPayment, { foreignKey: 'clientId', as: 'payments' })
 
 export { Client }
