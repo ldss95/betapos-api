@@ -15,16 +15,6 @@ export function isLoggedin(req: Request, res: Response, next: NextFunction): Res
 }
 
 /**
- * Verifica que el usuario logueado tenga los permisos necesarios.
- * De lo contrario devuelve un estado 403
- */
-export function havePermissions(req: Request, res: Response, next: NextFunction): Response | void {
-	if (req && res) {
-		next()
-	}
-}
-
-/**
  * Verifica si hay token y es valido, de lo contrario devuelve un estado 403
  */
 export function tokenIsValid(req: Request, res: Response, next: NextFunction): Response | void {
