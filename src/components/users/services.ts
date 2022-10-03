@@ -1,9 +1,9 @@
-import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError } from 'sequelize'
+import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, Op } from 'sequelize'
 import { format } from '@ldss95/helpers'
 import bcrypt from 'bcrypt'
 
 import { CustomError } from '../../errors'
-import { notifyUpdate } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
 import { Role } from '../roles/model'
 import { UserProps } from './interface'
@@ -173,6 +173,66 @@ export async function createUser(user: UserProps, businessId: string, merchantId
 	}
 }
 
+export async function setUserImage(userId: string, photoUrl: string): Promise<void> {
+	if (photoUrl.substr(0, 8) != 'https://') {
+		photoUrl = `https://${location}`
+	}
+
+	const user = await User.findOne({ where: { id: userId } })
+
+	// Delte current photo if exists
+	if (user?.photoUrl && user.photoUrl != photoUrl) {
+		let key = user.photoUrl.split('/images/').pop()
+		key = 'images/' + key
+		deleteFile(key)
+	}
+
+	await user!.update({ photoUrl })
+}
+
+export async function getUsersUpdates(date: string, merchantId: string): Promise<{ created: UserProps[]; updated: UserProps[]; }> {
+	const business = await Business.findOne({
+		where: {
+			merchantId
+		}
+	})
+
+	if (!business || !business.isActive) {
+		throw new CustomError({
+			message: 'Invalid merchantId'
+		})
+	}
+
+	const created = await User.findAll({
+		where: {
+			...(date != 'ALL' && {
+				createdAt: { [Op.gte]: date }
+			}),
+			businessId: business.id
+		},
+		include: {
+			model: Role,
+			as: 'role'
+		}
+	})
+	const updated = await User.findAll({
+		where: {
+			...(date != 'ALL' && {
+				updatedAt: { [Op.gte]: date }
+			}),
+			businessId: business.id
+		},
+		include: {
+			model: Role,
+			as: 'role'
+		}
+	})
+
+	return {
+		created: created.map((user) => user.toJSON()),
+		updated: updated.map((user) => user.toJSON())
+	}
+}
 
 // Asigna un codigo unico de 4 digitos
 async function getPartnerCode(): Promise<string> {
