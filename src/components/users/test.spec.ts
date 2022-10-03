@@ -66,12 +66,33 @@ describe('Users', () => {
 
 	describe('GET /users', () => {
 		it('Deberia obtener un array con todos los usuarios', async () => {
-			await http(app)
+			const { body } = await http(app)
 				.get('/users')
 				.set('Authorization', `Bearer ${session.token}`)
 				.set('Cookie', session.session)
 				.expect('Content-Type', /json/)
 				.expect(200)
+
+			expect(Array.isArray(body)).toBe(true)
+			const [firstUser] = body
+
+			expect(firstUser).toHaveProperty('id')
+			expect(firstUser).toHaveProperty('firstName')
+			expect(firstUser).toHaveProperty('lastName')
+			expect(firstUser).toHaveProperty('birthDate')
+			expect(firstUser).toHaveProperty('email')
+			expect(firstUser).toHaveProperty('nickName')
+			expect(firstUser).toHaveProperty('dui')
+			expect(firstUser).toHaveProperty('address')
+			expect(firstUser).toHaveProperty('photoUrl')
+			expect(firstUser).toHaveProperty('roleId')
+			expect(firstUser).toHaveProperty('businessId')
+			expect(firstUser).toHaveProperty('isActive')
+			expect(firstUser).toHaveProperty('createdAt')
+			expect(firstUser).toHaveProperty('updatedAt')
+
+			expect(firstUser).not.toHaveProperty('password')
+		})
 
 		it('Deberia obtener un array con todos los usuarios, pero solo con id y nombre', async () => {
 			const { body } = await http(app)
