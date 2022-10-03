@@ -73,7 +73,7 @@ describe('Users', () => {
 				.expect('Content-Type', /json/)
 				.expect(200)
 
-			expect(Array.isArray(body)).toBe(true)
+			expect(body).toBeInstanceOf(Array)
 			const [firstUser] = body
 
 			expect(firstUser).toHaveProperty('id')
@@ -102,7 +102,7 @@ describe('Users', () => {
 				.expect('Content-Type', /json/)
 				.expect(200)
 
-			expect(Array.isArray(body)).toBe(true)
+			expect(body).toBeInstanceOf(Array)
 			const [firstUser] = body
 			expect(Object.keys(firstUser).length).toBe(3)
 			expect(firstUser).toHaveProperty('id')
@@ -144,6 +144,20 @@ describe('Users', () => {
 				.set('Authorization', `Bearer ${session.token}`)
 				.set('Cookie', session.session)
 				.expect(200)
+		})
+	})
+
+	describe('GET /users/updates/:date', () => {
+		it('Deberia obtener una lista con los usuarios creados o modificados a partir de una fecha X', async () => {
+			const { body } = await http(app)
+				.get('/users/updates/2020-01-01 08:00:00')
+				.set('merchantId', process.env.TEST_MERCHANT_ID!)
+				.expect(200)
+
+			expect(body).toHaveProperty('updated')
+			expect(body).toHaveProperty('created')
+			expect(body.created).toBeInstanceOf(Array)
+			expect(body.updated).toBeInstanceOf(Array)
 		})
 	})
 
