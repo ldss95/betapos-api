@@ -4,11 +4,11 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-	"postinstall": "patch-package",
+    "postinstall": "patch-package",
     "clean": "rm -rf dist",
     "build": "tsc",
-	"copy-files": "cp src/404.html dist/",
-	"create-firebase-credentials": "printenv FIREBASE_CREDENTIALS > firebase.json",
+    "copy-files": "cp src/404.html dist/",
+    "create-firebase-credentials": "printenv FIREBASE_CREDENTIALS > firebase.json",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn src/server.ts",
     "test": "jest",
@@ -41,6 +41,7 @@
     "sequelize": "^6.13.0",
     "swagger-jsdoc": "6.1.0",
     "swagger-ui-express": "^4.3.0",
+    "uuid": "^9.0.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {
@@ -66,6 +67,7 @@
     "@types/supertest": "^2.0.11",
     "@types/swagger-jsdoc": "^6.0.1",
     "@types/swagger-ui-express": "^4.1.3",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
     "@typescript-eslint/parser": "^5.10.0",
     "eslint": "^8.7.0",
