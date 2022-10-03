@@ -11,8 +11,8 @@
 	"create-firebase-credentials": "printenv FIREBASE_CREDENTIALS > firebase.json",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn src/server.ts",
-    "test": "NODE_ENV=test jest",
-    "test:watch": "NODE_ENV=test jest --watch"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "Luis David Santiago",

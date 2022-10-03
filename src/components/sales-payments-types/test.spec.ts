@@ -1,43 +1,25 @@
 import http from 'supertest'
 
 import { app } from '../../app'
+import { login4Tests } from '../../helpers'
 
-let token: string
-let session: string
+const session = {
+	token: '',
+	session: ''
+}
 
-beforeAll((done) => {
-	http(app)
-		.post('/auth/login')
-		.send({
-			email: 'user@test.com',
-			password: '123456'
-		})
-		.then((res) => {
-			token = res.body.token
-
-			session = res.headers['set-cookie'][0]
-				.split(',')
-				.map((item: string) => item.split(';')[0])
-				.join(';')
-
-			done()
-		})
-		.catch((error) => done(error))
-})
+beforeEach(async () => await login4Tests(app, session))
 
 describe('Payment Types', () => {
 	describe('GET /sales-payment-types', () => {
-		it('Deberia obtener una lista con los tipos de pago', (done) => {
-			http(app)
+		it('Deberia obtener una lista con los tipos de pago', async () => {
+			const { body } = await http(app)
 				.get('/sales-payment-types')
-				.set('Authorization', `Bearer ${token}`)
-				.set('Cookie', session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
 				.expect(200)
-				.then(({ body }) => {
-					expect(body.length).toBeGreaterThan(0)
-					done()
-				})
-				.catch((error) => done(error))
+
+			expect(body.length).toBeGreaterThan(0)
 		})
 	})
 })

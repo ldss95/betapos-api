@@ -1,49 +1,38 @@
 import http from 'supertest'
 
 import { app } from '../../app'
+import { login4Tests } from '../../helpers'
 
-let token: string
-let session: string
+const session = {
+	token: '',
+	session: ''
+}
 
-beforeAll((done) => {
-	http(app)
-		.post('/auth/login')
-		.send({
-			email: 'user@test.com',
-			password: '123456'
-		})
-		.then((res) => {
-			token = res.body.token
-
-			session = res.headers['set-cookie'][0]
-				.split(',')
-				.map((item: string) => item.split(';')[0])
-				.join(';')
-
-			done()
-		})
-		.catch((error) => done(error))
-})
+beforeEach(async () => await login4Tests(app, session))
 
 describe('Coupons', () => {
 	describe('POST /coupons', () => {
-		it('Deberia crear un cupon', (done) => {
-			http(app)
+		it('Deberia crear un cupon', async () => {
+			await http(app)
 				.post('/coupons')
-				.set('Authorization', `Bearer ${token}`)
-				.set('Cookie', session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
 				.send({
 					type: 'AMOUNT',
 					value: 200,
 					code: 'MONTATE'
 				})
-				.expect(201, done)
+				.expect(201)
 		})
 	})
 
 	describe('GET /coupons', () => {
-		it('Deberia obtener un array con todos los cupones', (done) => {
-			http(app).get('/coupons').set('Authorization', `Bearer ${token}`).set('Cookie', session).expect(200, done)
+		it('Deberia obtener un array con todos los cupones', async () => {
+			await http(app)
+				.get('/coupons')
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
+				.expect(200)
 		})
 	})
 })
