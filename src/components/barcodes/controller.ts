@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Business } from '../business/model'
+import { CustomError } from '../../errors'
 
 import { getUpdates } from './services'
 
@@ -9,22 +9,14 @@ export default {
 			const { date } = req.params
 			const merchantId = req.header('merchantId')
 
-			const business = await Business.findOne({
-				where: {
-					merchantId
-				}
-			})
-
-			if (!business || !business.isActive) {
-				return res.status(400).send({
-					message: 'Cliente desabilitado'
-				})
-			}
-
-			const { updated, created } = await getUpdates(date, business.id)
+			const { updated, created } = await getUpdates(date, merchantId!)
 
 			res.status(200).send({ created, updated })
 		} catch (error) {
+			if (error instanceof CustomError) {
+				return res.status(400).send(error.message)
+			}
+
 			res.sendStatus(500)
 			throw error
 		}

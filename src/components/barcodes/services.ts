@@ -2,6 +2,8 @@ import { Op } from 'sequelize'
 
 import { Barcode } from './model'
 import { Product } from '../products/model'
+import { Business } from '../business/model'
+import { CustomError } from '../../errors'
 
 interface UpdatesResponseProps {
 	created: {
@@ -16,7 +18,21 @@ interface UpdatesResponseProps {
 	}[];
 }
 
-export async function getUpdates(date: string, businessId: string): Promise<UpdatesResponseProps> {
+export async function getUpdates(date: string, merchantId: string): Promise<UpdatesResponseProps> {
+	const business = await Business.findOne({
+		where: {
+			merchantId
+		}
+	})
+
+	if (!business) {
+		throw new CustomError({ message: 'Wrong merchantId' })
+	}
+
+	if (!business.isActive) {
+		throw new CustomError({ message: 'Cliente desabilitado' })
+	}
+
 	const created = await Barcode.findAll({
 		attributes: ['id', 'barcode', 'productId'],
 		where: {
@@ -28,7 +44,7 @@ export async function getUpdates(date: string, businessId: string): Promise<Upda
 			model: Product,
 			as: 'product',
 			where: {
-				businessId
+				businessId: business.id
 			},
 			required: true
 		},
@@ -45,7 +61,7 @@ export async function getUpdates(date: string, businessId: string): Promise<Upda
 			model: Product,
 			as: 'product',
 			where: {
-				businessId
+				businessId: business.id
 			},
 			required: true
 		},
