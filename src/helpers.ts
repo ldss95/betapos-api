@@ -34,7 +34,7 @@ export function notifyUpdate(table: Table, merchantId?: string) {
 
 	db.collection(merchantId)
 		.doc(table)
-		.update({
+		.set({
 			lastUpdate: moment().format('YYYY-MM-DD HH:mm:ss')
 		})
 }
