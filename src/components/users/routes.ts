@@ -1,11 +1,11 @@
 import { Router } from 'express'
 const router: Router = Router()
 
-import { isBusinessAdmin, isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { hasMerchantId, isBusinessAdmin, isLoggedin, tokenIsValid } from '../../middlewares/auth'
 import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 
-router.get('/updates/:date', controller.getUpdates)
+router.get('/updates/:date', hasMerchantId, controller.getUpdates)
 
 router
 	.route('/')
