@@ -59,11 +59,6 @@ const Purchase = db.define<PurchaseAttr>(
 			type: DataTypes.DATEONLY,
 			allowNull: false
 		},
-		gainPercent: {
-			type: DataTypes.DECIMAL(10, 2),
-			allowNull: false,
-			defaultValue: 20
-		},
 		adjustPrices: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,

@@ -18,7 +18,6 @@ export interface PurchaseAttr extends Model {
 	amount: number;
 	date: string;
 	products: PurchaseProductAttr[];
-	gainPercent: number;
 	adjustPrices: boolean;
 	createdAt: string;
 	updatedAt: string;
