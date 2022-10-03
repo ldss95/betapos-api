@@ -7,7 +7,7 @@ import { User } from './model'
 import { Role } from '../roles/model'
 import { deleteFile, notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
-import { deleteUser, getAllUsers, getOneUser } from './services'
+import { deleteUser, getAllUsers, getOneUser, getUsersList } from './services'
 import { CustomError } from '../../errors'
 
 export default {
@@ -31,18 +31,15 @@ export default {
 			throw error
 		}
 	},
-	getList: (req: Request, res: Response) => {
-		User.findAll({
-			attributes: ['id', 'firstName', 'lastName'],
-			where: {
-				businessId: req.session!.businessId
-			}
-		})
-			.then((users) => res.status(200).send(users))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+	getList: async (req: Request, res: Response) => {
+		try {
+			const { businessId } = req.session!
+			const users = await getUsersList(businessId)
+			res.status(200).send(users)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	},
 	update: async (req: Request, res: Response) => {
 		try {

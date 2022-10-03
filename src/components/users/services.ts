@@ -76,3 +76,12 @@ export async function getAllUsers(businessId: string): Promise<UserProps[]> {
 
 	return users.map(user => user.toJSON())
 }
+
+export async function getUsersList(businessId: string): Promise<{ id: string; firstName: string; lastName: string; }[]> {
+	const users = await User.findAll({
+		attributes: ['id', 'firstName', 'lastName'],
+		where: { businessId }
+	})
+
+	return users.map(user => user.toJSON())
+}
