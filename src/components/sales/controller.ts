@@ -242,7 +242,8 @@ export default {
 					include: [
 						{
 							model: Product,
-							as: 'product'
+							as: 'product',
+							paranoid: false
 						}
 					],
 					paranoid: false
