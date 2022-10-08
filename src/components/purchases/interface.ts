@@ -14,7 +14,7 @@ export interface PurchaseProps extends Model {
 	deadline: string;
 	affectsExistence: boolean;
 	fileUrl: string;
-	status: 'DONE' | 'IN PROGRESS' | 'PAUSED';
+	status: 'DONE' | 'IN PROGRESS';
 	amount: number;
 	date: string;
 	products: PurchaseProductProps[];
