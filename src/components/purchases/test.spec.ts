@@ -8,6 +8,8 @@ const session = {
 	token: '',
 	session: ''
 }
+const TEST_PURCHASE_ID = '56d5de0c-c3df-4fa3-96d0-4d3d781ebeac'
+const TEST_PROVIDER_ID = '0319da94-d62b-4460-a320-5b8acc4c8f38' // Coca Cola
 
 beforeEach(async () => await login4Tests(app, session))
 
@@ -57,6 +59,8 @@ describe('Purchases', () => {
 			expect(typeof purchase.date).toBe('string')
 			expect(purchase).toHaveProperty('adjustPrices')
 			expect(typeof purchase.adjustPrices).toBe('boolean')
+			expect(purchase).toHaveProperty('userId')
+			expect(typeof purchase.userId).toBe('string')
 			expect(purchase).toHaveProperty('createdAt')
 			expect(typeof purchase.createdAt).toBe('string')
 			expect(purchase).toHaveProperty('updatedAt')
@@ -101,7 +105,6 @@ describe('Purchases', () => {
 		})
 
 		it('Deberaia crear una nueva factura y retornar su id', async () => {
-			const TEST_PROVIDER_ID = '0319da94-d62b-4460-a320-5b8acc4c8f38' // Coca Cola
 			const { body } = await http(app)
 				.post('/purchases')
 				.send({
@@ -119,6 +122,122 @@ describe('Purchases', () => {
 
 			expect(body).toHaveProperty('id')
 			expect(typeof body.id).toBe('string')
+		})
+	})
+
+	describe('PUT /purchases', () => {
+		it('Deberaia fallar al modificar compra por no tener sesion iniciada', async () => {
+			await http(app)
+				.put('/purchases')
+				.expect(401)
+		})
+
+		it('Deberaia fallar al modificar compra por falta de token', async () => {
+			await http(app)
+				.put('/purchases')
+				.set('Cookie', session.session)
+				.expect(401)
+		})
+
+		it('Deberaia fallar al modificar una nueva factura por cuerpo incorrecto', async () => {
+			await http(app)
+				.put('/purchases')
+				.send({ })
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
+				.expect(400)
+		})
+
+		it('Deberaia modificar una factura', async () => {
+			const data = {
+				id: TEST_PURCHASE_ID,
+				providerId: TEST_PROVIDER_ID,
+				documentId: `${Math.floor(Math.round(Math.random() * (0 - 999999) + 999999))}`,
+				paymentType: 'CREDIT',
+				affectsExistence: false,
+				amount: Math.floor(Math.round(Math.random() * (0 - 999999) + 999999)),
+				date: moment().format('YYYY-MM-DD'),
+				adjustPrices: false
+			}
+
+			await http(app)
+				.put('/purchases')
+				.send(data)
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
+				.expect(204)
+
+			const { body } = await http(app)
+				.get('/purchases/' + data.id)
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
+				.expect(200)
+
+			expect(body.documentId).toBe(data.documentId)
+			expect(body.amount).toBe(data.amount)
+			expect(body.date).toBe(data.date)
+		})
+	})
+
+	describe('GET /purchases/:id', () => {
+		it('Deberaia obtener una compras por el id dado', async () => {
+			const { body } = await http(app)
+				.get('/purchases/' + TEST_PURCHASE_ID)
+				.set('Authorization', `Bearer ${session.token}`)
+				.set('Cookie', session.session)
+				.expect(200)
+
+			expect(body).toBeInstanceOf(Object)
+
+			expect(body).toHaveProperty('id')
+			expect(typeof body.id).toBe('string')
+			expect(body).toHaveProperty('businessId')
+			expect(typeof body.businessId).toBe('string')
+			expect(body).toHaveProperty('providerId')
+			expect(typeof body.providerId).toBe('string')
+			expect(body).toHaveProperty('provider')
+			expect(body.provider).toBeInstanceOf(Object)
+			expect(body).toHaveProperty('documentId')
+			expect(typeof body.documentId).toBe('string')
+			expect(body).toHaveProperty('paymentType')
+			expect(body).toHaveProperty('products')
+			expect(body.products).toBeInstanceOf(Array)
+			expect(typeof body.paymentType).toBe('string')
+			expect(['IMMEDIATE', 'CREDIT']).toContain(body.paymentType)
+			if (body.paymentType == 'CREDIT') {
+				expect(body).toHaveProperty('creditDays')
+				expect(typeof body.creditDays).toBe('number')
+				expect(body).toHaveProperty('deadline')
+				expect(typeof body.deadline).toBe('string')
+			}
+			expect(body).toHaveProperty('affectsExistence')
+			expect(typeof body.affectsExistence).toBe('boolean')
+			expect(body).toHaveProperty('fileUrl')
+			expect(body).toHaveProperty('status')
+			expect(['DONE', 'IN PROGRESS']).toContain(body.status)
+			expect(body).toHaveProperty('amount')
+			expect(typeof body.amount).toBe('number')
+			expect(body).toHaveProperty('date')
+			expect(typeof body.date).toBe('string')
+			expect(body).toHaveProperty('adjustPrices')
+			expect(typeof body.adjustPrices).toBe('boolean')
+			expect(body).toHaveProperty('createdAt')
+			expect(typeof body.createdAt).toBe('string')
+			expect(body).toHaveProperty('updatedAt')
+			expect(typeof body.updatedAt).toBe('string')
+		})
+
+		it('Deberaia fallar al obtener lista de compras por no tener sesion iniciada', async () => {
+			await http(app)
+				.get('/purchases/' + TEST_PURCHASE_ID)
+				.expect(401)
+		})
+
+		it('Deberaia fallar al obtener lista de compras por falta de token', async () => {
+			await http(app)
+				.get('/purchases/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.expect(401)
 		})
 	})
 })
