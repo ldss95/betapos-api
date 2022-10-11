@@ -10,4 +10,6 @@ router.route('/')
 	.post(isLoggedin, tokenIsValid, validateNewPurchase, controller.create)
 	.put(isLoggedin, tokenIsValid, validateUpdatePurchase, controller.update)
 
+router.get('/:id', isLoggedin, tokenIsValid, controller.getOne)
+
 export default router

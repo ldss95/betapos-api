@@ -5,6 +5,7 @@ import { db } from '../../database/connection'
 import { Business } from '../business/model'
 import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
+import { User } from '../users/model'
 
 const Purchase = db.define<PurchaseProps>(
 	'purchase',
@@ -63,6 +64,10 @@ const Purchase = db.define<PurchaseProps>(
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: true
+		},
+		userId: {
+			type: DataTypes.UUID,
+			allowNull: false
 		}
 	},
 	{
@@ -77,6 +82,7 @@ const Purchase = db.define<PurchaseProps>(
 
 Purchase.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
 Purchase.belongsTo(Provider, { foreignKey: 'providerId', as: 'provider' })
+Purchase.belongsTo(User, { foreignKey: 'userId', as: 'user' })
 Purchase.hasMany(PurchaseProduct, { foreignKey: 'purchaseId', as: 'products' })
 PurchaseProduct.belongsTo(Purchase, { foreignKey: 'purchaseId', as: 'purchase' })
 
