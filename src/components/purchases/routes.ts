@@ -2,11 +2,12 @@ import { Router } from 'express'
 
 import controller from './controller'
 import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
-import { validateNewPurchase } from './middlewares'
+import { validateNewPurchase, validateUpdatePurchase } from './middlewares'
 const router: Router = Router()
 
 router.route('/')
 	.get(isLoggedin, tokenIsValid, controller.getAll)
 	.post(isLoggedin, tokenIsValid, validateNewPurchase, controller.create)
+	.put(isLoggedin, tokenIsValid, validateUpdatePurchase, controller.update)
 
 export default router
