@@ -38,7 +38,7 @@ const updatePurchaseSchema = z.object({
 	adjustPrices: z.boolean()
 })
 
-export function validateUpdatePurchase(req: Request, res: Response, next: NextFunction) {
+export function validateUpdatePurchase(req: Request, res: Response, next: NextFunction): Response | void {
 	try {
 		updatePurchaseSchema.parse(req.body)
 		next()
@@ -50,4 +50,16 @@ export function validateUpdatePurchase(req: Request, res: Response, next: NextFu
 			})
 		}
 	}
+}
+
+export function validateAtachFile(req: Request, res: Response, next: NextFunction): Response | void {
+	const file = req.file as Express.MulterS3.File
+
+	if (!file || !file?.location) {
+		return res.status(400).send({
+			message: 'No attached or invalid file'
+		})
+	}
+
+	next()
 }

@@ -90,3 +90,21 @@ export async function updatePurchase(data: PurchaseProps, businessId: string): P
 		deadline: await deadline()
 	})
 }
+
+export async function saveUploadedPurchaseFile(id: string, fileUrl: string): Promise<void> {
+	if (fileUrl.includes('http://')) {
+		fileUrl = fileUrl.replace('http://', 'https://')
+	}
+
+	if (!fileUrl.includes('https://')) {
+		fileUrl = 'https://' + fileUrl
+	}
+
+	const { CDN_URL, EDGE_URL, ORIGIN_URL } = process.env
+
+	fileUrl = fileUrl
+		.replace(ORIGIN_URL!, CDN_URL!)
+		.replace(EDGE_URL!, CDN_URL!)
+
+	await Purchase.update({ fileUrl }, { where: { id } })
+}

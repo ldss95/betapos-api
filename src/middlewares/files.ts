@@ -8,7 +8,7 @@ const { S3_ENDPOINT, BUCKET_NAME } = process.env
 const spaceEndpoint = new aws.Endpoint(S3_ENDPOINT!)
 const s3 = new aws.S3({ endpoint: spaceEndpoint })
 
-const uploadSingle = (path: string) =>
+const uploadSingle = (path: string, key = 'image') =>
 	multer({
 		storage: multerS3({
 			s3,
@@ -25,7 +25,7 @@ const uploadSingle = (path: string) =>
 				callback(null, `${path}${name || originalname}`)
 			}
 		})
-	}).single('image')
+	}).single(key)
 
 const uploadMultiple = multer({
 	storage: multerS3({

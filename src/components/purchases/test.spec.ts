@@ -1,5 +1,7 @@
 import moment from 'moment'
 import http from 'supertest'
+import fs from 'fs'
+import path from 'path'
 
 import { app } from '../../app'
 import { login4Tests } from '../../helpers'
@@ -176,6 +178,50 @@ describe('Purchases', () => {
 			expect(body.documentId).toBe(data.documentId)
 			expect(body.amount).toBe(data.amount)
 			expect(body.date).toBe(data.date)
+		})
+	})
+
+	describe('PUT /purchases/file', () => {
+		it('Deberaia fallar al subir archivo de compras por no tener sesion iniciada', async () => {
+			await http(app)
+				.put('/purchases/file/' + TEST_PURCHASE_ID)
+				.expect(401)
+		})
+
+		it('Deberaia fallar al subir archivo de compras por falta de token', async () => {
+			await http(app)
+				.put('/purchases/file/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.expect(401)
+		})
+
+		it('Deberaia fallar al subir archivo de compras por no adjunsta ningun archivo', async () => {
+			await http(app)
+				.put('/purchases/file/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.field('id', TEST_PURCHASE_ID)
+				.expect(400)
+		})
+
+		const file = fs.readFileSync(path.join(__dirname, '../../assets/ZECONOMY GUIA CAJERO.pdf'))
+
+		it('Deberaia subir archivo de compra', async () => {
+			await http(app)
+				.put('/purchases/file/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.attach('file', file, 'Invoice.pdf')
+				.expect(204)
+
+			const { body } = await http(app)
+				.get('/purchases/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(200)
+
+			expect(typeof body.fileUrl).toBe('string')
+			expect(body.fileUrl.includes('https://files.betapos.com.do')).toBe(true)
 		})
 	})
 

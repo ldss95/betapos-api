@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { createPurchase, getAllPurchases, getOnePurchase, updatePurchase } from './services'
+import { createPurchase, getAllPurchases, getOnePurchase, saveUploadedPurchaseFile, updatePurchase } from './services'
 
 export default {
 	getAll: async (req: Request, res: Response) => {
@@ -37,6 +37,18 @@ export default {
 		try {
 			const { businessId } = req.session!
 			await updatePurchase(req.body, businessId)
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	attachFile: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			const file = req.file as Express.MulterS3.File
+			await saveUploadedPurchaseFile(id, file.location)
+
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
