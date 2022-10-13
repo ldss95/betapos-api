@@ -12,6 +12,9 @@ router.route('/')
 	.put(isLoggedin, tokenIsValid, validateUpdatePurchase, controller.update)
 
 router.get('/:id', isLoggedin, tokenIsValid, controller.getOne)
-router.put('/file/:id', isLoggedin, tokenIsValid, uploadSingle('purchases/', 'file'), validateAtachFile, controller.attachFile)
+
+router.route('/file/:id')
+	.put(isLoggedin, tokenIsValid, uploadSingle('purchases/', 'file'), validateAtachFile, controller.attachFile)
+	.delete(isLoggedin, tokenIsValid, controller.removeAttachedFile)
 
 export default router

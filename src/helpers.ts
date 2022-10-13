@@ -1,11 +1,11 @@
-import AWS from 'aws-sdk'
+import AWS, { S3 } from 'aws-sdk'
 import moment from 'moment'
 import http from 'supertest'
 import { Express } from 'express'
 
 import { db } from './database/firebase'
 
-export function deleteFile(Key: string) {
+export function deleteFile(Key: string): Promise<S3.DeleteObjectOutput> {
 	return new Promise((resolve, reject) => {
 		const { S3_ENDPOINT, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, BUCKET_NAME } = process.env
 

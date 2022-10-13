@@ -181,7 +181,7 @@ describe('Purchases', () => {
 		})
 	})
 
-	describe('PUT /purchases/file', () => {
+	describe('PUT /purchases/file/:id', () => {
 		it('Deberaia fallar al subir archivo de compras por no tener sesion iniciada', async () => {
 			await http(app)
 				.put('/purchases/file/' + TEST_PURCHASE_ID)
@@ -222,6 +222,37 @@ describe('Purchases', () => {
 
 			expect(typeof body.fileUrl).toBe('string')
 			expect(body.fileUrl.includes('https://files.betapos.com.do')).toBe(true)
+		})
+	})
+
+	describe('DELETE /purchases/file/:id', () => {
+		it('Deberaia fallar al eliminar archivo de compras por no tener sesion iniciada', async () => {
+			await http(app)
+				.delete('/purchases/file/' + TEST_PURCHASE_ID)
+				.expect(401)
+		})
+
+		it('Deberaia fallar al eliminar archivo de compras por falta de token', async () => {
+			await http(app)
+				.delete('/purchases/file/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.expect(401)
+		})
+
+		it('Deberaia eliminar archivo de compra', async () => {
+			await http(app)
+				.delete('/purchases/file/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(204)
+
+			const { body } = await http(app)
+				.get('/purchases/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(200)
+
+			expect(body.fileUrl).toBe(null)
 		})
 	})
 

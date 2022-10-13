@@ -1,6 +1,7 @@
 import moment from 'moment'
 
 import { CustomError } from '../../errors'
+import { deleteFile } from '../../helpers'
 import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { PurchaseProps } from './interface'
@@ -107,4 +108,15 @@ export async function saveUploadedPurchaseFile(id: string, fileUrl: string): Pro
 		.replace(EDGE_URL!, CDN_URL!)
 
 	await Purchase.update({ fileUrl }, { where: { id } })
+}
+
+export async function deletePurchaseFile(id: string): Promise<void> {
+	const purchase = await Purchase.findByPk(id)
+	if (!purchase?.fileUrl) {
+		return
+	}
+
+	const url = purchase.fileUrl
+	await purchase.update({ fileUrl: null })
+	deleteFile(url)
 }
