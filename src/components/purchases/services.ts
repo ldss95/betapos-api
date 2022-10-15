@@ -52,9 +52,8 @@ export async function createPurchase(data: PurchaseProps, businessId: string, us
 	const { id } = await Purchase.create({
 		...data,
 		businessId,
-		payed: true,
+		payed: data.paymentType == 'IMMEDIATE',
 		...(data.paymentType == 'CREDIT' && {
-			padyed: false,
 			creditDays: provider.creditDays,
 			deadline: moment(data.date).add(provider.creditDays, 'days').format('YYYY-MM-DD')
 		}),
