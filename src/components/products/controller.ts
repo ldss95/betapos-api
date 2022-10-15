@@ -210,8 +210,7 @@ export default {
 					model: Purchase,
 					as: 'purchase',
 					where: {
-						affectsExistence: true,
-						status: 'DONE'
+						affectsExistence: true
 					},
 					required: true
 				}
@@ -377,7 +376,6 @@ export default {
 								purchases p ON p.id = pp.purchaseId
 							WHERE
 								pp.productId = product.id AND
-								p.status = 'DONE' AND
 								p.affectsExistence = 1
 						), 0) +
 						COALESCE((

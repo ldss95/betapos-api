@@ -49,7 +49,6 @@ export async function getAllProducts({
 						purchases p ON p.id = pp.purchaseId
 					WHERE
 						pp.productId = product.id AND
-						p.status = 'DONE' AND
 						p.affectsExistence = 1
 				), 0) +
 				COALESCE((
@@ -197,7 +196,6 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 										purchases p ON p.id = pp.purchaseId
 									WHERE
 										pp.productId = product.id AND
-										p.status = 'DONE' AND
 										p.affectsExistence = 1
 								), 0) +
 								COALESCE((
