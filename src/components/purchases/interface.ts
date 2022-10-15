@@ -10,11 +10,11 @@ export interface PurchaseProps extends Model {
 	provider?: ProviderProps;
 	documentId: string;
 	paymentType: 'IMMEDIATE' | 'CREDIT';
+	payed: boolean;
 	creditDays: number;
 	deadline: string;
 	affectsExistence: boolean;
 	fileUrl: string;
-	status: 'DONE' | 'IN PROGRESS';
 	amount: number;
 	date: string;
 	products: PurchaseProductProps[];

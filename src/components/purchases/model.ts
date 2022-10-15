@@ -31,6 +31,10 @@ const Purchase = db.define<PurchaseProps>(
 			type: DataTypes.ENUM('IMMEDIATE', 'CREDIT'),
 			allowNull: false
 		},
+		payed: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false
+		},
 		creditDays: DataTypes.SMALLINT,
 		deadline: DataTypes.DATEONLY,
 		affectsExistence: {
@@ -43,11 +47,6 @@ const Purchase = db.define<PurchaseProps>(
 			validate: {
 				isUrl: true
 			}
-		},
-		status: {
-			type: DataTypes.ENUM('DONE', 'IN PROGRESS', 'PAUSED'),
-			allowNull: false,
-			defaultValue: 'IN PROGRESS'
 		},
 		amount: {
 			type: DataTypes.DECIMAL(10, 2),
