@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { createPurchase, deletePurchaseFile, getAllPurchases, getOnePurchase, markPurchaseAsPayed, saveUploadedPurchaseFile, updatePurchase } from './services'
+import { createPurchase, deletePurchase, deletePurchaseFile, getAllPurchases, getOnePurchase, markPurchaseAsPayed, saveUploadedPurchaseFile, updatePurchase } from './services'
 
 export default {
 	getAll: async (req: Request, res: Response) => {
@@ -69,6 +69,16 @@ export default {
 		try {
 			const { id } = req.params
 			await markPurchaseAsPayed(id)
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	delete: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			await deletePurchase(id)
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)

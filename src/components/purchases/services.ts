@@ -139,3 +139,15 @@ export async function deletePurchaseFile(id: string): Promise<void> {
 export async function markPurchaseAsPayed(id: string): Promise<void> {
 	await Purchase.update({ payed: true }, { where: { id } })
 }
+
+export async function deletePurchase(id: string): Promise<void> {
+	const purchase = await Purchase.findByPk(id)
+	if (!purchase) {
+		return
+	}
+
+	await purchase.destroy()
+	if (purchase.fileUrl) {
+		await deleteFile(purchase.fileUrl)
+	}
+}

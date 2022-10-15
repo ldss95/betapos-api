@@ -257,6 +257,44 @@ describe('Purchases', () => {
 		})
 	})
 
+	describe('DELETE /purchases/:id', () => {
+		it('Deberaia fallar al eliminar compra por no tener sesion iniciada', async () => {
+			await http(app)
+				.delete('/purchases/' + TEST_PURCHASE_ID)
+				.expect(401)
+		})
+
+		it('Deberaia fallar al eliminar compra por falta de token', async () => {
+			await http(app)
+				.delete('/purchases/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.expect(401)
+		})
+
+		it('Deberaia eliminar compra', async () => {
+			const { body: purchases } = await http(app)
+				.get('/purchases')
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+
+			const [{ id }] = purchases
+
+			await http(app)
+				.delete('/purchases/' + id)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(204)
+
+			const { body } = await http(app)
+				.get('/purchases/' + id)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(200)
+
+			expect(body === null || Object.keys(body).length === 0).toBeTruthy()
+		})
+	})
+
 	describe('GET /purchases/:id', () => {
 		it('Deberaia obtener una compras por el id dado', async () => {
 			const { body } = await http(app)

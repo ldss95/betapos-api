@@ -11,7 +11,9 @@ router.route('/')
 	.post(isLoggedin, tokenIsValid, validateNewPurchase, controller.create)
 	.put(isLoggedin, tokenIsValid, validateUpdatePurchase, controller.update)
 
-router.get('/:id', isLoggedin, tokenIsValid, controller.getOne)
+router.route('/:id')
+	.get(isLoggedin, tokenIsValid, controller.getOne)
+	.delete(isLoggedin, tokenIsValid, controller.delete)
 
 router.route('/file/:id')
 	.put(isLoggedin, tokenIsValid, uploadSingle('purchases/', 'file'), validateAtachFile, controller.attachFile)
