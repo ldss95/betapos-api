@@ -29,6 +29,7 @@ import billing from './components/billing/routes'
 import settings from './components/settings/routes'
 import ncf from './components/ncf/routes'
 import purchases from './components/purchases/routes'
+import computingScales from './components/computing-scales/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -56,6 +57,7 @@ router.use('/billing', billing)
 router.use('/settings', settings)
 router.use('/ncf', ncf)
 router.use('/purchases', purchases)
+router.use('/computing-scales', computingScales)
 
 router.all('*', (req, res) => res.status(404).sendFile(join(__dirname, '404.html')))
 

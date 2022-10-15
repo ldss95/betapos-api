@@ -26,7 +26,7 @@ export function deleteFile(Key: string): Promise<S3.DeleteObjectOutput> {
 	})
 }
 
-type Table = 'users' | 'barcodes' | 'clients' | 'business' | 'products' | 'devices' | 'settings' | 'sales';
+type Table = 'users' | 'barcodes' | 'clients' | 'business' | 'products' | 'devices' | 'settings' | 'sales' | 'scales';
 export function notifyUpdate(table: Table, merchantId?: string) {
 	if (!merchantId) {
 		return
