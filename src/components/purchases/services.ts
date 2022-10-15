@@ -135,3 +135,7 @@ export async function deletePurchaseFile(id: string): Promise<void> {
 	await purchase.update({ fileUrl: null })
 	deleteFile(url)
 }
+
+export async function markPurchaseAsPayed(id: string): Promise<void> {
+	await Purchase.update({ payed: true }, { where: { id } })
+}

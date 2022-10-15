@@ -5,6 +5,7 @@ import path from 'path'
 
 import { app } from '../../app'
 import { login4Tests } from '../../helpers'
+import { PurchaseProps } from './interface'
 
 const session = {
 	token: '',
@@ -315,6 +316,46 @@ describe('Purchases', () => {
 				.get('/purchases/' + TEST_PURCHASE_ID)
 				.set('Cookie', session.session)
 				.expect(401)
+		})
+	})
+
+	describe('PUT /purchase/pay/:id', () => {
+		it('Deberaia fallar pagar compras por no tener sesion iniciada', async () => {
+			await http(app)
+				.put('/purchases/pay/' + TEST_PURCHASE_ID)
+				.send()
+				.expect(401)
+		})
+
+		it('Deberaia fallar al pagar compras por falta de token', async () => {
+			await http(app)
+				.put('/purchases/pay/' + TEST_PURCHASE_ID)
+				.set('Cookie', session.session)
+				.expect(401)
+		})
+
+		it('Deberaia marcar compra como pagada', async () => {
+			const { body: purchases } = await http(app)
+				.get('/purchases')
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(200)
+
+			const purchase = purchases.find(({ payed }: PurchaseProps) => !payed)
+
+			await http(app)
+				.put('/purchases/pay/' + purchase.id)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(204)
+
+			const { body } = await http(app)
+				.get('/purchases/' + purchase.id)
+				.set('Cookie', session.session)
+				.set('Authorization', `Bearer ${session.token}`)
+				.expect(200)
+
+			expect(body.payed).toBe(true)
 		})
 	})
 })

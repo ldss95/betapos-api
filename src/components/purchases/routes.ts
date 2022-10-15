@@ -17,4 +17,6 @@ router.route('/file/:id')
 	.put(isLoggedin, tokenIsValid, uploadSingle('purchases/', 'file'), validateAtachFile, controller.attachFile)
 	.delete(isLoggedin, tokenIsValid, controller.removeAttachedFile)
 
+router.put('/pay/:id', isLoggedin, tokenIsValid, controller.markAsPayed)
+
 export default router
