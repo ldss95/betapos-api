@@ -24,7 +24,7 @@ export async function getAllProducts({
 	search,
 	filters,
 	sorter
-}: GetAllProductsProps): Promise<{ total: number; products: ProductProps[] }> {
+}: GetAllProductsProps): Promise<{ total: number; products: ProductProps[]; count: number; }> {
 	const stockQuery = `
 		ROUND(
 			(
@@ -157,10 +157,12 @@ export async function getAllProducts({
 	})
 
 	const total = await Product.count({ where, include })
+	const count = await Product.count({ where: { businessId } })
 
 	return {
 		products: products.map((product) => product.toJSON()),
-		total
+		total,
+		count
 	}
 }
 
