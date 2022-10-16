@@ -17,6 +17,7 @@ export interface ProductProps extends Model {
 	initialStock: number;
 	cost: number;
 	price: number;
+	comercialPrice: number;
 	photoUrl: string;
 	itbis: boolean;
 	isFractionable: boolean;

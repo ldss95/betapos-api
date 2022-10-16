@@ -35,6 +35,7 @@ const Product = db.define<ProductProps>(
 			type: DataTypes.DOUBLE,
 			allowNull: false
 		},
+		businessPrice:  DataTypes.DOUBLE,
 		itbis: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true,
