@@ -107,21 +107,22 @@ export async function updatePurchase(data: PurchaseProps, businessId: string): P
 }
 
 export async function saveUploadedPurchaseFile(id: string, fileUrl: string): Promise<void> {
-	if (fileUrl.includes('http://')) {
-		fileUrl = fileUrl.replace('http://', 'https://')
+	const { CDN_URL } = process.env
+
+	// S3 no retorna la URL con la CDN, la cual cuenta con cache
+	if (!fileUrl.includes(CDN_URL!)) {
+		const breakPoint = fileUrl.indexOf('/purchases')
+		fileUrl = `${CDN_URL}${fileUrl.substr(breakPoint)}`
 	}
 
-	if (!fileUrl.includes('https://')) {
-		fileUrl = 'https://' + fileUrl
-	}
-
-	const { CDN_URL, EDGE_URL, ORIGIN_URL } = process.env
-
-	fileUrl = fileUrl
-		.replace(ORIGIN_URL!, CDN_URL!)
-		.replace(EDGE_URL!, CDN_URL!)
-
-	await Purchase.update({ fileUrl }, { where: { id } })
+	await Purchase.update(
+		{
+			fileUrl: encodeURI(fileUrl)
+		},
+		{
+			where: { id }
+		}
+	)
 }
 
 export async function deletePurchaseFile(id: string): Promise<void> {
@@ -132,7 +133,9 @@ export async function deletePurchaseFile(id: string): Promise<void> {
 
 	const url = purchase.fileUrl
 	await purchase.update({ fileUrl: null })
-	deleteFile(url)
+	const breakPoint = url.indexOf('purchases')
+	const fileName: string = decodeURI(url.substr(breakPoint))
+	deleteFile(fileName)
 }
 
 export async function markPurchaseAsPayed(id: string): Promise<void> {
