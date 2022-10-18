@@ -19,6 +19,7 @@ export interface ClientProps extends Model {
 	payments: ClientPaymentProps[];
 	sales: SaleProps[];
 	creditLimit: number;
+	isBusiness: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

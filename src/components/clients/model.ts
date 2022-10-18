@@ -61,6 +61,11 @@ const Client = db.define<ClientProps>(
 			type: DataTypes.MEDIUMINT,
 			allowNull: false,
 			defaultValue: 0
+		},
+		isBusiness: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
 		}
 	},
 	{ paranoid: true }
