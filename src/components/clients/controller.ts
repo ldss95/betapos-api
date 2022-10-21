@@ -12,6 +12,7 @@ import { SalePayment } from '../sales-payments/model'
 import { User } from '../users/model'
 import { ClientPaymentProps } from '../clients-payments/interface'
 import { SaleProps } from '../sales/interface'
+import { availableClientCredit } from './services'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -142,13 +143,13 @@ export default {
 	getPending: async (req: Request, res: Response) => {
 		try {
 			const { businessId } = req.session!
-			const payentType = await SalePaymentType.findOne({
+			const paymentType = await SalePaymentType.findOne({
 				where: {
 					name: 'Fiao'
 				}
 			})
 
-			if (!payentType) {
+			if (!paymentType) {
 				res.sendStatus(500)
 				throw new Error('Tipo de pago "Fiao" no encontrado')
 			}
@@ -159,9 +160,7 @@ export default {
 						[fn('sum', col('sales->payments.amount')), 'debt']
 					]
 				},
-				where: {
-					businessId
-				},
+				where: { businessId },
 				include: [
 					{
 						model: Sale,
@@ -173,7 +172,7 @@ export default {
 							model: SalePayment,
 							as: 'payments',
 							where: {
-								typeId: payentType.id
+								typeId: paymentType.id
 							}
 						}],
 						required: true
