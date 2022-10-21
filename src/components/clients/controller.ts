@@ -270,5 +270,16 @@ export default {
 			res.sendStatus(500)
 			throw error
 		}
+	},
+	getAvailableCredit: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			const available = await availableClientCredit(id)
+
+			res.status(200).send({ available })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
 	}
 }

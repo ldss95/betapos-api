@@ -15,6 +15,7 @@ routes
 
 routes.get('/pending', isLoggedin, tokenIsValid, controller.getPending)
 routes.get('/pending-details/:clientId', isLoggedin, tokenIsValid, controller.getPendingDetails)
+routes.get('/available-credit/:id', controller.getAvailableCredit)
 
 routes
 	.route('/:id')
