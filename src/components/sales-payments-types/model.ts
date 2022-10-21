@@ -14,7 +14,11 @@ const SalePaymentType = db.define<SalePaymentTypeProps>('sales_payment_types', {
 		allowNull: false,
 		unique: true
 	},
-	description: DataTypes.STRING
+	description: DataTypes.STRING,
+	order: {
+		type: DataTypes.TINYINT,
+		allowNull: false
+	}
 })
 
 SalePaymentType.sync().then(() => {
