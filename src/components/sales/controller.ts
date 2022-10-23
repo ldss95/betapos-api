@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Op, UniqueConstraintError } from 'sequelize'
+import { ForeignKeyConstraintError, Op, UniqueConstraintError } from 'sequelize'
 
 import { Sale } from './model'
 import { SaleProduct } from '../sales-products/model'
@@ -63,6 +63,12 @@ export default {
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
 				return res.sendStatus(201)
+			}
+
+			if (error instanceof ForeignKeyConstraintError) {
+				return res.status(400).send({
+					message: ''
+				})
 			}
 
 			res.sendStatus(500)
