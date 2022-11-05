@@ -28,8 +28,7 @@ const PurchaseProduct = db.define<PurchaseProductProps>(
 			type: DataTypes.DECIMAL(10, 2),
 			allowNull: false
 		}
-	},
-	{ timestamps: false }
+	}
 )
 
 PurchaseProduct.belongsTo(Product, { foreignKey: 'productId', as: 'product' })

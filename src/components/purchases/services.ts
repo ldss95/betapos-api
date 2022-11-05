@@ -28,8 +28,22 @@ export async function getOnePurchase(id: string): Promise<PurchaseProps | null> 
 			},
 			{
 				model: PurchaseProduct,
+				include: [{
+					model: Product,
+					as: 'product'
+				}],
 				as: 'products'
 			}
+		],
+		order: [
+			[
+				{
+					model: PurchaseProduct,
+					as: 'products'
+				},
+				'createdAt',
+				'DESC'
+			]
 		]
 	})
 

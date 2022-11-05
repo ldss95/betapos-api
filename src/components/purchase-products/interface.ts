@@ -8,4 +8,6 @@ export interface PurchaseProductProps extends Model {
 	productId: string;
 	quantity: number;
 	price: number;
+	createdAt: string;
+	updatedAt: string;
 }
