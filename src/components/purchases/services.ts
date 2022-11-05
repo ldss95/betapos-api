@@ -176,7 +176,8 @@ export async function addProductToPurchase(purchaseId: string, productId: string
 		purchaseId,
 		productId,
 		quantity: 1,
-		price: product?.cost
+		cost: product?.cost || 0,
+		price: product?.price || 0
 	})
 }
 

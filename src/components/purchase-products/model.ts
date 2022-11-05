@@ -24,6 +24,10 @@ const PurchaseProduct = db.define<PurchaseProductProps>(
 			type: DataTypes.DECIMAL(10, 2),
 			allowNull: false
 		},
+		cost: {
+			type: DataTypes.DECIMAL(10, 2),
+			allowNull: false
+		},
 		price: {
 			type: DataTypes.DECIMAL(10, 2),
 			allowNull: false

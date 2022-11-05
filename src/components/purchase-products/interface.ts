@@ -7,6 +7,7 @@ export interface PurchaseProductProps extends Model {
 	purchase: PurchaseProps;
 	productId: string;
 	quantity: number;
+	cost: number;
 	price: number;
 	createdAt: string;
 	updatedAt: string;
