@@ -2,6 +2,7 @@ import moment from 'moment'
 
 import { CustomError } from '../../errors'
 import { deleteFile } from '../../helpers'
+import { Product } from '../products/model'
 import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { PurchaseProps } from './interface'
@@ -166,4 +167,27 @@ export async function deletePurchase(id: string): Promise<void> {
 	if (purchase.fileUrl) {
 		await deleteFile(purchase.fileUrl)
 	}
+}
+
+export async function addProductToPurchase(purchaseId: string, productId: string): Promise<void> {
+	const product = await Product.findByPk(productId)
+
+	await PurchaseProduct.create({
+		purchaseId,
+		productId,
+		quantity: 1,
+		price: product?.cost
+	})
+}
+
+export async function updatePurchaseProductQty(id: string, quantity: number): Promise<void> {
+	await PurchaseProduct.update({ quantity }, {
+		where: { id }
+	})
+}
+
+export async function removePurchaseProduct(id: string): Promise<void> {
+	await PurchaseProduct.destroy({
+		where: { id }
+	})
 }

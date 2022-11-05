@@ -63,3 +63,21 @@ export function validateAtachFile(req: Request, res: Response, next: NextFunctio
 
 	next()
 }
+
+const updateProductQtySchema = z.object({
+	id: z.string(),
+	quantity: z.number().min(1),
+})
+export function validateUpdateProductQty(req: Request, res: Response, next: NextFunction): Response | void {
+	try {
+		updateProductQtySchema.parse(req.body)
+		next()
+	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).send({
+				errors: error.issues,
+				message: 'Informacion incompleta o incorrecta'
+			})
+		}
+	}
+}

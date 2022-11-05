@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { createPurchase, deletePurchase, deletePurchaseFile, getAllPurchases, getOnePurchase, markPurchaseAsPayed, saveUploadedPurchaseFile, updatePurchase } from './services'
+import { addProductToPurchase, createPurchase, deletePurchase, deletePurchaseFile, getAllPurchases, getOnePurchase, markPurchaseAsPayed, removePurchaseProduct, saveUploadedPurchaseFile, updatePurchase, updatePurchaseProductQty } from './services'
 
 export default {
 	getAll: async (req: Request, res: Response) => {
@@ -79,6 +79,36 @@ export default {
 		try {
 			const { id } = req.params
 			await deletePurchase(id)
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	addProduct: async (req: Request, res: Response) => {
+		try {
+			const { purchaseId, productId } = req.body
+			await addProductToPurchase(purchaseId, productId)
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	updateProductQty: async (req: Request, res: Response) => {
+		try {
+			const { id, quantity } = req.body
+			updatePurchaseProductQty(id, quantity)
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	removeProduct: async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params
+			removePurchaseProduct(id)
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
