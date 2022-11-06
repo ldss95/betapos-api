@@ -1,6 +1,8 @@
 import xlsx from 'json-as-xlsx'
 import { Op, literal } from 'sequelize'
 
+import { notifyUpdate } from '../../helpers'
+import { BarcodeProps } from '../barcodes/interface'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
@@ -314,6 +316,60 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 			type: 'buffer'
 		}
 	})
+}
+
+export async function updateProduct(merchantId: string, product: ProductProps): Promise<void> {
+	const { id } = product
+
+	/**
+	 * Actualizar producto
+	 */
+	Product.update(product, { where: { id } })
+	notifyUpdate('products', merchantId)
+
+	const barcodes = product?.barcodes || []
+	if (barcodes.length === 0) {
+		return
+	}
+
+	/**
+	 * Actualizar los codigos de barras
+	 */
+	// Eliminados
+	await Barcode.destroy({
+		where: {
+			[Op.and]: [
+				{ productId: id },
+				{
+					id: {
+						[Op.notIn]: barcodes?.map(({ id }: BarcodeProps) => id) || []
+					}
+				}
+			]
+		}
+	})
+
+	// Nuevos
+	await Barcode.bulkCreate(
+		barcodes
+			.filter(({ id }: BarcodeProps) => !id)
+			.map(({ barcode }: BarcodeProps) => ({
+				barcode,
+				productId: id
+			}))
+	)
+
+	// Modificados
+	const oldBarcodes = barcodes.filter(({ id }: BarcodeProps) => id)
+	for (const { id, barcode } of oldBarcodes) {
+		await Barcode.update(
+			{ barcode },
+			{
+				where: { id }
+			}
+		)
+	}
+	notifyUpdate('barcodes', merchantId)
 }
 
 interface GetUpdatesResponse {

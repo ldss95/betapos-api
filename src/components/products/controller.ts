@@ -1,19 +1,18 @@
 import { Request, Response } from 'express'
-import { literal, Op } from 'sequelize'
+import { literal } from 'sequelize'
 import moment from 'moment'
 
 import { deleteFile, notifyUpdate, round } from '../../helpers'
 import { Barcode } from '../barcodes/model'
 import { Product } from './model'
 import { Business } from '../business/model'
-import { BarcodeProps } from '../barcodes/interface'
 import { SaleProduct } from '../sales-products/model'
 import { Sale } from '../sales/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { Purchase } from '../purchases/model'
 import { InventoryAdjustment } from '../inventory-adjustments/model'
 import { User } from '../users/model'
-import { createExcelFile, getAllProducts, getUpdates } from './services'
+import { createExcelFile, getAllProducts, getUpdates, updateProduct } from './services'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -47,55 +46,8 @@ export default {
 	},
 	update: async (req: Request, res: Response) => {
 		try {
-			const { id } = req.body
 			const { merchantId } = req.session!
-			const barcodes = req.body?.barcodes || []
-
-			/**
-			 * Actualizar producto
-			 */
-			Product.update(req.body, { where: { id } })
-			notifyUpdate('products', merchantId)
-
-			/**
-			 * Actualizar los codigos de barras
-			 */
-			// Eliminados
-			await Barcode.destroy({
-				where: {
-					[Op.and]: [
-						{ productId: id },
-						{
-							id: {
-								[Op.notIn]: barcodes?.map(({ id }: BarcodeProps) => id) || []
-							}
-						}
-					]
-				}
-			})
-
-			// Nuevos
-			await Barcode.bulkCreate(
-				barcodes
-					.filter(({ id }: BarcodeProps) => !id)
-					.map(({ barcode }: BarcodeProps) => ({
-						barcode,
-						productId: id
-					}))
-			)
-
-			// Modificados
-			const oldBarcodes = barcodes.filter(({ id }: BarcodeProps) => id)
-			for (const { id, barcode } of oldBarcodes) {
-				await Barcode.update(
-					{ barcode },
-					{
-						where: { id }
-					}
-				)
-			}
-			notifyUpdate('products', merchantId)
-
+			await updateProduct(merchantId, req.body)
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
