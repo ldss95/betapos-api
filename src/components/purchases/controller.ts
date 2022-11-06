@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
+import { CustomError } from '../../errors'
 
-import { addProductToPurchase, createPurchase, deletePurchase, deletePurchaseFile, getAllPurchases, getOnePurchase, markPurchaseAsPayed, removePurchaseProduct, saveUploadedPurchaseFile, updatePurchase, updatePurchaseProductQty } from './services'
+import { addProductToPurchase, createPurchase, deletePurchase, deletePurchaseFile, getAllPurchases, getOnePurchase, markPurchaseAsPayed, removePurchaseProduct, saveUploadedPurchaseFile, updatePurchase, updatePurchaseProductCost, updatePurchaseProductPrice, updatePurchaseProductQty } from './services'
 
 export default {
 	getAll: async (req: Request, res: Response) => {
@@ -98,9 +99,43 @@ export default {
 	updateProductQty: async (req: Request, res: Response) => {
 		try {
 			const { id, quantity } = req.body
-			updatePurchaseProductQty(id, quantity)
+			await updatePurchaseProductQty(id, quantity)
 			res.sendStatus(204)
 		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	updateProductCost: async (req: Request, res: Response) => {
+		try {
+			const { id, cost } = req.body
+			const { merchantId } = req.session!
+			await updatePurchaseProductCost(merchantId, id, cost)
+			res.sendStatus(204)
+		} catch (error) {
+			if (error instanceof CustomError) {
+				return res.status(400).send({
+					message: error.message
+				})
+			}
+
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	updateProductPrice: async (req: Request, res: Response) => {
+		try {
+			const { id, price } = req.body
+			const { merchantId } = req.session!
+			await updatePurchaseProductPrice(merchantId, id, price)
+			res.sendStatus(204)
+		} catch (error) {
+			if (error instanceof CustomError) {
+				return res.status(400).send({
+					message: error.message
+				})
+			}
+
 			res.sendStatus(500)
 			throw error
 		}

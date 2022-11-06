@@ -2,7 +2,9 @@ import moment from 'moment'
 
 import { CustomError } from '../../errors'
 import { deleteFile } from '../../helpers'
+import { ProductProps } from '../products/interface'
 import { Product } from '../products/model'
+import { updateProduct } from '../products/services'
 import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { PurchaseProps } from './interface'
@@ -185,6 +187,47 @@ export async function updatePurchaseProductQty(id: string, quantity: number): Pr
 	await PurchaseProduct.update({ quantity }, {
 		where: { id }
 	})
+}
+
+export async function updatePurchaseProductCost(merchantId: string, id: string, cost: number): Promise<void> {
+	const product = await PurchaseProduct.findByPk(id)
+	if (!product) {
+		throw new CustomError({
+			message: 'Producto no encontrado'
+		})
+	}
+
+	await PurchaseProduct.update({ cost }, {
+		where: { id }
+	})
+
+	updateProduct(
+		merchantId,
+		{
+			id: product.productId,
+			cost
+		} as ProductProps
+	)
+}
+
+export async function updatePurchaseProductPrice(merchantId: string, id: string, price: number): Promise<void> {
+	const product = await PurchaseProduct.findByPk(id)
+	if (!product) {
+		throw new CustomError({
+			message: 'Producto no encontrado'
+		})
+	}
+
+	await PurchaseProduct.update({ price }, {
+		where: { id }
+	})
+
+	updateProduct(
+		merchantId, {
+			id: product.productId,
+			price
+		} as ProductProps
+	)
 }
 
 export async function removePurchaseProduct(id: string): Promise<void> {

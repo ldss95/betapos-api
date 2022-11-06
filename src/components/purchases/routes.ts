@@ -2,7 +2,7 @@ import { Router } from 'express'
 
 import controller from './controller'
 import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
-import { validateAtachFile, validateNewPurchase, validateUpdatePurchase, validateUpdateProductQty } from './middlewares'
+import { validateAttachFile, validateNewPurchase, validateUpdatePurchase, validateUpdateProductQty, validateUpdateProductCost, validateUpdateProductPrice } from './middlewares'
 import { uploadSingle } from '../../middlewares/files'
 const router: Router = Router()
 
@@ -22,6 +22,8 @@ router.route('/file/:id')
 router.put('/pay/:id', isLoggedIn, tokenIsValid, controller.markAsPayed)
 router.put('/update-product-qty/', isLoggedIn, tokenIsValid, validateUpdateProductQty, controller.updateProductQty)
 router.put('/update-product-cost/', isLoggedIn, tokenIsValid, validateUpdateProductCost, controller.updateProductCost)
+router.put('/update-product-price/', isLoggedIn, tokenIsValid, validateUpdateProductPrice, controller.updateProductPrice)
+router.post('/add-product', isLoggedIn, tokenIsValid, controller.addProduct)
 
 router.delete('/remove-product/:id', isLoggedIn, tokenIsValid, controller.removeProduct)
 

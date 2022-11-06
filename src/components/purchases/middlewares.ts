@@ -52,7 +52,7 @@ export function validateUpdatePurchase(req: Request, res: Response, next: NextFu
 	}
 }
 
-export function validateAtachFile(req: Request, res: Response, next: NextFunction): Response | void {
+export function validateAttachFile(req: Request, res: Response, next: NextFunction): Response | void {
 	const file = req.file as Express.MulterS3.File
 
 	if (!file || !file?.location) {
@@ -66,11 +66,47 @@ export function validateAtachFile(req: Request, res: Response, next: NextFunctio
 
 const updateProductQtySchema = z.object({
 	id: z.string(),
-	quantity: z.number().min(1),
+	quantity: z.number().min(1, 'La cantidad minima debe ser 1'),
 })
 export function validateUpdateProductQty(req: Request, res: Response, next: NextFunction): Response | void {
 	try {
 		updateProductQtySchema.parse(req.body)
+		next()
+	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).send({
+				errors: error.issues,
+				message: 'Informacion incompleta o incorrecta'
+			})
+		}
+	}
+}
+
+const updateProductCostSchema = z.object({
+	id: z.string(),
+	cost: z.number().min(0.01, 'El costo minimo debe ser 0.01'),
+})
+export function validateUpdateProductCost(req: Request, res: Response, next: NextFunction): Response | void {
+	try {
+		updateProductCostSchema.parse(req.body)
+		next()
+	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).send({
+				errors: error.issues,
+				message: 'Informacion incompleta o incorrecta'
+			})
+		}
+	}
+}
+
+const updateProductPriceSchema = z.object({
+	id: z.string(),
+	price: z.number().min(0.01, 'El precio0 minimo debe ser 0.01'),
+})
+export function validateUpdateProductPrice(req: Request, res: Response, next: NextFunction): Response | void {
+	try {
+		updateProductPriceSchema.parse(req.body)
 		next()
 	} catch (error) {
 		if (error instanceof ZodError) {
