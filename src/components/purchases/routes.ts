@@ -1,28 +1,28 @@
 import { Router } from 'express'
 
 import controller from './controller'
-import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
 import { validateAtachFile, validateNewPurchase, validateUpdatePurchase, validateUpdateProductQty } from './middlewares'
 import { uploadSingle } from '../../middlewares/files'
 const router: Router = Router()
 
 router.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, validateNewPurchase, controller.create)
-	.put(isLoggedin, tokenIsValid, validateUpdatePurchase, controller.update)
+	.get(isLoggedIn, tokenIsValid, controller.getAll)
+	.post(isLoggedIn, tokenIsValid, validateNewPurchase, controller.create)
+	.put(isLoggedIn, tokenIsValid, validateUpdatePurchase, controller.update)
 
 router.route('/:id')
-	.get(isLoggedin, tokenIsValid, controller.getOne)
-	.delete(isLoggedin, tokenIsValid, controller.delete)
+	.get(isLoggedIn, tokenIsValid, controller.getOne)
+	.delete(isLoggedIn, tokenIsValid, controller.delete)
 
 router.route('/file/:id')
-	.put(isLoggedin, tokenIsValid, uploadSingle('purchases/', 'file'), validateAtachFile, controller.attachFile)
-	.delete(isLoggedin, tokenIsValid, controller.removeAttachedFile)
+	.put(isLoggedIn, tokenIsValid, uploadSingle('purchases/', 'file'), validateAttachFile, controller.attachFile)
+	.delete(isLoggedIn, tokenIsValid, controller.removeAttachedFile)
 
-router.put('/pay/:id', isLoggedin, tokenIsValid, controller.markAsPayed)
-router.put('/update-product-qty/', isLoggedin, tokenIsValid, validateUpdateProductQty, controller.updateProductQty)
-router.post('/add-product', isLoggedin, tokenIsValid, controller.addProduct)
+router.put('/pay/:id', isLoggedIn, tokenIsValid, controller.markAsPayed)
+router.put('/update-product-qty/', isLoggedIn, tokenIsValid, validateUpdateProductQty, controller.updateProductQty)
+router.put('/update-product-cost/', isLoggedIn, tokenIsValid, validateUpdateProductCost, controller.updateProductCost)
 
-router.delete('/remove-product/:id', isLoggedin, tokenIsValid, controller.removeProduct)
+router.delete('/remove-product/:id', isLoggedIn, tokenIsValid, controller.removeProduct)
 
 export default router

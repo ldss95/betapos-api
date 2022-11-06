@@ -2,17 +2,17 @@ import { Router } from 'express'
 const routes: Router = Router()
 
 import controller from './controller'
-import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
 
 routes
 	.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, controller.create)
-	.put(isLoggedin, tokenIsValid, controller.update)
+	.get(isLoggedIn, tokenIsValid, controller.getAll)
+	.post(isLoggedIn, tokenIsValid, controller.create)
+	.put(isLoggedIn, tokenIsValid, controller.update)
 
 routes
 	.route('/:id')
-	.get(isLoggedin, tokenIsValid, controller.getOne)
-	.delete(isLoggedin, tokenIsValid, controller.delete)
+	.get(isLoggedIn, tokenIsValid, controller.getOne)
+	.delete(isLoggedIn, tokenIsValid, controller.delete)
 
 export default routes

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 const routes: Router = Router()
 
-import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
 import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 
@@ -9,19 +9,19 @@ routes.get('/updates/:date', controller.getUpdates)
 
 routes
 	.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, controller.create)
-	.put(isLoggedin, tokenIsValid, controller.update)
+	.get(isLoggedIn, tokenIsValid, controller.getAll)
+	.post(isLoggedIn, tokenIsValid, controller.create)
+	.put(isLoggedIn, tokenIsValid, controller.update)
 
-routes.get('/pending', isLoggedin, tokenIsValid, controller.getPending)
-routes.get('/pending-details/:clientId', isLoggedin, tokenIsValid, controller.getPendingDetails)
+routes.get('/pending', isLoggedIn, tokenIsValid, controller.getPending)
+routes.get('/pending-details/:clientId', isLoggedIn, tokenIsValid, controller.getPendingDetails)
 routes.get('/available-credit/:id', controller.getAvailableCredit)
 
 routes
 	.route('/:id')
-	.get(isLoggedin, tokenIsValid, controller.getOne)
-	.delete(isLoggedin, tokenIsValid, controller.delete)
+	.get(isLoggedIn, tokenIsValid, controller.getOne)
+	.delete(isLoggedIn, tokenIsValid, controller.delete)
 
-routes.post('/photo', isLoggedin, tokenIsValid, uploadSingle('images/clients/'), controller.addPhoto)
+routes.post('/photo', isLoggedIn, tokenIsValid, uploadSingle('images/clients/'), controller.addPhoto)
 
 export default routes

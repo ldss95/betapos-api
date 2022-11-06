@@ -1,15 +1,15 @@
 import { Router } from 'express'
 
 import controller from './controller'
-import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
 const router: Router = Router()
 
 router
 	.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, controller.create)
-	.put(isLoggedin, tokenIsValid, controller.update)
+	.get(isLoggedIn, tokenIsValid, controller.getAll)
+	.post(isLoggedIn, tokenIsValid, controller.create)
+	.put(isLoggedIn, tokenIsValid, controller.update)
 
-router.delete('/:id', isLoggedin, tokenIsValid, controller.delete)
+router.delete('/:id', isLoggedIn, tokenIsValid, controller.delete)
 
 export default router

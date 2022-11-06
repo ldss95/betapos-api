@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 /**
  * Verifica si hay una sesion iniciada, de lo contrario devuelve un estado 401
  */
-export function isLoggedin(req: Request, res: Response, next: NextFunction): Response | void {
+export function isLoggedIn(req: Request, res: Response, next: NextFunction): Response | void {
 	if (req.session?.loggedin) {
 		return next()
 	}

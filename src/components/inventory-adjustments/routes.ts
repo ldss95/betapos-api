@@ -1,9 +1,9 @@
 import { Router } from 'express'
 
 import controller from './controller'
-import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
 const routes: Router = Router()
 
-routes.post('/', isLoggedin, tokenIsValid, controller.create)
+routes.post('/', isLoggedIn, tokenIsValid, controller.create)
 
 export default routes

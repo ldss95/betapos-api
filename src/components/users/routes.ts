@@ -1,7 +1,7 @@
 import { Router } from 'express'
 const router: Router = Router()
 
-import { hasMerchantId, isBusinessAdmin, isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { hasMerchantId, isBusinessAdmin, isLoggedIn, tokenIsValid } from '../../middlewares/auth'
 import { uploadSingle } from '../../middlewares/files'
 import controller from './controller'
 
@@ -9,25 +9,25 @@ router.get('/updates/:date', hasMerchantId, controller.getUpdates)
 
 router
 	.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, controller.create)
-	.put(isLoggedin, tokenIsValid, controller.update)
+	.get(isLoggedIn, tokenIsValid, controller.getAll)
+	.post(isLoggedIn, tokenIsValid, controller.create)
+	.put(isLoggedIn, tokenIsValid, controller.update)
 
-router.get('/list', isLoggedin, tokenIsValid, controller.getList)
+router.get('/list', isLoggedIn, tokenIsValid, controller.getList)
 
 router
 	.route('/:id')
-	.get(isLoggedin, tokenIsValid, controller.getOne)
-	.delete(isLoggedin, tokenIsValid, isBusinessAdmin, controller.delete)
+	.get(isLoggedIn, tokenIsValid, controller.getOne)
+	.delete(isLoggedIn, tokenIsValid, isBusinessAdmin, controller.delete)
 
 router.post(
 	'/set-profile-image',
-	isLoggedin,
+	isLoggedIn,
 	tokenIsValid,
 	uploadSingle('images/profile/'),
 	controller.setProfileImage
 )
 
-router.post('/photo', isLoggedin, tokenIsValid, uploadSingle('images/users/'), controller.addPhoto)
+router.post('/photo', isLoggedIn, tokenIsValid, uploadSingle('images/users/'), controller.addPhoto)
 
 export default router

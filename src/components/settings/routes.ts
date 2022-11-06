@@ -1,10 +1,10 @@
 import { Router } from 'express'
 
 const routes: Router = Router()
-import { isLoggedin, tokenIsValid } from '../../middlewares/auth'
+import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
 import controller from './controller'
 
-routes.route('/').get(isLoggedin, tokenIsValid, controller.get).put(isLoggedin, tokenIsValid, controller.update)
+routes.route('/').get(isLoggedIn, tokenIsValid, controller.get).put(isLoggedIn, tokenIsValid, controller.update)
 
 routes.get('/updates', controller.getUpdates)
 

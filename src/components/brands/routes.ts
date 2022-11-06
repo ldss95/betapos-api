@@ -3,17 +3,17 @@ const routes: Router = Router()
 
 import controller from './controller'
 import { validateCreateBrand, validateUpdateBrand } from './middlewares'
-import { isLoggedin, tokenIsValid, isBusinessAdmin } from '../../middlewares/auth'
+import { isLoggedIn, tokenIsValid, isBusinessAdmin } from '../../middlewares/auth'
 
 routes
 	.route('/')
-	.get(isLoggedin, tokenIsValid, controller.getAll)
-	.post(isLoggedin, tokenIsValid, isBusinessAdmin, validateCreateBrand, controller.create)
-	.put(isLoggedin, tokenIsValid, isBusinessAdmin, validateUpdateBrand, controller.update)
+	.get(isLoggedIn, tokenIsValid, controller.getAll)
+	.post(isLoggedIn, tokenIsValid, isBusinessAdmin, validateCreateBrand, controller.create)
+	.put(isLoggedIn, tokenIsValid, isBusinessAdmin, validateUpdateBrand, controller.update)
 
 routes
 	.route('/:id')
-	.get(isLoggedin, tokenIsValid, controller.getOne)
-	.delete(isLoggedin, tokenIsValid, isBusinessAdmin, controller.delete)
+	.get(isLoggedIn, tokenIsValid, controller.getOne)
+	.delete(isLoggedIn, tokenIsValid, isBusinessAdmin, controller.delete)
 
 export default routes
