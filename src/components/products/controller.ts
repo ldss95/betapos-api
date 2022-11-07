@@ -4,7 +4,7 @@ import moment from 'moment'
 
 import { deleteFile, notifyUpdate, round } from '../../helpers'
 import { Barcode } from '../barcodes/model'
-import { Product } from './model'
+import { Product, ProductLink } from './model'
 import { Business } from '../business/model'
 import { SaleProduct } from '../sales-products/model'
 import { Sale } from '../sales/model'
@@ -21,7 +21,6 @@ export default {
 
 			const { cost, price } = req.body
 			const profitPercent = cost && price ? round(((price - cost) / cost) * 100) : 0
-
 			const { id } = await Product.create(
 				{
 					...req.body,
@@ -29,10 +28,16 @@ export default {
 					businessId
 				},
 				{
-					include: {
-						model: Barcode,
-						as: 'barcodes'
-					}
+					include: [
+						{
+							model: Barcode,
+							as: 'barcodes'
+						},
+						{
+							model: ProductLink,
+							as: 'linkedProducts'
+						}
+					]
 				}
 			)
 

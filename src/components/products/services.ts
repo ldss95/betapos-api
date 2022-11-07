@@ -6,8 +6,8 @@ import { BarcodeProps } from '../barcodes/interface'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
-import { ProductProps } from './interface'
-import { Product } from './model'
+import { ProductLinkProps, ProductProps } from './interface'
+import { Product, ProductLink } from './model'
 
 interface GetAllProductsProps {
 	businessId: string;
@@ -140,6 +140,14 @@ export async function getAllProducts({
 			model: Category,
 			as: 'category',
 			required: false
+		},
+		{
+			model: ProductLink,
+			as: 'linkedProducts',
+			include: [{
+				model: Product,
+				as: 'child'
+			}]
 		}
 	]
 
@@ -327,49 +335,8 @@ export async function updateProduct(merchantId: string, product: ProductProps): 
 	Product.update(product, { where: { id } })
 	notifyUpdate('products', merchantId)
 
-	const barcodes = product?.barcodes || []
-	if (barcodes.length === 0) {
-		return
-	}
-
-	/**
-	 * Actualizar los codigos de barras
-	 */
-	// Eliminados
-	await Barcode.destroy({
-		where: {
-			[Op.and]: [
-				{ productId: id },
-				{
-					id: {
-						[Op.notIn]: barcodes?.map(({ id }: BarcodeProps) => id) || []
-					}
-				}
-			]
-		}
-	})
-
-	// Nuevos
-	await Barcode.bulkCreate(
-		barcodes
-			.filter(({ id }: BarcodeProps) => !id)
-			.map(({ barcode }: BarcodeProps) => ({
-				barcode,
-				productId: id
-			}))
-	)
-
-	// Modificados
-	const oldBarcodes = barcodes.filter(({ id }: BarcodeProps) => id)
-	for (const { id, barcode } of oldBarcodes) {
-		await Barcode.update(
-			{ barcode },
-			{
-				where: { id }
-			}
-		)
-	}
-	notifyUpdate('barcodes', merchantId)
+	handleUpdateBarcodes(id, product.barcodes, merchantId)
+	handleUpdateLinks(id, product.linkedProducts)
 }
 
 interface GetUpdatesResponse {
@@ -404,5 +371,89 @@ export async function getUpdates(businessId: string, date: string): Promise<GetU
 	return {
 		updated,
 		created: created.map((product) => product.toJSON())
+	}
+}
+
+async function handleUpdateBarcodes(productId: string, barcodes: BarcodeProps[], merchantId: string) {
+	// Eliminados
+	await Barcode.destroy({
+		where: {
+			[Op.and]: [
+				{ productId },
+				{
+					id: {
+						[Op.notIn]: barcodes?.map(({ id }) => id) || []
+					}
+				}
+			]
+		}
+	})
+
+	if (barcodes.length === 0) {
+		return notifyUpdate('barcodes', merchantId)
+	}
+
+	// Nuevos
+	await Barcode.bulkCreate(
+		barcodes
+			.filter(({ id }) => !id)
+			.map(({ barcode }) => ({
+				barcode,
+				productId
+			}))
+	)
+
+	// Modificados
+	const oldBarcodes = barcodes.filter(({ id }) => id)
+	for (const { id, barcode } of oldBarcodes) {
+		await Barcode.update(
+			{ barcode },
+			{
+				where: { id }
+			}
+		)
+	}
+	notifyUpdate('barcodes', merchantId)
+}
+
+async function handleUpdateLinks(productId: string, links: ProductLinkProps[]) {
+	// Eliminados
+	await ProductLink.destroy({
+		where: {
+			[Op.and]: [
+				{ parentProductId: productId },
+				{
+					id: {
+						[Op.notIn]: links?.map(({ id }) => id) || []
+					}
+				}
+			]
+		}
+	})
+
+	if (links.length === 0) {
+		return
+	}
+
+	// Nuevos
+	await ProductLink.bulkCreate(
+		links
+			.filter(({ id }) => !id)
+			.map(({ childProductId, quantityOnParent }) => ({
+				childProductId,
+				quantityOnParent,
+				parentProductId: productId
+			}))
+	)
+
+	// Modificados
+	const oldLinks = links.filter(({ id }) => id)
+	for (const { id, quantityOnParent } of oldLinks) {
+		await ProductLink.update(
+			{ quantityOnParent },
+			{
+				where: { id }
+			}
+		)
 	}
 }

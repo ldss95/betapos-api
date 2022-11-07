@@ -97,5 +97,6 @@ Barcode.belongsTo(Product, { foreignKey: 'productId', as: 'product' })
 Product.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
 Product.belongsTo(Brand, { foreignKey: 'brandId', as: 'brand' })
 Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' })
+ProductLink.belongsTo(Product, { foreignKey: 'childProductId', as: 'child' })
 
 export { Product }

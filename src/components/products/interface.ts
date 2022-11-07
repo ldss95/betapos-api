@@ -22,6 +22,7 @@ export interface ProductProps extends Model {
 	itbis: boolean;
 	isFractionable: boolean;
 	profitPercent: number;
+	linkedProducts: ProductLinkProps[];
 	isActive: boolean;
 	deletedAt: string;
 	createdAt: string;
