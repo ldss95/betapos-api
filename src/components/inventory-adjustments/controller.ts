@@ -45,17 +45,7 @@ export default {
 									FROM
 										inventory_adjustments
 									WHERE
-										productId = p.id AND
-										type = 'IN'
-								), 0) -
-								COALESCE((
-									SELECT
-										SUM(quantity)
-									FROM
-										inventory_adjustments
-									WHERE
-										productId = p.id AND
-										type = 'OUT'
+										productId = p.id
 								), 0)
 							),
 							2
@@ -70,7 +60,7 @@ export default {
 
 				const diference = quantity - stock
 
-				if (diference == 0) {
+				if (diference === 0 || quantity === stock) {
 					return res.sendStatus(204)
 				}
 
@@ -85,7 +75,12 @@ export default {
 				return res.sendStatus(201)
 			}
 
-			await InventoryAdjustment.create({ ...req.body, userId })
+			const data = req.body
+			if (data.type === 'OUT' && data.quantity > 0) {
+				data.quantity = data.quantity * -1
+			}
+
+			await InventoryAdjustment.create({ ...data, userId })
 			res.sendStatus(201)
 		} catch (error) {
 			res.sendStatus(500)

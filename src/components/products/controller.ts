@@ -203,11 +203,11 @@ export default {
 
 			if (adjustments.length > 0) {
 				transactions.push(
-					...adjustments.map(({ quantity, createdAt, description, type, id, user }) => ({
+					...adjustments.map(({ quantity, createdAt, description, id, user }) => ({
 						id,
 						description,
 						stock: 0,
-						quantity: type === 'IN' ? quantity : quantity * -1,
+						quantity: quantity,
 						date: createdAt,
 						type: 'INVENTORY_ADJUSTMENT',
 						user: user.firstName + ' ' + user.lastName,
