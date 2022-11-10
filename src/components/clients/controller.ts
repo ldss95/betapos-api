@@ -221,7 +221,8 @@ export default {
 					},
 					{
 						model: User,
-						as: 'seller'
+						as: 'seller',
+						paranoid: false
 					}
 				]
 			})
@@ -231,7 +232,8 @@ export default {
 				where: { clientId },
 				include: {
 					model: User,
-					as: 'user'
+					as: 'user',
+					paranoid: false
 				}
 			})
 
