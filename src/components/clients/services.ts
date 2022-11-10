@@ -1,4 +1,6 @@
 import { col, fn } from 'sequelize'
+
+import { round } from '../../helpers'
 import { ClientPayment } from '../clients-payments/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { SalePayment } from '../sales-payments/model'
@@ -49,5 +51,5 @@ export async function availableClientCredit(clientId: string): Promise<number> {
 		where: { clientId }
 	})
 
-	return (client.creditLimit || 0) - (client.debt || 0) - (payed || 0)
+	return round((client.creditLimit || 0) - ((client.debt || 0) - (payed || 0)))
 }
