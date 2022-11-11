@@ -131,7 +131,8 @@ export default {
 					include: [
 						{
 							model: User,
-							as: 'seller'
+							as: 'seller',
+							paranoid: false
 						}
 					],
 					where: {
@@ -197,7 +198,8 @@ export default {
 				},
 				include: {
 					model: User,
-					as: 'user'
+					as: 'user',
+					paranoid: false
 				}
 			})
 

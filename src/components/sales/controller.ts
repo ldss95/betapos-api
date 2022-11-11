@@ -190,11 +190,13 @@ export default {
 				{
 					model: Client,
 					as: 'client',
-					required: false
+					required: false,
+					paranoid: false
 				},
 				{
 					model: User,
-					as: 'seller'
+					as: 'seller',
+					paranoid: false
 				},
 				{
 					model: SalePaymentType,
@@ -236,11 +238,13 @@ export default {
 			include: [
 				{
 					model: Client,
-					as: 'client'
+					as: 'client',
+					paranoid: false
 				},
 				{
 					model: User,
-					as: 'seller'
+					as: 'seller',
+					paranoid: false
 				},
 				{
 					model: SaleProduct,

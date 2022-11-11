@@ -55,7 +55,8 @@ export default {
 					include: [
 						{
 							model: User,
-							as: 'user'
+							as: 'user',
+							paranoid: false
 						}
 					]
 				}

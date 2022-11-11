@@ -100,7 +100,8 @@ export async function getAllShifts(businessId: string, date?: string, userId?: s
 			as: 'user',
 			where: {
 				businessId
-			}
+			},
+			paranoid: false
 		},
 		order: [['date', 'DESC']],
 		where: {
