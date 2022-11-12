@@ -21,7 +21,7 @@ const InventoryAdjustment = db.define<InventoryAdjustmentProps>('inventory_adjus
 	},
 	description: DataTypes.TEXT,
 	quantity: {
-		type: DataTypes.INTEGER,
+		type: DataTypes.DOUBLE,
 		allowNull: false
 	},
 	userId: {
