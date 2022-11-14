@@ -364,7 +364,7 @@ export async function getUpdates(businessId: string, date: string): Promise<GetU
 	}
 }
 
-async function handleUpdateBarcodes(productId: string, barcodes: BarcodeProps[], merchantId: string) {
+async function handleUpdateBarcodes(productId: string, barcodes: BarcodeProps[] = [], merchantId: string) {
 	// Eliminados
 	await Barcode.destroy({
 		where: {
@@ -406,7 +406,7 @@ async function handleUpdateBarcodes(productId: string, barcodes: BarcodeProps[],
 	notifyUpdate('barcodes', merchantId)
 }
 
-async function handleUpdateLinks(productId: string, links: ProductLinkProps[]) {
+async function handleUpdateLinks(productId: string, links: ProductLinkProps[] = []) {
 	// Eliminados
 	await ProductLink.destroy({
 		where: {
