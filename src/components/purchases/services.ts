@@ -27,13 +27,15 @@ export async function getOnePurchase(id: string): Promise<PurchaseProps | null> 
 		include: [
 			{
 				model: Provider,
-				as: 'provider'
+				as: 'provider',
+				paranoid: false
 			},
 			{
 				model: PurchaseProduct,
 				include: [{
 					model: Product,
-					as: 'product'
+					as: 'product',
+					paranoid: false
 				}],
 				as: 'products'
 			}
