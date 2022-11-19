@@ -325,7 +325,10 @@ export async function updateProduct(merchantId: string, product: ProductProps): 
 	Product.update(product, { where: { id } })
 	notifyUpdate('products', merchantId)
 
-	handleUpdateBarcodes(id, product.barcodes, merchantId)
+	if (product.barcodes) {
+		handleUpdateBarcodes(id, product.barcodes, merchantId)
+	}
+
 	handleUpdateLinks(id, product.linkedProducts)
 }
 
