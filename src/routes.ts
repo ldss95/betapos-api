@@ -5,6 +5,7 @@ const router: Router = Router()
 
 import users from './components/users/routes'
 import clients from './components/clients/routes'
+import clientsGroups from './components/clients-groups/routes'
 import clientsPayments from './components/clients-payments/routes'
 import business from './components/business/routes'
 import barcodes from './components/barcodes/routes'
@@ -34,6 +35,7 @@ import computingScales from './components/computing-scales/routes'
 router.use('/auth', auth)
 router.use('/users', users)
 router.use('/clients', clients)
+router.use('/clients-groups', clientsGroups)
 router.use('/clients-payments', clientsPayments)
 router.use('/business', business)
 router.use('/business-types', businessTypes)
