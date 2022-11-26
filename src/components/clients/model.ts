@@ -2,8 +2,9 @@ import { DataTypes } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
+import { ClientsGroup } from '../clients-groups/model'
 import { ClientPayment } from '../clients-payments/model'
-import { ClientProps, ClientGroupProps } from './interface'
+import { ClientProps } from './interface'
 
 const Client = db.define<ClientProps>(
 	'client',
@@ -71,20 +72,8 @@ const Client = db.define<ClientProps>(
 	{ paranoid: true }
 )
 
-const ClientGroup = db.define<ClientGroupProps>('client_group', {
-	id: {
-		type: DataTypes.UUID,
-		defaultValue: DataTypes.UUIDV4,
-		primaryKey: true
-	},
-	name: {
-		type: DataTypes.STRING,
-		allowNull: false
-	}
-})
-
 Client.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
-Client.belongsTo(ClientGroup, { foreignKey: 'groupId', as: 'group' })
+Client.belongsTo(ClientsGroup, { foreignKey: 'groupId', as: 'group' })
 Client.hasMany(ClientPayment, { foreignKey: 'clientId', as: 'payments' })
 
 export { Client }

@@ -1,12 +1,13 @@
 import { Model } from 'sequelize'
 
+import { ClientsGroupProps } from '../clients-groups/interface'
 import { ClientPaymentProps } from '../clients-payments/interface'
 import { SaleProps } from '../sales/interface'
 
 export interface ClientProps extends Model {
 	id: string;
 	groupId: string;
-	group: ClientGroupProps;
+	group: ClientsGroupProps;
 	name: string;
 	dui: string;
 	photoUrl: string;
@@ -20,13 +21,6 @@ export interface ClientProps extends Model {
 	sales: SaleProps[];
 	creditLimit: number;
 	isBusiness: boolean;
-	createdAt: string;
-	updatedAt: string;
-}
-
-export interface ClientGroupProps extends Model {
-	id: string;
-	name: string;
 	createdAt: string;
 	updatedAt: string;
 }

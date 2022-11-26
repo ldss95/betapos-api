@@ -13,6 +13,7 @@ import { User } from '../users/model'
 import { ClientPaymentProps } from '../clients-payments/interface'
 import { SaleProps } from '../sales/interface'
 import { availableClientCredit } from './services'
+import { ClientsGroup } from '../clients-groups/model'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -56,7 +57,13 @@ export default {
 		}
 	},
 	getAll: (req: Request, res: Response) => {
-		Client.findAll({ where: { businessId: req.session!.businessId } })
+		Client.findAll({
+			include: {
+				model: ClientsGroup,
+				as: 'group'
+			},
+			where: { businessId: req.session!.businessId }
+		})
 			.then((clients) => res.status(200).send(clients))
 			.catch((error) => {
 				res.sendStatus(500)
@@ -66,7 +73,13 @@ export default {
 	getOne: (req: Request, res: Response) => {
 		const { id } = req.params
 
-		Client.findOne({ where: { id } })
+		Client.findOne({
+			include: {
+				model: ClientsGroup,
+				as: 'group'
+			},
+			where: { id }
+		})
 			.then((client) => res.status(200).send(client))
 			.catch((error) => {
 				res.sendStatus(500)
