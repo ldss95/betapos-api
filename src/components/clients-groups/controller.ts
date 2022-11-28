@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { getAllClientsGroups, getDebtByClientsGroup } from './services'
+import { applyClientsGroupPayment, getAllClientsGroups, getDebtByClientsGroup } from './services'
 
 export default {
 	getAll: async (req: Request, res: Response) => {
@@ -17,6 +17,16 @@ export default {
 			const { groupId } = req.params
 			const debt = await getDebtByClientsGroup(groupId)
 			res.status(200).send({ debt })
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	applyClientsGroupPayments: async (req: Request, res: Response) => {
+		try {
+			const { groupId, date } = req.body
+			await applyClientsGroupPayment(groupId, date, req.session!.userId)
+			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
 			throw error
