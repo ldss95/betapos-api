@@ -196,7 +196,7 @@ export async function generateClientsGroupDetailsReport(groupId: string, startAt
 					2
 				),
 				clientName: client.name,
-				clientDui: format.dui(client.dui),
+				clientDui: client.dui ? format.dui(client.dui) : '',
 				ticketNumber,
 				date: moment(createdAt).format('DD-MM-YYYY'),
 				time: moment(createdAt).format('hh:mm A')
