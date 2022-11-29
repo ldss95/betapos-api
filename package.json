@@ -7,7 +7,7 @@
     "postinstall": "patch-package",
     "clean": "rm -rf dist",
     "build": "tsc",
-    "copy-files": "cp src/404.html dist/",
+    "copy-files": "cp src/404.html dist/ && cp -r src/templates dist/",
     "create-firebase-credentials": "printenv FIREBASE_CREDENTIALS > firebase.json",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn src/server.ts",

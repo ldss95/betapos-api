@@ -6,6 +6,7 @@ import controller from './controller'
 
 routes.get('/', isLoggedIn, tokenIsValid, controller.getAll)
 routes.get('/debt/:groupId', isLoggedIn, tokenIsValid, controller.getDebtByGroup)
+routes.get('/detailed-report', isLoggedIn, controller.getDetailedReport)
 routes.post('/apply-payment', isLoggedIn, tokenIsValid, controller.applyClientsGroupPayments)
 
 export default routes

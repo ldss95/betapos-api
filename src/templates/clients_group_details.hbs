@@ -1,0 +1,76 @@
+<html>
+	<style>
+		body {
+			padding: 20px;
+		}
+
+		header {
+			text-align: center;
+		}
+
+		h1, h3, h6 {
+			margin: 0;
+		}
+
+		table {
+			width: 100%;
+			font-size: 8px;
+			border-collapse: collapse;
+		}
+
+		table thead th{
+			background:#656565;
+			color:#fff;
+			padding:5px 10px;
+			text-align: left;
+		}
+
+		table tbody tr td{
+			padding:8px 10px;
+			vertical-align: top;
+		}
+
+		table tbody tr:nth-child(even) td{
+			background: #f0f0f0;
+		}
+	</style>
+
+	<body>
+		<header>
+			<h1>{{businessName}}</h1>
+			<h3>Ventas a credito: {{groupName}}</h3>
+			<p>{{startDate}} - {{endDate}}</p>
+		</header>
+		<br>
+
+		<p>Fecha: {{date}}</p>
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Cliente</th>
+					<th style="width: 60px;">Cédula</th>
+					<th style="width: 60px;"># Ticket</th>
+					<th style="text-align: right;">Monto</th>
+					<th style="width: 50px;">Fecha</th>
+					<th style="width: 40px;">Hora</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each sales}}
+					<tr>
+						<td>{{ no }}</td>
+						<td>{{ clientName }}</td>
+						<td>{{ clientDui }}</td>
+						<td>{{ ticketNumber }}</td>
+						<td align="right">{{ amount }}</td>
+						<td>{{ date }}</td>
+						<td>{{ time }}</td>
+					</tr>
+				{{/each}}
+			</tbody>
+		</table>
+		<br>
+		<h4>Total: {{total}}</h4>
+	</body>
+</html>

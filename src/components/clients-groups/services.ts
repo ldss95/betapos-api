@@ -1,10 +1,19 @@
-import { QueryTypes } from 'sequelize'
+import { QueryTypes, Op } from 'sequelize'
+import { format, pdf } from '@ldss95/helpers'
+import path from 'path'
+import moment from 'moment'
 
 import { db } from '../../database/connection'
 import { round } from '../../helpers'
 import { ClientPayment } from '../clients-payments/model'
 import { ClientsGroupProps } from './interface'
 import { ClientsGroup } from './model'
+import { Sale } from '../sales/model'
+import { Client } from '../clients/model'
+import { SalePayment } from '../sales-payments/model'
+import { SalePaymentType } from '../sales-payments-types/model'
+import { User } from '../users/model'
+import { Business } from '../business/model'
 
 const CREDIT_ID = 'd14005a3-c39e-4a00-87b6-28939213a00f'
 
@@ -118,4 +127,90 @@ export async function applyClientsGroupPayment(groupId: string, date: string, us
 	}))
 
 	await ClientPayment.bulkCreate(payments.filter(({ amount }) => amount > 0))
+}
+
+export async function generateClientsGroupDetailsReport(groupId: string, startAt: string, endAt: string, userId: string) {
+	const fiao = await SalePaymentType.findOne({
+		where: {
+			name: 'Fiao'
+		}
+	})
+
+	const sales = await Sale.findAll({
+		include: [
+			{
+				model: Client,
+				as: 'client',
+				where: { groupId },
+				required: true,
+				paranoid: false
+			},
+			{
+				model: SalePayment,
+				as: 'payments',
+				where: {
+					typeId: fiao?.id
+				},
+				required: true
+			}
+		],
+		where: {
+			[Op.and]: [
+				{
+					createdAt: {
+						[Op.gt]: startAt + ' 00:00:00'
+					}
+				},
+				{
+					createdAt: {
+						[Op.lt]: endAt + ' 23:59:59'
+					}
+				}
+			]
+		},
+		order: [['createdAt', 'asc']]
+	})
+
+	const user = await User.findOne({
+		where: { id: userId },
+		include: {
+			model: Business,
+			as: 'business'
+		}
+	})
+
+	const group = await ClientsGroup.findByPk(groupId)
+
+	const templatePath = path.join(__dirname, '../../templates/clients_group_details.hbs')
+	return await pdf.toStream(templatePath, {
+		businessName: user?.business.name,
+		groupName: group?.name,
+		startDate: moment(startAt).format('DD-MM-YYYY'),
+		endDate: moment(endAt).format('DD-MM-YYYY'),
+		date: moment().format('DD-MM-YYYY'),
+		sales: sales.map(({ client, ticketNumber, createdAt, payments }, index) => {
+			return {
+				no: index + 1,
+				amount: format.cash(
+					round(payments.find(({ typeId }) => typeId === fiao?.id)?.amount || 0),
+					2
+				),
+				clientName: client.name,
+				clientDui: format.dui(client.dui),
+				ticketNumber,
+				date: moment(createdAt).format('DD-MM-YYYY'),
+				time: moment(createdAt).format('hh:mm A')
+			}
+		}),
+		total: format.cash(
+			round(
+				sales
+					.map(({ payments }) => payments)
+					.flat()
+					.filter(({ typeId }) => typeId === fiao?.id)
+					.reduce((total, payment) => total += payment.amount, 0)
+			),
+			2
+		)
+	})
 }
