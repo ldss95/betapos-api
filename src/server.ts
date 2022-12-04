@@ -10,7 +10,9 @@ function runServer() {
 	})
 }
 
-//Funcion anonima, para poder usar el return
+/**
+ * Funcion anonima, para poder usar el return
+ */
 (() => {
 	const isProd = ['prod', 'production'].includes(process.env.NODE_ENV!)
 	if (!isProd) {
