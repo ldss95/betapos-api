@@ -24,4 +24,5 @@ const db = new Sequelize({
 
 db.sync()
 
+
 export { db }
