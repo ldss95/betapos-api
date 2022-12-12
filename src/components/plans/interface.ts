@@ -1,10 +1,12 @@
 import { Model } from 'sequelize'
+
 import { PlanFeatureProps } from '../plan-features/interface'
 
 export interface PlanProps extends Model {
 	id: string;
 	name: string;
-	price: number;
+	monthlyPrice: number;
+	annualPrice: number;
 	features: PlanFeatureProps[];
 	isAvailable: boolean;
 	isActive: boolean;
