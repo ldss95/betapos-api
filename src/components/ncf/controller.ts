@@ -3,6 +3,7 @@ import { Op } from 'sequelize'
 
 import { NcfStatusName } from './interface'
 import { Ncf, NcfStatus } from './model'
+import { getAllNcfAvailability } from './services'
 
 export default {
 	uploadNcfFile: async (req: Request, res: Response) => {
@@ -98,6 +99,16 @@ export default {
 		try {
 			const states = await NcfStatus.findAll({ raw: true })
 			res.status(200).send(states)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getAvailability: async (req: Request, res: Response) => {
+		try {
+			const { businessId } = req.session!
+			const items = await getAllNcfAvailability(businessId)
+			res.status(200).send(items)
 		} catch (error) {
 			res.sendStatus(500)
 			throw error

@@ -10,5 +10,6 @@ import controller from './controller'
 routes.post('/upload', isLoggedIn, tokenIsValid, getFields.single('file'), controller.uploadNcfFile)
 routes.post('/', isLoggedIn, tokenIsValid, controller.getAll)
 routes.get('/states', isLoggedIn, tokenIsValid, controller.getStates)
+routes.get('/availability', isLoggedIn, tokenIsValid, controller.getAvailability)
 
 export default routes
