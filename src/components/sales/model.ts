@@ -22,6 +22,10 @@ const Sale = db.define<SaleProps>(
 			type: DataTypes.STRING,
 			allowNull: false
 		},
+		ncfTypeId:  DataTypes.STRING(4),
+		ncfNumber: DataTypes.INTEGER,
+		rnc: DataTypes.STRING(11),
+		businessName: DataTypes.STRING,
 		businessId: {
 			type: DataTypes.UUID,
 			allowNull: false

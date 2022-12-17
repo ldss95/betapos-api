@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
 import { Op } from 'sequelize'
+import { CustomError } from '../../errors'
 
 import { NcfStatusName } from './interface'
 import { Ncf, NcfStatus } from './model'
-import { getAllNcfAvailability } from './services'
+import { getAllNcfAvailability, getBusinessByRnc, getNextNcf } from './services'
 
 export default {
 	uploadNcfFile: async (req: Request, res: Response) => {
@@ -110,6 +111,35 @@ export default {
 			const items = await getAllNcfAvailability(businessId)
 			res.status(200).send(items)
 		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getByRnc: async (req: Request, res: Response) => {
+		try {
+			const { rnc } = req.params
+			const business = await getBusinessByRnc(rnc)
+			res.status(200).send(business)
+		} catch (error) {
+			res.sendStatus(500)
+			throw error
+		}
+	},
+	getNextNcf: async (req: Request, res: Response) => {
+		try {
+			const { type, lastNcf } = req.body
+			const merchantId = req.header('merchantId')
+			const nextNcf = await getNextNcf(type, lastNcf, merchantId!)
+			res.status(200).send({
+				ncfNumber: nextNcf
+			})
+		} catch (error) {
+			if (error instanceof CustomError) {
+				return res.status(error.status).send({
+					message: error.message
+				})
+			}
+
 			res.sendStatus(500)
 			throw error
 		}

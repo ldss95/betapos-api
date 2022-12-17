@@ -1,6 +1,7 @@
 import { Model } from 'sequelize'
 
 import { ClientProps } from '../clients/interface'
+import { NcfTypeId } from '../ncf/interface'
 import { SalePaymentTypeProps } from '../sales-payments-types/interface'
 import { SalePaymentProps } from '../sales-payments/interface'
 import { SaleProductProps } from '../sales-products/interface'
@@ -9,6 +10,10 @@ import { UserProps } from '../users/interface'
 export interface SaleProps extends Model {
 	id: string;
 	ticketNumber: string;
+	ncfTypeId: NcfTypeId | null;
+	ncfNumber: number | null;
+	rnc: string | null;
+	businessName: string | null;
 	businessId: string;
 	clientId: string;
 	client: ClientProps;
