@@ -3,6 +3,18 @@ import cluster from 'cluster'
 
 import { app } from './app'
 
+process.on('unhandledRejection', (reason, promise) => {
+	console.error(`
+		#######################################
+		#### THIS ERROR NEED TO BE STOPPED ####
+		#######################################
+
+		Reason: ${reason}
+		---------------------------------------
+		Location: ${promise}
+	`)
+})
+
 function runServer() {
 	const port = app.get('port')
 	app.listen(port, () => {
