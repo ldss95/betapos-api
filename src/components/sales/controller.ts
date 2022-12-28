@@ -205,7 +205,6 @@ export default {
 			]
 
 			const count = await Sale.count({ where, include })
-			const total = await Sale.sum('amount', { where })
 			const sales = await Sale.findAll({
 				where,
 				include,
@@ -217,6 +216,13 @@ export default {
 					order: [[sorter.field, sorter.order == 'ascend' ? 'ASC' : 'DESC']]
 				})
 			})
+			const total = await (async () => {
+				if (!search) {
+					return await Sale.sum('amount', { where })
+				}
+
+				return sales.reduce((total: number, sale) => total += sale.amount, 0)
+			})()
 
 			res.status(200).send({
 				count,
