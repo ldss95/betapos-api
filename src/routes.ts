@@ -31,6 +31,7 @@ import settings from './components/settings/routes'
 import ncf from './components/ncf/routes'
 import purchases from './components/purchases/routes'
 import computingScales from './components/computing-scales/routes'
+import plans from './components/plans/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -52,6 +53,7 @@ router.use('/providers', providers)
 router.use('/provinces', provinces)
 router.use('/sales', sales)
 router.use('/shifts', shifts)
+router.use('/plans', plans)
 router.use('/inventory-adjustments', inventoryAdjustments)
 router.use('/cash-flow', cashFlow)
 router.use('/profits', profits)
