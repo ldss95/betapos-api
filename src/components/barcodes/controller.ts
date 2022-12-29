@@ -1,10 +1,10 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { CustomError } from '../../errors'
 
 import { getUpdates } from './services'
 
 export default {
-	getUpdates: async (req: Request, res: Response) => {
+	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { date } = req.params
 			const merchantId = req.header('merchantId')
@@ -18,7 +18,7 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { literal } from 'sequelize'
 import moment from 'moment'
 
@@ -15,7 +15,7 @@ import { User } from '../users/model'
 import { createExcelFile, getAllProducts, getUpdates, updateProduct } from './services'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId, merchantId } = req.session!
 
@@ -46,20 +46,20 @@ export default {
 			res.status(201).send({ id })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { merchantId } = req.session!
 			await updateProduct(merchantId, req.body)
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	delete: async (req: Request, res: Response) => {
+	delete: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const { merchantId } = req.session!
@@ -70,10 +70,10 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const businessId = req.session!.businessId
 			const { limit, page, filters, search, sorter } = req.body
@@ -89,10 +89,10 @@ export default {
 			res.status(200).send(data)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getTransactions: async (req: Request, res: Response) => {
+	getTransactions: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const product = await Product.findOne({
@@ -234,20 +234,21 @@ export default {
 			res.status(200).send(transactions)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getOne: (req: Request, res: Response) => {
-		const { id } = req.params
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		Product.findOne({ where: { id } })
-			.then((product) => res.status(200).send(product))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			const product = await Product.findOne({ where: { id } })
+			res.status(200).send(product)
+		} catch(error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	addPhoto: async (req: Request, res: Response) => {
+	addPhoto: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			let { location } = req.file as Express.MulterS3.File
 			if (location.substr(0, 8) != 'https://') {
@@ -269,10 +270,10 @@ export default {
 			res.status(200).send({ photoUrl: location })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getUpdates: async (req: Request, res: Response) => {
+	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { date } = req.params
 			const merchantId = req.header('merchantId')
@@ -292,10 +293,10 @@ export default {
 			res.status(200).send(results)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	export: async (req: Request, res: Response) => {
+	export: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const doc = await createExcelFile(businessId)
@@ -303,10 +304,10 @@ export default {
 			res.status(200).send(doc)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	findByBarcode: async (req: Request, res: Response) => {
+	findByBarcode: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { barcode } = req.params
 			const { businessId } = req.session!
@@ -380,7 +381,7 @@ export default {
 			res.status(200).send(products.map((product) => product.toJSON()))
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

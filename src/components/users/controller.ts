@@ -1,40 +1,40 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { createUser, deleteUser, getAllUsers, getOneUser, getUsersList, getUsersUpdates, setUserImage, updateUser } from './services'
 import { CustomError } from '../../errors'
 
 export default {
-	getOne: async (req: Request, res: Response) => {
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const user = await getOneUser(id)
 			res.status(200).send(user)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const users = await getAllUsers(businessId)
 			res.status(200).send(users)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getList: async (req: Request, res: Response) => {
+	getList: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const users = await getUsersList(businessId)
 			res.status(200).send(users)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { merchantId } = req.session!
 			await updateUser(req.body, merchantId)
@@ -47,10 +47,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	delete: async (req: Request, res: Response) => {
+	delete: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const { force } = req.body
@@ -64,10 +64,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { merchantId, businessId } = req.session!
 			const id = await createUser(req.body, businessId, merchantId)
@@ -80,10 +80,10 @@ export default {
 			}
 
 			res.status(500).send(error)
-			throw error
+			next(error)
 		}
 	},
-	setProfileImage: async (req: Request, res: Response) => {
+	setProfileImage: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { userId } = req.session!
 			const  { location } = req.file as Express.MulterS3.File
@@ -91,10 +91,10 @@ export default {
 			res.status(200).send({ photoUrl: location })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	addPhoto: async (req: Request, res: Response) => {
+	addPhoto: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { location } = req.file as Express.MulterS3.File
 			const { id } = req.body
@@ -103,10 +103,10 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getUpdates: async (req: Request, res: Response) => {
+	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { date } = req.params
 			const merchantId = req.header('merchantId')
@@ -131,7 +131,7 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

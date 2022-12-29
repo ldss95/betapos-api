@@ -1,13 +1,11 @@
-import { Request, Response } from 'express'
-import moment from 'moment'
+import { NextFunction, Request, Response } from 'express'
 
-import { db } from '../../database/firebase'
 import { notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
 import { Setting } from './model'
 
 export default {
-	get: async (req: Request, res: Response) => {
+	get: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const settings = await Setting.findOne({
@@ -19,10 +17,10 @@ export default {
 			res.status(200).send(settings?.toJSON())
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId, merchantId } = req.session!
 
@@ -34,10 +32,10 @@ export default {
 			notifyUpdate('settings', merchantId)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getUpdates: async (req: Request, res: Response) => {
+	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const merchantId = req.header('merchantId')
 			const business = await Business.findOne({
@@ -59,7 +57,7 @@ export default {
 			res.status(200).send(settings?.toJSON())
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

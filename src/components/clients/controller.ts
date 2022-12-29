@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import moment from 'moment'
 import { Op, fn, col } from 'sequelize'
 
@@ -16,7 +16,7 @@ import { availableClientCredit } from './services'
 import { ClientsGroup } from '../clients-groups/model'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId, merchantId } = req.session!
 
@@ -26,10 +26,10 @@ export default {
 			res.status(201).send({ id })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.body
 			const { merchantId } = req.session!
@@ -40,10 +40,10 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	delete: async (req: Request, res: Response) => {
+	delete: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const { merchantId } = req.session!
@@ -53,40 +53,43 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: (req: Request, res: Response) => {
-		Client.findAll({
-			include: {
-				model: ClientsGroup,
-				as: 'group'
-			},
-			where: { businessId: req.session!.businessId }
-		})
-			.then((clients) => res.status(200).send(clients))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const clients = await Client.findAll({
+				include: {
+					model: ClientsGroup,
+					as: 'group'
+				},
+				where: { businessId: req.session!.businessId }
 			})
+			res.status(200).send(clients)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	getOne: (req: Request, res: Response) => {
-		const { id } = req.params
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		Client.findOne({
-			include: {
-				model: ClientsGroup,
-				as: 'group'
-			},
-			where: { id }
-		})
-			.then((client) => res.status(200).send(client))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
+			const client = await Client.findOne({
+				include: {
+					model: ClientsGroup,
+					as: 'group'
+				},
+				where: { id }
 			})
+
+			res.status(200).send(client)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	addPhoto: async (req: Request, res: Response) => {
+	addPhoto: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			let { location } = req.file as Express.MulterS3.File
 			const { merchantId } = req.session!
@@ -110,10 +113,10 @@ export default {
 			res.status(200).send({ photoUrl: location })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getUpdates: async (req: Request, res: Response) => {
+	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { date } = req.params
 			const merchantId = req.header('merchantId')
@@ -150,10 +153,10 @@ export default {
 			res.status(200).send({ created, updated })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getPending: async (req: Request, res: Response) => {
+	getPending: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const paymentType = await SalePaymentType.findOne({
@@ -207,10 +210,10 @@ export default {
 			)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getPendingDetails: async (req: Request, res: Response) => {
+	getPendingDetails: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { clientId } = req.params
 
@@ -282,10 +285,10 @@ export default {
 			res.status(200).send(data.reverse())
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAvailableCredit: async (req: Request, res: Response) => {
+	getAvailableCredit: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const available = await availableClientCredit(id)
@@ -293,7 +296,7 @@ export default {
 			res.status(200).send({ available })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

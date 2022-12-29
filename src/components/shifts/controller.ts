@@ -1,10 +1,10 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { createShift, getAllShifts, getShiftSummary, updateShift } from './services'
 import { CustomError } from '../../errors'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { shift } = req.body
 			const deviceId = req.header('deviceId')
@@ -18,10 +18,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.body.shift
 			const deviceId = req.header('deviceId')
@@ -35,10 +35,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const { date, userId } = req.query as { [key: string]: string }
@@ -47,17 +47,17 @@ export default {
 			res.status(200).send(shifts)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getSoldDetails: async (req: Request, res: Response) => {
+	getSoldDetails: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { shiftId } = req.params
 			const summary = await getShiftSummary(shiftId)
 			res.status(200).send(summary)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

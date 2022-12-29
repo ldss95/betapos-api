@@ -1,11 +1,11 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { QueryTypes } from 'sequelize'
 import { db } from '../../database/connection'
 
 import { InventoryAdjustment } from './model'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { userId } = req.session!
 			const { type, productId, quantity, description } = req.body
@@ -84,7 +84,7 @@ export default {
 			res.sendStatus(201)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

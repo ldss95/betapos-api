@@ -1,60 +1,65 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { Coupon } from './model'
 
 export default {
-	create: (req: Request, res: Response) => {
-		const { businessId } = req.session!
-		const coupon = {
-			...req.body,
-			businessId
+	create: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { businessId } = req.session!
+			const coupon = {
+				...req.body,
+				businessId
+			}
+
+			const { id } = await Coupon.create(coupon)
+			res.status(201).send({ id })
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
 		}
-
-		Coupon.create(coupon)
-			.then((coupon) => res.status(201).send({ id: coupon.id }))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
 	},
-	update: (req: Request, res: Response) => {
-		const { id } = req.body
+	update: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.body
 
-		Coupon.update(req.body, { where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			await Coupon.update(req.body, { where: { id } })
+			res.sendStatus(200)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	delete: (req: Request, res: Response) => {
-		const { id } = req.params
+	delete: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		Coupon.destroy({ where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			await Coupon.destroy({ where: { id } })
+			res.sendStatus(200)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	getAll: (req: Request, res: Response) => {
-		const { businessId } = req.session!
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { businessId } = req.session!
 
-		Coupon.findAll({ where: { businessId } })
-			.then((coupons) => res.status(200).send(coupons))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			const coupons = await Coupon.findAll({ where: { businessId } })
+			res.status(200).send(coupons)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	getOne: (req: Request, res: Response) => {
-		const { id } = req.params
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		Coupon.findOne({ where: { id } })
-			.then((coupon) => res.status(200).send(coupon))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			const coupon = await Coupon.findOne({ where: { id } })
+			res.status(200).send(coupon?.toJSON())
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	}
 }

@@ -1,78 +1,83 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize'
 
 import { Category } from './model'
 
 export default {
-	create: (req: Request, res: Response) => {
-		const category = {
-			...req.body,
-			businessId: req.session!.businessId
+	create: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const category = {
+				...req.body,
+				businessId: req.session!.businessId
+			}
+
+			await Category.create(category)
+			res.sendStatus(201)
+		} catch (error) {
+			if (error instanceof UniqueConstraintError) {
+				return res.status(400).send({
+					message: `Ya existe una categoría con el nombre "${req.body.name}"`
+				})
+			}
+
+			res.sendStatus(500)
+			next(error)
 		}
-
-		Category.create(category)
-			.then(() => res.sendStatus(201))
-			.catch((error) => {
-				if (error instanceof UniqueConstraintError) {
-					return res.status(400).send({
-						message: `Ya existe una categoría con el nombre "${req.body.name}"`
-					})
-				}
-
-				res.sendStatus(500)
-				throw error
-			})
 	},
-	update: (req: Request, res: Response) => {
-		const { id } = req.body
+	update: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.body
 
-		Category.update(req.body, { where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				if (error instanceof UniqueConstraintError) {
-					return res.status(400).send({
-						message: `Ya existe una categoría con el nombre "${req.body.name}"`
-					})
-				}
+			await Category.update(req.body, { where: { id } })
+			res.sendStatus(200)
+		} catch (error) {
+			if (error instanceof UniqueConstraintError) {
+				return res.status(400).send({
+					message: `Ya existe una categoría con el nombre "${req.body.name}"`
+				})
+			}
 
-				res.sendStatus(500)
-				throw error
-			})
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	delete: (req: Request, res: Response) => {
-		const { id } = req.params
+	delete: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		Category.destroy({ where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				if (error instanceof ForeignKeyConstraintError) {
-					return res.status(400).send({
-						message: 'Esta categoria no puede ser eliminada ya que está en uso'
-					})
-				}
+			await Category.destroy({ where: { id } })
+			res.sendStatus(200)
+		} catch (error) {
+			if (error instanceof ForeignKeyConstraintError) {
+				return res.status(400).send({
+					message: 'Esta categoria no puede ser eliminada ya que está en uso'
+				})
+			}
 
-				res.sendStatus(500)
-				throw error
-			})
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	getAll: (req: Request, res: Response) => {
-		const { businessId } = req.session!
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { businessId } = req.session!
 
-		Category.findAll({ where: { businessId }, order: [['name', 'ASC']] })
-			.then((categories) => res.status(200).send(categories))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			const categories = await Category.findAll({ where: { businessId }, order: [['name', 'ASC']] })
+			res.status(200).send(categories)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	getOne: (req: Request, res: Response) => {
-		const { id } = req.params
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		Category.findOne({ where: { id } })
-			.then((category) => res.status(200).send(category))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			const category = await Category.findOne({ where: { id } })
+			res.status(200).send(category)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	}
 }

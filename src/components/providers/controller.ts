@@ -1,11 +1,11 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize'
 
 import { Provider } from './model'
 import { Bank } from '../banks/model'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			await Provider.create({ ...req.body, businessId })
@@ -29,10 +29,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.body
 			await Provider.update(req.body, { where: { id } })
@@ -56,10 +56,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	delete: async (req: Request, res: Response) => {
+	delete: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			await Provider.destroy({ where: { id } })
@@ -73,24 +73,26 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: (req: Request, res: Response) => {
-		Provider.findAll({
-			order: [['name', 'ASC']],
-			include: {
-				model: Bank,
-				as: 'bank'
-			},
-			where: {
-				businessId: req.session!.businessId
-			}
-		})
-			.then((providers) => res.status(200).send(providers.map((provider) => provider.toJSON())))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const providers = await Provider.findAll({
+				order: [['name', 'ASC']],
+				include: {
+					model: Bank,
+					as: 'bank'
+				},
+				where: {
+					businessId: req.session!.businessId
+				}
 			})
+
+			res.status(200).send(providers.map((provider) => provider.toJSON()))
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	}
 }

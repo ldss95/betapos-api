@@ -1,9 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { ClientPayment } from './model'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { clientId, amount, description } = req.body
 			const { userId } = req.session!
@@ -18,7 +18,7 @@ export default {
 			res.status(201).send(payment.toJSON())
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

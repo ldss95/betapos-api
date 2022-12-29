@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Op } from 'sequelize'
 import { CustomError } from '../../errors'
 
@@ -7,7 +7,7 @@ import { Ncf, NcfStatus } from './model'
 import { getAllNcfAvailability, getBusinessByRnc, getNextNcf } from './services'
 
 export default {
-	uploadNcfFile: async (req: Request, res: Response) => {
+	uploadNcfFile: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { file } = req
 
@@ -31,10 +31,10 @@ export default {
 			console.log('Se ha cargado todo el archivo de RNC')
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { pagination, filters, sorter, search } = req.body
 			const pageSize = pagination?.pageSize || 100
@@ -93,39 +93,39 @@ export default {
 			})
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getStates: async (req: Request, res: Response) => {
+	getStates: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const states = await NcfStatus.findAll({ raw: true })
 			res.status(200).send(states)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAvailability: async (req: Request, res: Response) => {
+	getAvailability: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const items = await getAllNcfAvailability(businessId)
 			res.status(200).send(items)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getByRnc: async (req: Request, res: Response) => {
+	getByRnc: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { rnc } = req.params
 			const business = await getBusinessByRnc(rnc)
 			res.status(200).send(business)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getNextNcf: async (req: Request, res: Response) => {
+	getNextNcf: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { type, lastNcf } = req.body
 			const merchantId = req.header('merchantId')
@@ -141,7 +141,7 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

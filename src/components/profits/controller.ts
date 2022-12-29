@@ -1,11 +1,11 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { Op, fn, col, literal } from 'sequelize'
 
 import { SaleProduct } from '../sales-products/model'
 import { Sale } from '../sales/model'
 
 export default {
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			interface ReqBodyProps {
 				groupBy: 'TICKET' | 'DAY' | 'MONTH' | 'YEAR';
@@ -165,7 +165,7 @@ export default {
 			}
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

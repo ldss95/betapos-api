@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { Op } from 'sequelize'
 
 import { Shift } from '../shifts/model'
@@ -6,7 +6,7 @@ import { User } from '../users/model'
 import { CashFlow } from './model'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { cashFlow } = req.body
 
@@ -30,10 +30,10 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const { shiftId } = req.query
@@ -65,7 +65,7 @@ export default {
 			res.status(200).send(data.map((item) => item.toJSON()))
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

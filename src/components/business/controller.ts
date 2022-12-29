@@ -1,40 +1,40 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { UniqueConstraintError } from 'sequelize'
 
 import { getAllBusiness, getOneBusiness, updateBusiness, updateBusinessLogo } from './services'
 
 export default {
-	getOne: async (req: Request, res: Response) => {
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const business = await getOneBusiness({ id })
 			res.status(200).send(business)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getByMerchantId: async (req: Request, res: Response) => {
+	getByMerchantId: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const merchantId = req.header('merchantId')
 			const business = await getOneBusiness({ merchantId })
 			res.status(200).send(business)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { roleCode, id } = req.session!
 			const business = await getAllBusiness(roleCode, id)
 			res.status(200).send(business)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { merchantId } = req.session!
 			await updateBusiness(req.body, merchantId)
@@ -50,10 +50,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	setLogoImage: async (req: Request, res: Response) => {
+	setLogoImage: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.session!.businessId
 			const { location } = req.file as Express.MulterS3.File
@@ -62,10 +62,10 @@ export default {
 			res.status(200).send({ logoUrl })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	confirm: async (req: Request, res: Response) => {
+	confirm: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { merchantId } = req.query
 			const business = await getOneBusiness({ merchantId: `${merchantId}` })
@@ -77,7 +77,7 @@ export default {
 			res.status(200).send({ name: business.name, id: business.id })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

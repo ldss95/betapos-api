@@ -1,10 +1,10 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize'
 
 import { createBrand, deleteBrand, getOneBrand, listAllBrands, updateBrand } from './services'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			await createBrand(req.body.name, req.session!.businessId)
 			res.sendStatus(201)
@@ -16,10 +16,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.body
 			await updateBrand(id, req.body.name)
@@ -32,10 +32,10 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	delete: async (req: Request, res: Response) => {
+	delete: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			await deleteBrand(id)
@@ -48,27 +48,27 @@ export default {
 			}
 
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const brands = await listAllBrands(businessId)
 			res.status(200).send(brands)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getOne: async (req: Request, res: Response) => {
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const brand = await getOneBrand(id)
 			res.status(200).send(brand)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }

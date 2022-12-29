@@ -1,9 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { login as handleLogin, changePassword as handleChangePassword, createAccount } from './services'
 
 export default {
-	login: async (req: Request, res: Response) => {
+	login: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { email, password } = req.body
 			const { loggedin, user, token } = await handleLogin(email, password)
@@ -31,10 +31,10 @@ export default {
 			})
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	changePassword: async (req: Request, res: Response) => {
+	changePassword: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { oldPassword, newPassword } = req.body
 			const { userId, merchantId } = req.session!
@@ -49,10 +49,10 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	signup: async (req: Request, res: Response) => {
+	signup: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { user, business, partnerCode } = req.body
 			const { error } = await createAccount(user, business, partnerCode)
@@ -63,14 +63,14 @@ export default {
 			res.sendStatus(201)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	logout: (req: Request, res: Response) => {
+	logout: (req: Request, res: Response, next: NextFunction) => {
 		req.session?.destroy((error) => {
 			if (error) {
 				res.sendStatus(500)
-				throw error
+				next(error)
 			}
 
 			res.sendStatus(204)

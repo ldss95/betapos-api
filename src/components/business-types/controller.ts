@@ -1,27 +1,27 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import { BusinessType } from './model'
 
 export default {
-	getAll: (req: Request, res: Response) => {
-		BusinessType.findAll({ order: [['name', 'ASC']] })
-			.then((types) => {
-				const other = types.find((type) => type.code === 'OTHE')
-				res.status(200).send([...types.filter((type) => type.code !== 'OTHE'), other])
-			})
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const types = await BusinessType.findAll({ order: [['name', 'ASC']] })
+			const other = types.find((type) => type.code === 'OTHE')
+			res.status(200).send([...types.filter((type) => type.code !== 'OTHE'), other])
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	getOne: (req: Request, res: Response) => {
-		const { id } = req.params
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		BusinessType.findOne({ where: { id } })
-			.then((type) => res.status(200).send(type))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			const type = await BusinessType.findOne({ where: { id } })
+			res.status(200).send(type)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	}
 }

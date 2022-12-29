@@ -1,19 +1,20 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
+
 import { Business } from '../business/model'
 import { createComputingScale, deleteComputingScale, getAllComputingScale, getComputingScalesUpdates, updateComputingScale } from './services'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId, merchantId } = req.session!
 			await createComputingScale({ ...req.body, businessId }, merchantId)
 			res.sendStatus(201)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	update: async (req: Request, res: Response) => {
+	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id, ...scale } = req.body
 			const { merchantId } = req.session!
@@ -22,10 +23,10 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	delete: async (req: Request, res: Response) => {
+	delete: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const { merchantId } = req.session!
@@ -34,20 +35,20 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId } = req.session!
 			const scales = await getAllComputingScale(businessId)
 			res.status(200).send(scales)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getUpdates: async (req: Request, res: Response) => {
+	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { date } = req.params
 			const merchantId = req.header('merchantId')
@@ -67,7 +68,7 @@ export default {
 			res.status(200).send(results)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
 }

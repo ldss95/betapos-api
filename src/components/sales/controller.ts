@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { ForeignKeyConstraintError, Op, UniqueConstraintError } from 'sequelize'
 
 import { Sale } from './model'
@@ -14,7 +14,7 @@ import { getSalesSummary } from './services'
 import { notifyUpdate } from '../../helpers'
 
 export default {
-	create: async (req: Request, res: Response) => {
+	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { ticket } = req.body
 			const merchantId = req.header('merchantId')
@@ -71,31 +71,32 @@ export default {
 				})
 			}
 
-			res.sendStatus(500)
-			throw error
+			res.status(500).send(error)
+			next(error)
 		}
 	},
-	update: (req: Request, res: Response) => {
-		const { id } = req.body
+	update: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.body
 
-		Sale.update(req.body, { where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+			await Sale.update(req.body, { where: { id } })
+			res.sendStatus(200)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	delete: (req: Request, res: Response) => {
-		const { id } = req.params
-
-		Sale.destroy({ where: { id } })
-			.then(() => res.sendStatus(200))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
-			})
+	delete: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
+			await Sale.destroy({ where: { id } })
+			res.sendStatus(200)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	getAll: async (req: Request, res: Response) => {
+	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { pagination, filters, sorter, search, dateFrom, dateTo, shiftId } = req.body
 			const currentPage = pagination.current || 1
@@ -231,52 +232,53 @@ export default {
 			})
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getOne: (req: Request, res: Response) => {
-		const { id } = req.params
+	getOne: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.params
 
-		Sale.findOne({
-			where: {
-				[Op.and]: [{ id }, { businessId: req.session!.businessId }]
-			},
-			include: [
-				{
-					model: Client,
-					as: 'client',
-					paranoid: false
+			const sale = await Sale.findOne({
+				where: {
+					[Op.and]: [{ id }, { businessId: req.session!.businessId }]
 				},
-				{
-					model: User,
-					as: 'seller',
-					paranoid: false
-				},
-				{
-					model: SaleProduct,
-					as: 'products',
-					include: [
-						{
-							model: Product,
-							as: 'product',
-							paranoid: false
-						}
-					],
-					paranoid: false
-				},
-				{
-					model: SalePaymentType,
-					as: 'paymentType'
-				}
-			]
-		})
-			.then((sale) => res.status(200).send(sale?.toJSON()))
-			.catch((error) => {
-				res.sendStatus(500)
-				throw error
+				include: [
+					{
+						model: Client,
+						as: 'client',
+						paranoid: false
+					},
+					{
+						model: User,
+						as: 'seller',
+						paranoid: false
+					},
+					{
+						model: SaleProduct,
+						as: 'products',
+						include: [
+							{
+								model: Product,
+								as: 'product',
+								paranoid: false
+							}
+						],
+						paranoid: false
+					},
+					{
+						model: SalePaymentType,
+						as: 'paymentType'
+					}
+				]
 			})
+			res.status(200).send(sale?.toJSON())
+		} catch(error) {
+			res.sendStatus(500)
+			next(error)
+		}
 	},
-	removeProduct: async (req: Request, res: Response) => {
+	removeProduct: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			const config = {
@@ -304,19 +306,19 @@ export default {
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	cancel: async (req: Request, res: Response) => {
+	cancel: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
 			await Sale.update({ status: 'CANCELLED' }, { where: { id } })
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	},
-	getSummary: async (req: Request, res: Response) => {
+	getSummary: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { type } = req.params
 			const { businessId } = req.session!
@@ -325,7 +327,7 @@ export default {
 			res.status(200).send(summary)
 		} catch (error) {
 			res.sendStatus(500)
-			throw error
+			next(error)
 		}
 	}
 }
