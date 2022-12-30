@@ -16,7 +16,8 @@ export async function getAllPurchases(businessId: string): Promise<PurchaseProps
 		include: {
 			model: Provider,
 			as: 'provider'
-		}
+		},
+		order: [['date', 'DESC']]
 	})
 
 	return purchases.map(purchase => purchase.toJSON())
