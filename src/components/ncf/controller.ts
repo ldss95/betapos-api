@@ -4,7 +4,7 @@ import { CustomError } from '../../errors'
 
 import { NcfStatusName } from './interface'
 import { Ncf, NcfStatus } from './model'
-import { getAllNcfAvailability, getBusinessByRnc, getNextNcf } from './services'
+import { getAllNcfAvailability, getAllNcfTypes, getBusinessByRnc, getNextNcf, updateAvailability } from './services'
 
 export default {
 	uploadNcfFile: async (req: Request, res: Response, next: NextFunction) => {
@@ -115,6 +115,25 @@ export default {
 			next(error)
 		}
 	},
+	updateAvailability: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { typeId, startOn, stopOn, expireAt, id } = req.body
+			const { businessId } = req.session!
+			await updateAvailability({
+				businessId,
+				startOn,
+				stopOn,
+				expireAt,
+				typeId,
+				id
+			})
+
+			res.sendStatus(204)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
+	},
 	getByRnc: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { rnc } = req.params
@@ -140,6 +159,15 @@ export default {
 				})
 			}
 
+			res.sendStatus(500)
+			next(error)
+		}
+	},
+	getTypes: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const types = await getAllNcfTypes()
+			res.status(200).send(types)
+		} catch (error) {
 			res.sendStatus(500)
 			next(error)
 		}

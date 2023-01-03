@@ -4,8 +4,8 @@ import { Op } from 'sequelize'
 import { CustomError } from '../../errors'
 import { Business } from '../business/model'
 import { Sale } from '../sales/model'
-import { NcfAvailabilityProps, NcfProps, NcfTypeId } from './interface'
-import { Ncf, NcfAvailability, NcfStatus } from './model'
+import { NcfAvailabilityProps, NcfProps, NcfTypeId, NcfTypeProps } from './interface'
+import { Ncf, NcfAvailability, NcfStatus, NcfType } from './model'
 
 export async function getAllNcfAvailability(businessId: string): Promise<NcfAvailabilityProps[]> {
 	const items = await NcfAvailability.findAll({
@@ -18,38 +18,54 @@ export async function getAllNcfAvailability(businessId: string): Promise<NcfAvai
 	return items
 }
 
-export async function getNextNcfNumber(merchantId: string, ncfTypeId: NcfTypeId, lastIdUsed = 0) {
-	const business = await Business.findOne({
-		where: {
-			merchantId
-		}
-	})
+interface UpdateAvailabilityProps {
+	businessId: string;
+	id: string | null;
+	startOn: number;
+	stopOn: number;
+	expireAt: string;
+	typeId: NcfTypeId;
+}
+export async function updateAvailability(params: UpdateAvailabilityProps): Promise<void> {
+	const { startOn, stopOn, expireAt, id, businessId, typeId } = params
 
-	if (!business) {
-		throw new CustomError({
-			status: 400,
-			message: 'Merchant ID invalido'
-		})
+	if (id) {
+		await NcfAvailability.update(
+			{
+				startOn,
+				stopOn,
+				expireAt
+			},
+			{
+				where: {
+					[Op.and]: [
+						{ businessId },
+						{ id },
+						{ typeId }
+					]
+				}
+			}
+		)
+
+		return
 	}
 
-	if (!business.isActive) {
-		throw new CustomError({
-			status: 400,
-			message: 'Cuenta suspendida'
-		})
-	}
-
-	const lastSale = await Sale.findOne({
-		where: {
-			[Op.and]: [
-				{
-					businessId: business.id
-				},
-				{ ncfTypeId }
-			]
-		},
-		order: [['ncfNumber', 'DESC']]
+	await NcfAvailability.create({
+		businessId,
+		startOn,
+		stopOn,
+		expireAt,
+		typeId
 	})
+}
+
+export async function getAllNcfTypes(): Promise<NcfTypeProps[]> {
+	const types = await NcfType.findAll({
+		raw: true,
+		order: [['id', 'ASC']]
+	})
+
+	return types
 }
 
 export async function getBusinessByRnc(rnc: string): Promise<NcfProps | null> {
