@@ -138,11 +138,7 @@ export async function getNextNcf(typeId: NcfTypeId, lastLocalNcf: number, mercha
 			return 0
 		}
 
-		if (lastCloudNcf > lastLocalNcf) {
-			return lastCloudNcf
-		} else {
-			return lastLocalNcf
-		}
+		return Math.max(lastCloudNcf, lastLocalNcf, availability.startOn)
 	})()
 
 	return lastNcf + 1
