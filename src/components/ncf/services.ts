@@ -133,13 +133,9 @@ export async function getNextNcf(typeId: NcfTypeId, lastLocalNcf: number, mercha
 
 	const lastCloudNcf = lastTicket?.ncfNumber ?? 0
 
-	const lastNcf = (() => {
-		if (!lastLocalNcf && !lastCloudNcf) {
-			return 0
-		}
+	if (!lastLocalNcf && !lastCloudNcf) {
+		return availability.startOn
+	}
 
-		return Math.max(lastCloudNcf, lastLocalNcf, availability.startOn)
-	})()
-
-	return lastNcf + 1
+	return Math.max(lastCloudNcf || 0, lastLocalNcf || 0, (availability.startOn || 0) - 1) + 1
 }
