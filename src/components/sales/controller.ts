@@ -10,7 +10,7 @@ import { Client } from '../clients/model'
 import { User } from '../users/model'
 import { Product } from '../products/model'
 import { SalePaymentType } from '../sales-payments-types/model'
-import { getSalesSummary } from './services'
+import { createExcelFile, getSalesSummary } from './services'
 import { notifyUpdate } from '../../helpers'
 
 export default {
@@ -325,6 +325,18 @@ export default {
 			const summary = await getSalesSummary(businessId, type)
 
 			res.status(200).send(summary)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
+	},
+	export: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { dateFrom, dateTo } = req.query
+			const { businessId } = req.session!
+			const doc = await createExcelFile(businessId, dateFrom?.toString(), dateTo?.toString())
+
+			res.status(200).send(doc)
 		} catch (error) {
 			res.sendStatus(500)
 			next(error)

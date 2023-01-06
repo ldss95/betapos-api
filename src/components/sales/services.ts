@@ -1,13 +1,18 @@
+import { format } from '@ldss95/helpers'
 import moment from 'moment'
 import { literal, Op, QueryTypes } from 'sequelize'
+import xlsx from 'json-as-xlsx'
 
 import { db } from '../../database/connection'
+import { Client } from '../clients/model'
+import { Product } from '../products/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { SalePayment } from '../sales-payments/model'
 import { SaleProductProps } from '../sales-products/interface'
 import { SaleProduct } from '../sales-products/model'
 import { SaleProps } from './interface'
 import { Sale } from './model'
+import { round } from '../../helpers'
 
 export async function getSalesSummary(businessId: string, type: string) {
 	if (type == 'today') {
@@ -318,4 +323,152 @@ async function year(businessId: string) {
 		creditsAmount: credits.find((credit) => credit.month == month)?.amount || 0,
 		name: moment(date).locale('es').format('MMMM')
 	}))
+}
+
+export async function createExcelFile(businessId: string, dateFrom?: string, dateTo?: string): Promise<Buffer | undefined> {
+	const conditions: any[] = [{ businessId }]
+	if (dateFrom && dateTo) {
+		conditions.push({
+			createdAt: {
+				[Op.between]: [`${dateFrom} 00:00:00`, `${dateTo} 23:59:59`]
+			}
+		})
+	} else if (dateFrom) {
+		conditions.push({
+			createdAt: {
+				[Op.gte]: `${dateFrom} 00:00:00`
+			}
+		})
+	} else if (dateTo) {
+		conditions.push({
+			createdAt: {
+				[Op.lte]: `${dateFrom} 23:59:59`
+			}
+		})
+	}
+
+
+	const sales = await Sale.findAll({
+		where: {
+			[Op.and]: conditions
+		},
+		include: [
+			{
+				model: Client,
+				as: 'client',
+				paranoid: false
+			},
+			{
+				model: SalePaymentType,
+				as: 'paymentType'
+			},
+			{
+				model: SaleProduct,
+				as: 'products',
+				include: [{
+					model: Product,
+					as: 'product',
+					paranoid: false
+				}]
+			}
+		],
+		order: [['createdAt', 'ASC']]
+	})
+
+	const columns = [
+		{
+			label: 'NO',
+			value: 'ticketNumber'
+		},
+		{
+			label: 'Cliente',
+			value: (sale: any): string => sale?.client?.name || ''
+		},
+		{
+			label: 'NCF',
+			value: ({ ncfNumber, ncfTypeId }: any): string => {
+				if (!ncfNumber) {
+					return ''
+				}
+
+				return `B${ncfTypeId}${ncfNumber.toString().padStart(8, '0')}`
+			}
+		},
+		{
+			label: 'RNC',
+			value: 'rnc'
+		},
+		{
+			label: 'Razon Social',
+			value: 'businessName'
+		},
+		{
+			label: 'Sub Total',
+			value: ({ products, amount, discount }: any) => {
+				const itbis = products.reduce((total: number, { quantity, product, price }: SaleProductProps) => {
+					if (!product.itbis) {
+						return total
+					}
+
+					return total + ((quantity * price) - ((100 * quantity * price) / (100 + 18)))
+				}, 0)
+
+				return round(amount + discount - itbis)
+			}
+		},
+		{
+			label: 'Descuentos',
+			value: ({ discount }: any) => round(discount)
+		},
+		{
+			label: 'ITBIS',
+			value: ({ products }: any) => {
+				const itbis = products.reduce((total: number, { quantity, product, price }: SaleProductProps) => {
+					if (!product.itbis) {
+						return total
+					}
+
+					return total + ((quantity * price) - ((100 * quantity * price) / (100 + 18)))
+				}, 0)
+
+				return round(itbis)
+			}
+		},
+		{
+			label: 'Total',
+			value: ({ amount }: any) => round(amount)
+		},
+		{
+			label: 'Metodo de pago',
+			value: ({ paymentType }: any) => paymentType.name
+		},
+		{
+			label: 'Fecha',
+			value: ({ createdAt }: any) => moment(createdAt).format('DD/MM/YYYY')
+		},
+		{
+			label: 'Hora',
+			value: ({ createdAt }: any) => moment(createdAt).format('hh:mm A')
+		},
+		{
+			label: 'Estado',
+			value: ({ status }: any) => status === 'DONE' ? 'OK' : 'Cancelada'
+		}
+	]
+
+	const data = [
+		{
+			sheet: 'Ventas',
+			columns,
+			content: sales.map((sale) => sale.toJSON())
+		}
+	]
+
+	return xlsx(data, {
+		fileName: 'Beta POS Ventas',
+		extraLength: 3,
+		writeOptions: {
+			type: 'buffer'
+		}
+	})
 }
