@@ -2,25 +2,10 @@ import { NextFunction, Request, Response } from 'express'
 import { Op } from 'sequelize'
 import { CustomError } from '../../errors'
 
-import { NcfProps } from './interface'
 import { Ncf, NcfStatus } from './model'
-import { getAllNcfAvailability, getAllNcfTypes, getBusinessByRnc, getNextNcf, insertNewRNCList, updateAvailability } from './services'
+import { getAllNcfAvailability, getAllNcfTypes, getBusinessByRnc, getNextNcf, updateAvailability } from './services'
 
 export default {
-	uploadNcfFile: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const data = req.body as NcfProps[]
-			if (typeof data !== 'object' || data.length == 0) {
-				return res.sendStatus(400)
-			}
-
-			insertNewRNCList(data)
-			res.sendStatus(204)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
-	},
 	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { pagination, filters, sorter, search } = req.body

@@ -139,11 +139,3 @@ export async function getNextNcf(typeId: NcfTypeId, lastLocalNcf: number, mercha
 
 	return Math.max(lastCloudNcf || 0, lastLocalNcf || 0, (availability.startOn || 0) - 1) + 1
 }
-
-export async function insertNewRNCList(data: NcfProps[]) {
-	await Ncf.truncate()
-	for (let i = 0; i < data.length / 10000; i++) {
-		await Ncf.bulkCreate(data.slice(i * 10000, (i + 1) * 10000), { ignoreDuplicates: true })
-	}
-	console.log('Lista RNC Cargada')
-}
