@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { UniqueConstraintError } from 'sequelize'
 
 import { createShift, getAllShifts, getShiftSummary, updateShift } from './services'
 import { CustomError } from '../../errors'
@@ -15,6 +16,10 @@ export default {
 				return res.status(error.status).send({
 					message: error.message
 				})
+			}
+
+			if (error instanceof UniqueConstraintError) {
+				return res.sendStatus(201)
 			}
 
 			res.sendStatus(500)
