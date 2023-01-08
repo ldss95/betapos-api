@@ -4,7 +4,7 @@ import { CustomError } from '../../errors'
 
 import { NcfProps } from './interface'
 import { Ncf, NcfStatus } from './model'
-import { getAllNcfAvailability, getAllNcfTypes, getBusinessByRnc, getNextNcf, updateAvailability } from './services'
+import { getAllNcfAvailability, getAllNcfTypes, getBusinessByRnc, getNextNcf, insertNewRNCList, updateAvailability } from './services'
 
 export default {
 	uploadNcfFile: async (req: Request, res: Response, next: NextFunction) => {
@@ -14,13 +14,8 @@ export default {
 				return res.sendStatus(400)
 			}
 
+			insertNewRNCList(data)
 			res.sendStatus(204)
-			await Ncf.truncate()
-			for (let i = 0; i < data.length / 10000; i++) {
-				await Ncf.bulkCreate(data.slice(i * 10000, (i + 1) * 10000), { ignoreDuplicates: true })
-			}
-
-			console.log('Se ha cargado todo el archivo de RNC')
 		} catch (error) {
 			res.sendStatus(500)
 			next(error)
