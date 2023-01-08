@@ -9,14 +9,7 @@ import { getAllNcfAvailability, getAllNcfTypes, getBusinessByRnc, getNextNcf, up
 export default {
 	uploadNcfFile: async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const { file } = req
-
-			if (!file) {
-				return res.sendStatus(400)
-			}
-
-			const text = file.buffer.toString('utf-8')
-			const data = await txtToJson(text)
+			const data = await txtToJson(req.body)
 
 			if (data.length == 0) {
 				return res.sendStatus(400)
