@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { Op } from 'sequelize'
+import { ForeignKeyConstraintError, Op } from 'sequelize'
 
 import { Shift } from '../shifts/model'
 import { User } from '../users/model'
@@ -27,8 +27,15 @@ export default {
 				...cashFlow,
 				businessId
 			})
-			res.sendStatus(204)
+
+			res.sendStatus(201)
 		} catch (error) {
+			if (error instanceof ForeignKeyConstraintError) {
+				return res.status(400).send({
+					message: 'El turno al que pertenece esta transaccion aun no ha sido registrado en el servidor'
+				})
+			}
+
 			res.sendStatus(500)
 			next(error)
 		}
