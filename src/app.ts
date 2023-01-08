@@ -34,7 +34,7 @@ const sessionStore = new MySqlStore({
 app.use(Sentry.Handlers.requestHandler())
 app.use(Sentry.Handlers.tracingHandler())
 app.set('port', PORT || 3000)
-app.use(express.json())
+app.use(express.json({ limit: '100mb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(
 	session({
