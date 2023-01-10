@@ -450,3 +450,37 @@ async function handleUpdateLinks(productId: string, links: ProductLinkProps[] = 
 		)
 	}
 }
+
+interface GetProducts4CatalogueProps {
+	businessId: string;
+	limit: number;
+	page: number;
+	categoryId?: string;
+	search: string;
+}
+export async function getProducts4Catalogue({ page, limit, search, categoryId, businessId }: GetProducts4CatalogueProps) {
+	const products = await Product.findAll({
+		attributes: ['id', 'name', 'categoryId', 'price', 'photoUrl', 'isFractionable'],
+		where: {
+			[Op.and]: [
+				{ businessId },
+				{ isActive: true },
+				{
+					...(categoryId && {
+						categoryId
+					})
+				},
+				{
+					name: {
+						[Op.like]: `%${search}%`
+					}
+				}
+			]
+		},
+		limit,
+		offset: (page - 1) * limit,
+		raw: true
+	})
+
+	return products
+}

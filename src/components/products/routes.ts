@@ -13,6 +13,7 @@ routes
 
 routes.get('/updates/:date', hasMerchantId, controller.getUpdates)
 routes.get('/transactions/:id', isLoggedIn, tokenIsValid, controller.getTransactions)
+routes.get('/catalogue', controller.getProducts4Catalogue)
 
 routes
 	.route('/:id')

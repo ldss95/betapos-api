@@ -10,6 +10,8 @@ routes
 	.post(isLoggedIn, tokenIsValid, controller.create)
 	.put(isLoggedIn, tokenIsValid, controller.update)
 
+routes.get('/business/:businessId', controller.getCategoriesByBusiness)
+
 routes
 	.route('/:id')
 	.get(isLoggedIn, tokenIsValid, controller.getOne)

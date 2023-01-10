@@ -12,7 +12,7 @@ import { PurchaseProduct } from '../purchase-products/model'
 import { Purchase } from '../purchases/model'
 import { InventoryAdjustment } from '../inventory-adjustments/model'
 import { User } from '../users/model'
-import { createExcelFile, getAllProducts, getUpdates, updateProduct } from './services'
+import { createExcelFile, getAllProducts, getProducts4Catalogue, getUpdates, updateProduct } from './services'
 
 export default {
 	create: async (req: Request, res: Response, next: NextFunction) => {
@@ -381,6 +381,22 @@ export default {
 			res.status(200).send(products.map((product) => product.toJSON()))
 		} catch (error) {
 			res.sendStatus(500)
+			next(error)
+		}
+	},
+	getProducts4Catalogue: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { businessId, categoryId, limit, page, search } = req.query as any
+			const products = await getProducts4Catalogue({
+				businessId,
+				limit: Number(limit),
+				page: Number(page),
+				categoryId,
+				search
+			})
+			res.status(200).send(products)
+		} catch (error) {
+			res.status(500).send(error)
 			next(error)
 		}
 	}

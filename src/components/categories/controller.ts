@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize'
 
 import { Category } from './model'
+import { getCategoriesByBusiness } from './services'
 
 export default {
 	create: async (req: Request, res: Response, next: NextFunction) => {
@@ -75,6 +76,16 @@ export default {
 
 			const category = await Category.findOne({ where: { id } })
 			res.status(200).send(category)
+		} catch (error) {
+			res.sendStatus(500)
+			next(error)
+		}
+	},
+	getCategoriesByBusiness: async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { businessId } = req.params
+			const categories = await getCategoriesByBusiness(businessId)
+			res.status(200).send(categories)
 		} catch (error) {
 			res.sendStatus(500)
 			next(error)
