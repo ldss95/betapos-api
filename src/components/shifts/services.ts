@@ -2,8 +2,8 @@ import { literal, Op, col, fn } from 'sequelize'
 
 import { CustomError } from '../../errors'
 import { Device } from '../devices/model'
-import { SalePaymentTypeProps } from '../sales-payments-types/interface'
 import { SalePaymentType } from '../sales-payments-types/model'
+import { SalePayment } from '../sales-payments/model'
 import { Sale } from '../sales/model'
 import { User } from '../users/model'
 import { ShiftProps } from './interface'
@@ -119,22 +119,32 @@ export async function getAllShifts(businessId: string, date?: string, userId?: s
 	return shifts
 }
 
-interface ShiftSummaryProps {
-	total: number;
-	paymentType: SalePaymentTypeProps
-}
-export async function getShiftSummary(shiftId: string): Promise<ShiftSummaryProps[]> {
+export async function getShiftSummary(shiftId: string): Promise<{ total: number; name: string }[]> {
 	const items = await Sale.findAll({
-		attributes: [[fn('sum', col('amount')), 'total']],
+		attributes: [[fn('sum', col('payments.amount')), 'total']],
 		where: {
 			shiftId
 		},
 		include: {
-			model: SalePaymentType,
-			as: 'paymentType'
+			model: SalePayment,
+			as: 'payments',
+			include: [{
+				model: SalePaymentType,
+				as: 'type'
+			}]
 		},
-		group: 'paymentTypeId'
-	})
+		group: 'payments.typeId',
+	}) as any[]
 
-	return items.map(item => item.toJSON()) as ShiftSummaryProps[]
+	return items
+		.map(item => item.toJSON())
+		.filter(({ total, payments }) => total && payments.length)
+		.map(({ total, payments }) => {
+			const [{ type }] = payments
+
+			return {
+				total,
+				name: type.name
+			}
+		})
 }
