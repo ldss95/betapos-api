@@ -11,6 +11,7 @@ import * as Tracing from '@sentry/tracing'
 import 'dotenv/config'
 
 import routes from './routes'
+import { addExtraData2Sentry } from './middlewares/errors'
 
 const { PORT, DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER, SECRET_SESSION, NODE_ENV, SENTRY_DSN } = process.env
 const app: Express = express()
@@ -91,6 +92,7 @@ const specs = swaggerJsDoc({
 
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs))
 app.use(routes)
+app.use(addExtraData2Sentry)
 app.use(Sentry.Handlers.errorHandler())
 
 export { app }
