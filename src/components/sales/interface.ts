@@ -22,6 +22,7 @@ export interface SaleProps extends Model {
 	deviceId: string;
 	products: SaleProductProps[];
 	amount: number;
+	itbis?: number;
 	discount: number;
 	shiftId: string;
 	orderType: 'DELIVERY' | 'PICKUP';

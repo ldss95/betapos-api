@@ -141,6 +141,29 @@ export async function getAllSales({ pagination, filters, sorter, search, dateFro
 	const count = await Sale.count({ where, include })
 
 	const sales = await Sale.findAll({
+		attributes: {
+			include: [
+				[
+					literal(`
+						ROUND(
+							(
+								SELECT
+									SUM(sp.price * sp.quantity)
+								FROM
+									sales_products sp
+								JOIN
+									products p ON p.id = sp.productId
+								WHERE
+									sp.saleId = sale.id AND
+									p.itbis = 1
+							),
+							2
+						)
+					`),
+					'itbis'
+				]
+			]
+		},
 		where,
 		include,
 		limit: pageSize,
@@ -164,7 +187,18 @@ export async function getAllSales({ pagination, filters, sorter, search, dateFro
 	return {
 		count,
 		total,
-		sales
+		sales: sales.map((sale) => {
+			const raw = sale.toJSON()
+
+			const itbis = raw.itbis
+				? (raw.itbis - ((100 * raw.itbis) / (100 + 18)))
+				: 0
+
+			return {
+				...raw,
+				itbis
+			}
+		})
 	}
 }
 
