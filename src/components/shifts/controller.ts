@@ -3,6 +3,7 @@ import { UniqueConstraintError } from 'sequelize'
 
 import { createShift, getAllShifts, getShiftSummary, updateShift } from './services'
 import { CustomError } from '../../errors'
+import { ShiftProps } from './interface'
 
 export default {
 	create: async (req: Request, res: Response, next: NextFunction) => {
@@ -45,11 +46,34 @@ export default {
 	},
 	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const { businessId } = req.session!
-			const { date, userId } = req.query as { [key: string]: string }
+			const businessId = req.session!.businessId
+			const { date, userId, pagination, sorter } = req.query as {
+				date: string;
+				userId?: string;
+				pagination: {
+					current: string;
+					pageSize: string;
+				},
+				sorter?: {
+					field: keyof ShiftProps,
+					order: 'ascend' | 'descend'
+				}
+			}
 
-			const shifts = await getAllShifts(businessId, date, userId)
-			res.status(200).send(shifts)
+			const { shifts, count } = await getAllShifts({
+				businessId,
+				date,
+				userId,
+				pagination: {
+					current: +pagination?.current,
+					pageSize: +pagination?.pageSize
+				},
+				sorter
+			})
+			res.status(200).send({
+				data: shifts,
+				count
+			})
 		} catch (error) {
 			res.sendStatus(500)
 			next(error)

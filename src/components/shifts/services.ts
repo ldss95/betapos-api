@@ -41,7 +41,47 @@ export async function updateShift(shiftId: string, deviceId: string, data: Shift
 	await shift.update(data)
 }
 
-export async function getAllShifts(businessId: string, date?: string, userId?: string): Promise<ShiftProps[]> {
+interface GetAllShiftsProps {
+	businessId: string;
+	date?: string;
+	userId?: string;
+	pagination: {
+		current: number;
+		pageSize: number;
+	};
+	sorter?: {
+		field: keyof ShiftProps;
+		order: 'ascend' | 'descend';
+	};
+}
+
+export async function getAllShifts(params: GetAllShiftsProps): Promise<{ shifts: ShiftProps[]; count: number }> {
+	const { businessId, date, userId, sorter, pagination } = params
+	const currentPage = pagination.current || 1
+	const pageSize = pagination.pageSize || 100
+
+	const where = {
+		[Op.and]: [
+			{
+				...(date && { date })
+			},
+			{
+				...(userId && { userId })
+			}
+		]
+	}
+
+	const include = {
+		model: User,
+		as: 'user',
+		where: {
+			businessId
+		},
+		paranoid: false
+	}
+
+	const count = await Shift.count({ where, include })
+
 	const shifts = await Shift.findAll({
 		attributes: {
 			include: [
@@ -95,28 +135,22 @@ export async function getAllShifts(businessId: string, date?: string, userId?: s
 				]
 			]
 		},
-		include: {
-			model: User,
-			as: 'user',
-			where: {
-				businessId
-			},
-			paranoid: false
-		},
-		order: [['date', 'DESC']],
-		where: {
-			[Op.and]: [
-				{
-					...(date && { date })
-				},
-				{
-					...(userId && { userId })
-				}
-			]
-		}
+		include,
+		...(sorter?.field && {
+			order: [[sorter.field, sorter.order === 'descend' ? 'DESC' : 'ASC']],
+		}),
+		...(!sorter?.field && {
+			order: [['date', 'DESC']],
+		}),
+		where,
+		limit: pageSize,
+		offset: (currentPage - 1) * pageSize,
 	})
 
-	return shifts
+	return {
+		shifts,
+		count
+	}
 }
 
 export async function getShiftSummary(shiftId: string): Promise<{ total: number; name: string }[]> {
