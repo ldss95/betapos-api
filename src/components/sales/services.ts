@@ -1,4 +1,3 @@
-import { format } from '@ldss95/helpers'
 import moment from 'moment'
 import { literal, Op, QueryTypes } from 'sequelize'
 import xlsx from 'json-as-xlsx'
@@ -13,6 +12,161 @@ import { SaleProduct } from '../sales-products/model'
 import { SaleProps } from './interface'
 import { Sale } from './model'
 import { round } from '../../helpers'
+import { User } from '../users/model'
+
+interface GetAllSalesProps {
+	pagination: {
+		current: number;
+		pageSize: number;
+	};
+	businessId: string;
+	filters: {
+		paymentType?: string;
+		orderType?: string;
+		status?: string;
+	};
+	sorter?: {
+		field: keyof SaleProps;
+		order: 'ascend' | 'descend';
+	};
+	search: string;
+	dateFrom?: string;
+	dateTo?: string;
+	shiftId?: string;
+}
+
+export async function getAllSales({ pagination, filters, sorter, search, dateFrom, dateTo, shiftId, businessId }: GetAllSalesProps) {
+	const currentPage = pagination.current || 1
+	const pageSize = pagination.pageSize || 100
+
+	const where = {
+		[Op.and]: [
+			{ businessId },
+			{
+				...(shiftId && { shiftId })
+			},
+			{
+				...(filters.paymentType && {
+					paymentTypeId: {
+						[Op.in]: filters.paymentType
+					}
+				})
+			},
+			{
+				...(filters.orderType && {
+					orderType: {
+						[Op.in]: filters.orderType
+					}
+				})
+			},
+			{
+				...(filters.status && {
+					status: {
+						[Op.in]: filters.status
+					}
+				})
+			},
+			{
+				...(search && search !== '' && Number(search) && {
+					ticketNumber: {
+						[Op.like]: `%${search}%`
+					}
+				})
+			},
+			{
+				...(search && isNaN(Number(search)) && {
+					[Op.or]: [
+						{
+							'$client.name$': {
+								[Op.like]: `%${search}%`
+							}
+						},
+						{
+							'$seller.lastName$': {
+								[Op.like]: `%${search}%`
+							}
+						},
+						{
+							'$seller.firstName$': {
+								[Op.like]: `%${search}%`
+							}
+						}
+					]
+				})
+			},
+			{
+				...(dateFrom && dateTo && {
+					createdAt: {
+						[Op.between]: [dateFrom + ' 00:00:00', dateTo + ' 23:59:59']
+					}
+				})
+			},
+			{
+				...(dateFrom &&
+					!dateTo && {
+					createdAt: {
+						[Op.gte]: dateFrom
+					}
+				})
+			},
+			{
+				...(!dateFrom &&
+					dateTo && {
+					createdAt: {
+						[Op.lte]: dateTo
+					}
+				})
+			}
+		]
+	}
+
+	const include = [
+		{
+			model: Client,
+			as: 'client',
+			required: false,
+			paranoid: false
+		},
+		{
+			model: User,
+			as: 'seller',
+			paranoid: false
+		},
+		{
+			model: SalePaymentType,
+			as: 'paymentType'
+		}
+	]
+
+	const count = await Sale.count({ where, include })
+
+	const sales = await Sale.findAll({
+		where,
+		include,
+		limit: pageSize,
+		offset: (currentPage - 1) * pageSize,
+		...(sorter?.field && {
+			order: [[sorter.field, sorter.order == 'ascend' ? 'ASC' : 'DESC']]
+		}),
+		...(!sorter?.field && {
+			order: [['createdAt', 'DESC']],
+		})
+	})
+
+	const total = await (async () => {
+		if (!search) {
+			return await Sale.sum('amount', { where })
+		}
+
+		return sales.reduce((total: number, sale) => total += sale.amount, 0)
+	})()
+
+	return {
+		count,
+		total,
+		sales
+	}
+}
 
 export async function getSalesSummary(businessId: string, type: string) {
 	if (type == 'today') {

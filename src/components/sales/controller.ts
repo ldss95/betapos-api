@@ -10,7 +10,7 @@ import { Client } from '../clients/model'
 import { User } from '../users/model'
 import { Product } from '../products/model'
 import { SalePaymentType } from '../sales-payments-types/model'
-import { createExcelFile, getSalesSummary } from './services'
+import { createExcelFile, getAllSales, getSalesSummary } from './services'
 import { notifyUpdate } from '../../helpers'
 
 export default {
@@ -99,131 +99,16 @@ export default {
 	getAll: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { pagination, filters, sorter, search, dateFrom, dateTo, shiftId } = req.body
-			const currentPage = pagination.current || 1
-			const pageSize = pagination.pageSize || 100
-
-			const where = {
-				[Op.and]: [
-					{ businessId: req.session!.businessId },
-					{
-						...(shiftId && { shiftId })
-					},
-					{
-						...(filters.paymentType && {
-							paymentTypeId: {
-								[Op.in]: filters.paymentType
-							}
-						})
-					},
-					{
-						...(filters.orderType && {
-							orderType: {
-								[Op.in]: filters.orderType
-							}
-						})
-					},
-					{
-						...(filters.status && {
-							status: {
-								[Op.in]: filters.status
-							}
-						})
-					},
-					{
-						...(search &&
-							search !== '' &&
-							Number(search) && {
-							ticketNumber: {
-								[Op.like]: `%${search}%`
-							}
-						})
-					},
-					{
-						...(search &&
-							isNaN(search) && {
-							[Op.or]: [
-								{
-									'$client.name$': {
-										[Op.like]: `%${search}%`
-									}
-								},
-								{
-									'$seller.lastName$': {
-										[Op.like]: `%${search}%`
-									}
-								},
-								{
-									'$seller.firstName$': {
-										[Op.like]: `%${search}%`
-									}
-								}
-							]
-						})
-					},
-					{
-						...(dateFrom &&
-							dateTo && {
-							createdAt: {
-								[Op.between]: [dateFrom + ' 00:00:00', dateTo + ' 23:59:59']
-							}
-						})
-					},
-					{
-						...(dateFrom &&
-							!dateTo && {
-							createdAt: {
-								[Op.gte]: dateFrom
-							}
-						})
-					},
-					{
-						...(!dateFrom &&
-							dateTo && {
-							createdAt: {
-								[Op.lte]: dateTo
-							}
-						})
-					}
-				]
-			}
-
-			const include = [
-				{
-					model: Client,
-					as: 'client',
-					required: false,
-					paranoid: false
-				},
-				{
-					model: User,
-					as: 'seller',
-					paranoid: false
-				},
-				{
-					model: SalePaymentType,
-					as: 'paymentType'
-				}
-			]
-
-			const count = await Sale.count({ where, include })
-			const sales = await Sale.findAll({
-				where,
-				include,
-				order: [['createdAt', 'DESC']],
-				limit: pageSize,
-				offset: (currentPage - 1) * pageSize,
-				...(sorter &&
-					sorter.field && {
-					order: [[sorter.field, sorter.order == 'ascend' ? 'ASC' : 'DESC']]
-				})
+			const { count, total, sales } = await getAllSales({
+				pagination,
+				filters,
+				sorter,
+				search,
+				dateFrom,
+				dateTo,
+				shiftId,
+				businessId: req.session!.businessId
 			})
-			const total = await (async () => {
-				if (!search) {
-					return await Sale.sum('amount', { where })
-				}
-
-				return sales.reduce((total: number, sale) => total += sale.amount, 0)
-			})()
 
 			res.status(200).send({
 				count,
