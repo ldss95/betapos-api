@@ -30,9 +30,13 @@ const Product = db.define<ProductProps>(
 			type: DataTypes.MEDIUMINT,
 			defaultValue: 0
 		},
-		cost: DataTypes.DOUBLE,
+		cost: {
+			type: DataTypes.DOUBLE,
+			defaultValue: 0
+		},
 		price: {
 			type: DataTypes.DOUBLE,
+			defaultValue: 0,
 			allowNull: false
 		},
 		businessPrice:  DataTypes.DOUBLE,
