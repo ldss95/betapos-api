@@ -1,20 +1,21 @@
 import { Request } from 'express'
 import multer from 'multer'
 import multerS3 from 'multer-s3'
-import aws from 'aws-sdk'
+import { S3Client } from '@aws-sdk/client-s3'
 
-const { S3_ENDPOINT, BUCKET_NAME } = process.env
+const { AWS_BUCKET_NAME, AWS_REGION } = process.env
+const s3 = new S3Client({
+	region: AWS_REGION,
 
-const spaceEndpoint = new aws.Endpoint(S3_ENDPOINT!)
-const s3 = new aws.S3({ endpoint: spaceEndpoint })
+}) as any
 
 const uploadSingle = (path: string, key = 'image') =>
 	multer({
 		storage: multerS3({
 			s3,
-			bucket: BUCKET_NAME!,
-			acl: 'public-read',
+			bucket: AWS_BUCKET_NAME!,
 			contentType: multerS3.AUTO_CONTENT_TYPE,
+			acl: 'public-read',
 			metadata: (_, { fieldname }, callback) => {
 				callback(null, { fieldname })
 			},
@@ -30,9 +31,9 @@ const uploadSingle = (path: string, key = 'image') =>
 const uploadMultiple = multer({
 	storage: multerS3({
 		s3,
-		bucket: BUCKET_NAME!,
-		acl: 'public-read',
+		bucket: AWS_BUCKET_NAME!,
 		contentType: multerS3.AUTO_CONTENT_TYPE,
+		acl: 'public-read',
 		metadata: (_, { fieldname }, callback) => {
 			callback(null, { fieldname })
 		},

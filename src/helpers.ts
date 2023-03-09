@@ -1,19 +1,16 @@
-import AWS, { S3 } from 'aws-sdk'
 import moment from 'moment'
 import http from 'supertest'
 import { Express } from 'express'
+import { DeleteObjectCommandOutput, S3 } from '@aws-sdk/client-s3'
 
 import { db } from './database/firebase'
 
-export function deleteFile(Key: string): Promise<S3.DeleteObjectOutput> {
+export function deleteFile(Key: string): Promise<DeleteObjectCommandOutput | undefined> {
 	return new Promise((resolve, reject) => {
-		const { S3_ENDPOINT, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, BUCKET_NAME } = process.env
+		const { AWS_REGION, BUCKET_NAME } = process.env
 
-		const spacesEndpoint = new AWS.Endpoint(`${S3_ENDPOINT}`)
-		const s3 = new AWS.S3({
-			endpoint: spacesEndpoint,
-			secretAccessKey: AWS_SECRET_ACCESS_KEY,
-			accessKeyId: AWS_ACCESS_KEY_ID
+		const s3 = new S3({
+			region: AWS_REGION
 		})
 
 		s3.deleteObject({ Bucket: `${BUCKET_NAME}`, Key }, (error, data) => {

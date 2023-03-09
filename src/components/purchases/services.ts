@@ -127,14 +127,6 @@ export async function updatePurchase(data: PurchaseProps, businessId: string): P
 }
 
 export async function saveUploadedPurchaseFile(id: string, fileUrl: string): Promise<void> {
-	const { CDN_URL } = process.env
-
-	// S3 no retorna la URL con la CDN, la cual cuenta con cache
-	if (!fileUrl.includes(CDN_URL!)) {
-		const breakPoint = fileUrl.indexOf('/purchases')
-		fileUrl = `${CDN_URL}${fileUrl.substr(breakPoint)}`
-	}
-
 	await Purchase.update(
 		{
 			fileUrl: encodeURI(fileUrl)

@@ -14,6 +14,7 @@ declare namespace NodeJS {
 		S3_ENDPOINT: string;
 		AWS_SECRET_ACCESS_KEY: string;
 		AWS_ACCESS_KEY_ID: string;
-		BUCKET_NAME: string;
+		AWS_BUCKET_NAME: string
+		AWS_REGION: string;
 	}
 }
