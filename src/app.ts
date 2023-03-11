@@ -49,7 +49,7 @@ app.use(
 )
 app.use(
 	cors({
-		origin: (origin, callback) => callback(null, true),
+		origin: (_, callback) => callback(null, true),
 		credentials: true
 	})
 )

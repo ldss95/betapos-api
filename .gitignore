@@ -5,3 +5,5 @@ coverage/
 .husky/_
 .vscode
 .DS_Store
+RemoteAuth.zip
+.wwebjs_auth
