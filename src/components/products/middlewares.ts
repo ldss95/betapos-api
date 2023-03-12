@@ -26,9 +26,9 @@ const TableRequestSchema = z.object({
 	limit: z.number(),
 	filters: z
 		.object({
-			isActive: z.array(z.boolean()).nullable(),
-			category: z.array(z.string()).nullable(),
-			brand: z.array(z.string()).nullable()
+			isActive: z.array(z.boolean()).nullable().optional(),
+			category: z.array(z.string()).nullable().optional(),
+			brand: z.array(z.string()).nullable().optional()
 		})
 		.optional(),
 	sorter: z.string().nullable().array().optional()
