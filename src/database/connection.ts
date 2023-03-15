@@ -14,7 +14,7 @@ const db = new Sequelize({
 		collate: 'utf8_general_ci'
 	},
 	pool: {
-		max: 28
+		max: 2
 	},
 	timezone: '-04:00',
 	host: DB_HOST,
