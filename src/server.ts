@@ -2,6 +2,7 @@ import os from 'os'
 import cluster from 'cluster'
 
 import { app } from './app'
+const { NODE_ENV, MAX_THREADS, DISABLE_MULTI_THREADS } = process.env
 
 function runServer() {
 	const port = app.get('port')
@@ -14,14 +15,14 @@ function runServer() {
  * Funcion anonima, para poder usar el return
  */
 (() => {
-	const isProd = ['prod', 'production'].includes(process.env.NODE_ENV!)
-	if (!isProd) {
+	const isProd = ['prod', 'production'].includes(NODE_ENV!)
+	if (!isProd || DISABLE_MULTI_THREADS === 'true') {
 		return runServer()
 	}
 
 	const cpus = os.cpus().length
 	if (cluster.isMaster) {
-		for (let i = 0; i < cpus; i++) {
+		for (let i = 0; i < cpus && i < Number(MAX_THREADS); i++) {
 			cluster.fork()
 		}
 	} else {
