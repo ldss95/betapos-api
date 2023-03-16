@@ -16,6 +16,7 @@ declare namespace NodeJS {
 		AWS_ACCESS_KEY_ID: string;
 		AWS_BUCKET_NAME: string
 		AWS_REGION: string;
+		OPEN_IA_API_KEY: string;
 		DISABLE_MULTI_THREADS: 'true' | 'false';
 		MAX_THREADS: string;
 	}
