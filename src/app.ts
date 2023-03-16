@@ -80,7 +80,7 @@ const specs = swaggerJsDoc({
 		],
 		servers: [
 			{
-				url: 'https://betapos.com.do/api'
+				url: 'https://api.betapos.com.do'
 			},
 			{
 				url: 'http://localhost:4012'
