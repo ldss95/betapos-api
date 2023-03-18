@@ -39,8 +39,9 @@ export default {
 			const groupId = req.query.groupId as string
 			const { userId } = req.session!
 
-			const stream = await generateClientsGroupDetailsReport(groupId, startAt, endAt, userId)
-			stream.pipe(res)
+			const buffer = await generateClientsGroupDetailsReport(groupId, startAt, endAt, userId)
+			res.contentType('application/pdf')
+			res.send(buffer)
 		} catch (error) {
 			res.sendStatus(500)
 			next(error)

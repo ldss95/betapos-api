@@ -2,9 +2,6 @@ import { QueryTypes, Op } from 'sequelize'
 import { format, pdf } from '@ldss95/helpers'
 import path from 'path'
 import moment from 'moment'
-// eslint-disable-next-line
-// @ts-ignore
-import phantom from 'phantomjs-prebuilt'
 
 import { db } from '../../database/connection'
 import { round } from '../../helpers'
@@ -185,7 +182,7 @@ export async function generateClientsGroupDetailsReport(groupId: string, startAt
 	const group = await ClientsGroup.findByPk(groupId)
 
 	const templatePath = path.join(__dirname, '../../templates/clients_group_details.hbs')
-	return await pdf.toStream(templatePath, {
+	return await pdf.toBuffer(templatePath, {
 		businessName: user?.business.name,
 		groupName: group?.name,
 		startDate: moment(startAt).format('DD-MM-YYYY'),
@@ -214,7 +211,6 @@ export async function generateClientsGroupDetailsReport(groupId: string, startAt
 					.reduce((total, payment) => total += payment.amount, 0)
 			),
 			2
-		),
-		phantomPath: phantom.path
+		)
 	})
 }
