@@ -640,7 +640,16 @@ export async function createExcelFile(businessId: string, dateFrom?: string, dat
 		},
 		{
 			label: 'Estado',
-			value: ({ status }: any) => status === 'DONE' ? 'OK' : 'Cancelada'
+			value: (props: any) => {
+				const { status } = props as { status: 'DONE' | 'CANCELLED' | 'MODIFIED' }
+				enum statuses {
+					DONE = 'OK',
+					CANCELLED = 'Cancelada',
+					MODIFIED = 'Modificada'
+				}
+
+				return statuses[status]
+			}
 		}
 	]
 

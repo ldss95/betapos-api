@@ -3,6 +3,7 @@ import { DataTypes } from 'sequelize'
 import { db } from '../../database/connection'
 import { SaleProductProps } from './interface'
 import { Product } from '../products/model'
+import { Sale } from '../sales/model'
 
 const SaleProduct = db.define<SaleProductProps>(
 	'sales_product',
@@ -39,7 +40,16 @@ const SaleProduct = db.define<SaleProductProps>(
 			}
 		}
 	},
-	{ paranoid: true }
+	{
+		paranoid: true,
+		hooks: {
+			afterDestroy: async ({ saleId }) => {
+				await Sale.update({ status: 'MODIFIED' }, {
+					where: { id: saleId }
+				})
+			}
+		}
+	}
 )
 
 SaleProduct.belongsTo(Product, { foreignKey: 'productId', as: 'product' })

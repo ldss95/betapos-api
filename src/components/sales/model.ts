@@ -62,7 +62,7 @@ const Sale = db.define<SaleProps>(
 		},
 		cashReceived: DataTypes.DOUBLE,
 		status: {
-			type: DataTypes.ENUM('DONE', 'CANCELLED'),
+			type: DataTypes.ENUM('DONE', 'CANCELLED', 'MODIFIED'),
 			allowNull: false,
 			defaultValue: 'DONE'
 		}

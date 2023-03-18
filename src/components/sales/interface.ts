@@ -30,7 +30,7 @@ export interface SaleProps extends Model {
 	paymentType: SalePaymentTypeProps;
 	payments: SalePaymentProps[];
 	shippingAddress?: string;
-	status: 'DONE' | 'CANCELLED';
+	status: 'DONE' | 'CANCELLED' | 'MODIFIED';
 	cashReceived?: number;
 	createdAt: string;
 	updatedAt: string;
