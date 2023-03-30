@@ -3,71 +3,39 @@ import { ForeignKeyConstraintError, Op, UniqueConstraintError } from 'sequelize'
 
 import { Sale } from './model'
 import { SaleProduct } from '../sales-products/model'
-import { Business } from '../business/model'
-import { SalePayment } from '../sales-payments/model'
-import { Device } from '../devices/model'
 import { Client } from '../clients/model'
 import { User } from '../users/model'
 import { Product } from '../products/model'
 import { SalePaymentType } from '../sales-payments-types/model'
-import { createExcelFile, getAllSales, getSalesSummary } from './services'
-import { notifyUpdate } from '../../helpers'
+import { createExcelFile, getAllSales, getSalesSummary, insertSale } from './services'
+import { CustomError } from '../../errors'
 
 export default {
 	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { ticket } = req.body
 			const merchantId = req.header('merchantId')
-			const business = await Business.findOne({
-				where: { merchantId }
-			})
+			const deviceId = req.header('deviceId')
 
-			if (!business || !business.isActive) {
-				return res.status(400).send({
-					message: 'Invalida MERCHANT ID'
-				})
-			}
-
-			const device = await Device.findOne({
-				where: { deviceId: req.header('deviceId') }
-			})
-
-			if (!device || !device.isActive) {
-				return res.status(400).send({
-					message: 'Device not allowed'
-				})
-			}
-
-			await Sale.create(
-				{
-					...ticket,
-					businessId: business.id,
-					sellerId: ticket.userId,
-					deviceId: device.id
-				},
-				{
-					include: [
-						{
-							model: SaleProduct,
-							as: 'products'
-						},
-						{
-							model: SalePayment,
-							as: 'payments'
-						}
-					]
-				}
-			)
-			notifyUpdate('sales', merchantId)
+			await insertSale(ticket, merchantId!, deviceId!)
 			res.sendStatus(201)
 		} catch (error) {
+			if (error instanceof CustomError) {
+				return res.status(error.status).send({
+					message: error.message
+				})
+			}
+
 			if (error instanceof UniqueConstraintError) {
 				return res.sendStatus(201)
 			}
 
 			if (error instanceof ForeignKeyConstraintError) {
 				return res.status(400).send({
-					message: ''
+					value: error.value,
+					table: error.table,
+					fields: error.fields,
+					message: error.message
 				})
 			}
 

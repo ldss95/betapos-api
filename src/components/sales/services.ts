@@ -11,8 +11,62 @@ import { SaleProductProps } from '../sales-products/interface'
 import { SaleProduct } from '../sales-products/model'
 import { SaleProps } from './interface'
 import { Sale } from './model'
-import { round } from '../../helpers'
+import { notifyUpdate, round } from '../../helpers'
 import { User } from '../users/model'
+import { Business } from '../business/model'
+import { CustomError } from '../../errors'
+import { Device } from '../devices/model'
+
+interface TicketProps extends SaleProps {
+	userId: string;
+}
+
+export async function insertSale(ticket: TicketProps, merchantId: string, deviceId: string) {
+	const business = await Business.findOne({
+		where: { merchantId }
+	})
+
+	if (!business || !business.isActive) {
+		throw new CustomError({
+			status: 400,
+			message: 'Invalida MERCHANT ID'
+		})
+	}
+
+	const device = await Device.findOne({
+		where: { deviceId }
+	})
+
+	if (!device || !device.isActive) {
+		throw new CustomError({
+			status: 400,
+			message: 'Device not allowed'
+		})
+	}
+
+	await Sale.create(
+		{
+			...ticket,
+			businessId: business.id,
+			sellerId: ticket.userId,
+			deviceId: device.id
+		},
+		{
+			include: [
+				{
+					model: SaleProduct,
+					as: 'products'
+				},
+				{
+					model: SalePayment,
+					as: 'payments'
+				}
+			]
+		}
+	)
+
+	notifyUpdate('sales', merchantId)
+}
 
 interface GetAllSalesProps {
 	pagination: {

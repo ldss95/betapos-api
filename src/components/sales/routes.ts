@@ -2,11 +2,12 @@ import { Router } from 'express'
 
 import controller from './controller'
 import { isLoggedIn, tokenIsValid, isBusinessAdmin, hasDeviceId, hasMerchantId } from '../../middlewares/auth'
+import { validateInsertSale } from './middlewares'
 
 const routes: Router = Router()
 
 routes.route('/')
-	.post(hasDeviceId, hasMerchantId, controller.create)
+	.post(hasDeviceId, hasMerchantId, validateInsertSale, controller.create)
 	.put(hasDeviceId, hasMerchantId, controller.update)
 
 routes.post('/get-sales-for-table', isLoggedIn, tokenIsValid, controller.getAll)
