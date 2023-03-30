@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { UniqueConstraintError } from 'sequelize'
+import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize'
 
 import { createShift, getAllShifts, getShiftSummary, updateShift } from './services'
 import { CustomError } from '../../errors'
@@ -15,6 +15,15 @@ export default {
 		} catch (error) {
 			if (error instanceof CustomError) {
 				return res.status(error.status).send({
+					message: error.message
+				})
+			}
+
+			if (error instanceof ForeignKeyConstraintError) {
+				return res.status(400).send({
+					value: error.value,
+					table: error.table,
+					fields: error.fields,
 					message: error.message
 				})
 			}
@@ -36,6 +45,15 @@ export default {
 		} catch (error) {
 			if (error instanceof CustomError) {
 				return res.status(error.status).send({
+					message: error.message
+				})
+			}
+
+			if (error instanceof ForeignKeyConstraintError) {
+				return res.status(400).send({
+					value: error.value,
+					table: error.table,
+					fields: error.fields,
 					message: error.message
 				})
 			}
