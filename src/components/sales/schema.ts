@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const PaymentSchema = z.object({
 	id: z.string().uuid(),
-	saleId: z.string().uuid(),
+	ticketId: z.string().uuid(),
 	typeId: z.string().uuid(),
 	amount: z.number(),
 	createdAt: z.string(),
@@ -11,7 +11,7 @@ const PaymentSchema = z.object({
 
 const ProductSchema = z.object({
 	id: z.string().uuid(),
-	saleId: z.string().uuid(),
+	ticketId: z.string().uuid(),
 	productId: z.string().uuid(),
 	quantity: z.number(),
 	cost: z.number(),
@@ -20,7 +20,7 @@ const ProductSchema = z.object({
 
 export const TicketSchema = z.object({
 	id: z.string().uuid(),
-	ticketNumber: z.number(),
+	ticketNumber: z.string(),
 	ncfTypeId: z.string().nullable().optional(),
 	ncfNumber: z.number().nullable().optional(),
 	rnc: z.string().max(11).nullable().optional(),
@@ -29,7 +29,6 @@ export const TicketSchema = z.object({
 	userId: z.string().uuid(),
 	products: z.array(ProductSchema).min(1),
 	amount: z.number(),
-	itbis: z.number(),
 	discount: z.number().nullable().optional(),
 	shiftId: z.string().uuid(),
 	orderType: z.enum(['DELIVERY', 'PICKUP']),
