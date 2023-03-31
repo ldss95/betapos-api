@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import { z, ZodError } from 'zod'
 
+import { ProductSchema } from './schema'
+
 export function validateCreateProduct(req: Request, res: Response, next: NextFunction) {
 	try {
 		const { cost, price } = req.body
@@ -9,6 +11,8 @@ export function validateCreateProduct(req: Request, res: Response, next: NextFun
 				message: 'El costo no puede ser mayor al precio'
 			})
 		}
+
+		ProductSchema.parse(req.body)
 
 		next()
 	} catch (error) {
@@ -46,4 +50,10 @@ export function validateTableRequest(req: Request, res: Response, next: NextFunc
 			})
 		}
 	}
+}
+
+export function transformCostAnPrice(req: Request, _: Response, next: NextFunction) {
+	req.body.cost = Number(req.body.cost || 0)
+	req.body.price = Number(req.body.price || 0)
+	next()
 }
