@@ -14,7 +14,7 @@ const ProductSchema = z.object({
 	ticketId: z.string().uuid(),
 	productId: z.string().uuid(),
 	quantity: z.number(),
-	cost: z.number(),
+	cost: z.number().nullable(),
 	price: z.number()
 })
 
