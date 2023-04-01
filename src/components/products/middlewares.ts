@@ -52,8 +52,9 @@ export function validateTableRequest(req: Request, res: Response, next: NextFunc
 	}
 }
 
-export function transformCostAnPrice(req: Request, _: Response, next: NextFunction) {
+export function transformNumbersPrice(req: Request, _: Response, next: NextFunction) {
 	req.body.cost = Number(req.body.cost || 0)
 	req.body.price = Number(req.body.price || 0)
+	req.body.initialStock = Number(req.body.initialStock || 0)
 	next()
 }

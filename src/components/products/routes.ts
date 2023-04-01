@@ -4,11 +4,11 @@ const routes: Router = Router()
 import controller from './controller'
 import { uploadSingle } from '../../middlewares/files'
 import { isLoggedIn, tokenIsValid, hasMerchantId } from '../../middlewares/auth'
-import { transformCostAnPrice, validateCreateProduct, validateTableRequest } from './middlewares'
+import { transformNumbersPrice, validateCreateProduct, validateTableRequest } from './middlewares'
 
 routes
 	.route('/')
-	.post(isLoggedIn, tokenIsValid, transformCostAnPrice, validateCreateProduct, controller.create)
+	.post(isLoggedIn, tokenIsValid, transformNumbersPrice, validateCreateProduct, controller.create)
 	.put(isLoggedIn, tokenIsValid, controller.update)
 
 routes.get('/updates/:date', hasMerchantId, controller.getUpdates)
