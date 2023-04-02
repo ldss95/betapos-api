@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express'
 import { literal } from 'sequelize'
 import moment from 'moment'
 
-import { deleteFile, notifyUpdate, round } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../helpers'
 import { Barcode } from '../barcodes/model'
-import { Product, ProductLink } from './model'
+import { Product } from './model'
 import { Business } from '../business/model'
 import { SaleProduct } from '../sales-products/model'
 import { Sale } from '../sales/model'
@@ -12,37 +12,13 @@ import { PurchaseProduct } from '../purchase-products/model'
 import { Purchase } from '../purchases/model'
 import { InventoryAdjustment } from '../inventory-adjustments/model'
 import { User } from '../users/model'
-import { createExcelFile, getAllProducts, getProducts4Catalogue, getUpdates, updateProduct } from './services'
+import { createExcelFile, createProduct, getAllProducts, getProducts4Catalogue, getUpdates, updateProduct } from './services'
 
 export default {
 	create: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { businessId, merchantId } = req.session!
-
-			const { cost, price } = req.body
-			const profitPercent = cost && price ? round(((price - cost) / cost) * 100) : 0
-			const { id } = await Product.create(
-				{
-					...req.body,
-					profitPercent,
-					businessId
-				},
-				{
-					include: [
-						{
-							model: Barcode,
-							as: 'barcodes'
-						},
-						{
-							model: ProductLink,
-							as: 'linkedProducts'
-						}
-					]
-				}
-			)
-
-			notifyUpdate('products', merchantId)
-
+			const id = await createProduct(req.body, businessId, merchantId)
 			res.status(201).send({ id })
 		} catch (error) {
 			res.sendStatus(500)

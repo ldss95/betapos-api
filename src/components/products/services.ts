@@ -1,13 +1,42 @@
 import xlsx from 'json-as-xlsx'
 import { Op, literal } from 'sequelize'
 
-import { notifyUpdate } from '../../helpers'
+import { notifyUpdate, round } from '../../helpers'
 import { BarcodeProps } from '../barcodes/interface'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
+import { Stock } from '../stocks/model'
 import { ProductLinkProps, ProductProps } from './interface'
-import { Product, ProductLink } from './model'
+import { Product, ProductCategory, ProductLink } from './model'
+
+export async function createProduct(product: ProductProps, businessId: string, merchantId: string): Promise<string> {
+	const { cost, price } = product
+	const profitPercent = cost && price ? round(((price - cost) / cost) * 100) : 0
+	const { id } = await Product.create(
+		{
+			...product,
+			profitPercent,
+			businessId
+		},
+		{
+			include: [
+				{
+					model: Barcode,
+					as: 'barcodes'
+				},
+				{
+					model: ProductLink,
+					as: 'linkedProducts'
+				}
+			]
+		}
+	)
+
+	notifyUpdate('products', merchantId)
+
+	return id
+}
 
 interface GetAllProductsProps {
 	businessId: string;
