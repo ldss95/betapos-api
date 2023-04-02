@@ -6,9 +6,8 @@ import { BarcodeProps } from '../barcodes/interface'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
-import { Stock } from '../stocks/model'
 import { ProductLinkProps, ProductProps } from './interface'
-import { Product, ProductCategory, ProductLink } from './model'
+import { Product, ProductLink } from './model'
 
 export async function createProduct(product: ProductProps, businessId: string, merchantId: string): Promise<string> {
 	const { cost, price } = product
