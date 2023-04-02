@@ -12,7 +12,7 @@ import { SalePayment } from '../sales-payments/model'
 import { User } from '../users/model'
 import { ClientPaymentProps } from '../clients-payments/interface'
 import { SaleProps } from '../sales/interface'
-import { availableClientCredit } from './services'
+import { availableClientCredit, getClientCreditDetails } from './services'
 import { ClientsGroup } from '../clients-groups/model'
 
 export default {
@@ -216,73 +216,8 @@ export default {
 	getPendingDetails: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { clientId } = req.params
-
-			const sales = await Sale.findAll({
-				where: { clientId },
-				include: [
-					{
-						model: SalePayment,
-						include: [
-							{
-								model: SalePaymentType,
-								as: 'type',
-								where: {
-									name: 'Fiao'
-								},
-								required: true
-							}
-						],
-						as: 'payments',
-						required: true
-					},
-					{
-						model: User,
-						as: 'seller',
-						paranoid: false
-					}
-				]
-			})
-
-
-			const payments = await ClientPayment.findAll({
-				where: { clientId },
-				include: {
-					model: User,
-					as: 'user',
-					paranoid: false
-				}
-			})
-
-			const data: any = [...payments, ...sales]
-				.sort((a: SaleProps | ClientPaymentProps, b: SaleProps | ClientPaymentProps) => {
-					return moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime()
-				})
-				.reverse()
-
-			let lastPending = 0
-			for (let i = 0; i < data.length; i++) {
-				const item = data[i]
-				const type: 'SALE' | 'PAYMENT' = item?.ticketNumber ? 'SALE' : 'PAYMENT'
-
-				if (type == 'PAYMENT') {
-					lastPending -= item.amount
-					data[i] = {
-						...item.toJSON(),
-						pending: lastPending
-					}
-				}
-
-				if (type == 'SALE') {
-					const [payment] = item.payments
-					lastPending += payment.amount
-					data[i] = {
-						...item.toJSON(),
-						pending: lastPending
-					}
-				}
-			}
-
-			res.status(200).send(data.reverse())
+			const data = await getClientCreditDetails(clientId)
+			res.status(200).send(data)
 		} catch (error) {
 			res.sendStatus(500)
 			next(error)
