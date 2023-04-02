@@ -58,10 +58,7 @@ const Product = db.define<ProductProps>(
 		profitPercent: {
 			type: DataTypes.DOUBLE(10, 2),
 			allowNull: false,
-			defaultValue: 20,
-			validate: {
-				min: 0
-			}
+			defaultValue: 20
 		},
 		isActive: {
 			type: DataTypes.BOOLEAN,
