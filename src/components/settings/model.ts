@@ -14,12 +14,18 @@ const Setting = db.define<SettingProps>('setting', {
 		type: DataTypes.UUID,
 		allowNull: false
 	},
-	allowGeneridProduct: {
+	allowGenericProduct: {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
 		defaultValue: false
 	},
 	allowChangeProductPrice: {
+		type: DataTypes.BOOLEAN,
+		allowNull: false,
+		defaultValue: false
+	},
+	wsNotificationsNumber: DataTypes.CHAR(10),
+	sendShiftNotificationByWs: {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
 		defaultValue: false

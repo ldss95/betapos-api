@@ -3,6 +3,10 @@ import { Model } from 'sequelize'
 export interface SettingProps extends Model {
 	id: string;
 	businessId: string;
-	allowGeneridProduct: boolean;
+	allowGenericProduct: boolean;
 	allowChangeProductPrice: boolean;
+	wsNotificationsNumber: string;
+	sendShiftNotificationByWs: boolean;
+	createdAt: string;
+	updatedAt: string;
 }
