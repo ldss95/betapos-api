@@ -56,5 +56,7 @@ export function transformNumbersPrice(req: Request, _: Response, next: NextFunct
 	req.body.cost = Number(req.body.cost || 0)
 	req.body.price = Number(req.body.price || 0)
 	req.body.initialStock = Number(req.body.initialStock || 0)
+	req.body.businessPrice = Number(req.body.businessPrice || 0)
+
 	next()
 }
