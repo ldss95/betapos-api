@@ -8,6 +8,9 @@ import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
 import { ProductLinkProps, ProductProps } from './interface'
 import { Product, ProductLink } from './model'
+import { CustomError } from '../../errors'
+import { saveHistory } from '../history/services'
+import { HistoryAdditionalProps, Table } from '../history/interface'
 
 export async function createProduct(product: ProductProps, businessId: string, merchantId: string): Promise<string> {
 	const { cost, price } = product
@@ -344,20 +347,36 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 	})
 }
 
-export async function updateProduct(merchantId: string, product: ProductProps): Promise<void> {
-	const { id } = product
-
+export async function updateProduct(merchantId: string, data: ProductProps, history: HistoryAdditionalProps): Promise<void> {
 	/**
 	 * Actualizar producto
 	 */
-	Product.update(product, { where: { id } })
-	notifyUpdate('products', merchantId)
-
-	if (product.barcodes) {
-		handleUpdateBarcodes(id, product.barcodes, merchantId)
+	const product = await Product.findByPk(data.id)
+	const before = product?.toJSON()
+	if (!product) {
+		throw new CustomError({
+			message: 'Producto no encontrado',
+			status: 400
+		})
 	}
 
-	handleUpdateLinks(id, product.linkedProducts)
+	product.update(data)
+	notifyUpdate('products', merchantId)
+
+	if (data.barcodes) {
+		handleUpdateBarcodes(data.id, data.barcodes, merchantId)
+	}
+
+	handleUpdateLinks(data.id, data.linkedProducts)
+	saveHistory({
+		before,
+		after: data as any,
+		ip: history.ip,
+		agent: history.agent,
+		table: Table.PRODUCTS,
+		userId: history.userId,
+		identifier: data.id
+	})
 }
 
 interface GetUpdatesResponse {

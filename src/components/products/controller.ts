@@ -27,8 +27,14 @@ export default {
 	},
 	update: async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const { merchantId } = req.session!
-			await updateProduct(merchantId, req.body)
+			const { merchantId, userId } = req.session!
+			const ip = req.socket.remoteAddress
+			const agent = req.headers['user-agent']
+			await updateProduct(merchantId, req.body, {
+				ip,
+				agent,
+				userId
+			})
 			res.sendStatus(204)
 		} catch (error) {
 			res.sendStatus(500)

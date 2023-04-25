@@ -109,8 +109,14 @@ export default {
 	updateProductCost: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id, cost } = req.body
-			const { merchantId } = req.session!
-			await updatePurchaseProductCost(merchantId, id, cost)
+			const { merchantId, userId } = req.session!
+			const ip = req.socket.remoteAddress
+			const agent = req.headers['user-agent']
+			await updatePurchaseProductCost(merchantId, id, cost, {
+				userId,
+				ip,
+				agent
+			})
 			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof CustomError) {
@@ -126,8 +132,14 @@ export default {
 	updateProductPrice: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id, price } = req.body
-			const { merchantId } = req.session!
-			await updatePurchaseProductPrice(merchantId, id, price)
+			const { merchantId, userId } = req.session!
+			const ip = req.socket.remoteAddress
+			const agent = req.headers['user-agent']
+			await updatePurchaseProductPrice(merchantId, id, price, {
+				userId,
+				agent,
+				ip
+			})
 			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof CustomError) {

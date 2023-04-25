@@ -9,6 +9,7 @@ import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { PurchaseProps } from './interface'
 import { Purchase } from './model'
+import { HistoryAdditionalProps } from '../history/interface'
 
 export async function getAllPurchases(businessId: string): Promise<PurchaseProps[]> {
 	const purchases = await Purchase.findAll({
@@ -184,7 +185,7 @@ export async function updatePurchaseProductQty(id: string, quantity: number): Pr
 	})
 }
 
-export async function updatePurchaseProductCost(merchantId: string, id: string, cost: number): Promise<void> {
+export async function updatePurchaseProductCost(merchantId: string, id: string, cost: number, history: HistoryAdditionalProps): Promise<void> {
 	const product = await PurchaseProduct.findByPk(id)
 	if (!product) {
 		throw new CustomError({
@@ -201,11 +202,12 @@ export async function updatePurchaseProductCost(merchantId: string, id: string, 
 		{
 			id: product.productId,
 			cost
-		} as ProductProps
+		} as ProductProps,
+		history
 	)
 }
 
-export async function updatePurchaseProductPrice(merchantId: string, id: string, price: number): Promise<void> {
+export async function updatePurchaseProductPrice(merchantId: string, id: string, price: number, history: HistoryAdditionalProps): Promise<void> {
 	const product = await PurchaseProduct.findByPk(id)
 	if (!product) {
 		throw new CustomError({
@@ -221,7 +223,8 @@ export async function updatePurchaseProductPrice(merchantId: string, id: string,
 		merchantId, {
 			id: product.productId,
 			price
-		} as ProductProps
+		} as ProductProps,
+		history
 	)
 }
 
