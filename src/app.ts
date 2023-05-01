@@ -91,6 +91,7 @@ const specs = swaggerJsDoc({
 })
 
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs))
+app.use('/health', (_, res) => res.sendStatus(204))
 app.use(routes)
 app.use(addExtraData2Sentry)
 app.use(Sentry.Handlers.errorHandler())
