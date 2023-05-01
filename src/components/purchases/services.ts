@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-import { CustomError } from '../../errors'
+import { CustomError, CustomErrorType } from '../../errors'
 import { deleteFile } from '../../helpers'
 import { ProductProps } from '../products/interface'
 import { Product } from '../products/model'
@@ -66,7 +66,9 @@ export async function createPurchase(data: PurchaseProps, businessId: string, us
 
 	if (!provider) {
 		throw new CustomError({
-			message: 'Invalid providerId'
+			type: CustomErrorType.UNKNOWN_ERROR,
+			name: 'Invalid providerId',
+			description: 'Invalid providerId'
 		})
 	}
 
@@ -189,7 +191,9 @@ export async function updatePurchaseProductCost(merchantId: string, id: string, 
 	const product = await PurchaseProduct.findByPk(id)
 	if (!product) {
 		throw new CustomError({
-			message: 'Producto no encontrado'
+			type: CustomErrorType.UNKNOWN_ERROR,
+			name: 'Producto no encontrado',
+			description: 'Producto no encontrado',
 		})
 	}
 
@@ -211,7 +215,9 @@ export async function updatePurchaseProductPrice(merchantId: string, id: string,
 	const product = await PurchaseProduct.findByPk(id)
 	if (!product) {
 		throw new CustomError({
-			message: 'Producto no encontrado'
+			type: CustomErrorType.UNKNOWN_ERROR,
+			name: 'Producto no encontrado',
+			description: 'Producto no encontrado'
 		})
 	}
 

@@ -1,6 +1,6 @@
 import { literal, Op, col, fn } from 'sequelize'
 
-import { CustomError } from '../../errors'
+import { CustomError, CustomErrorType } from '../../errors'
 import { Device } from '../devices/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { SalePayment } from '../sales-payments/model'
@@ -13,8 +13,9 @@ export async function createShift(shift: ShiftProps, deviceId: string) {
 	const device = await Device.findOne({ where: { deviceId } })
 	if (!device || !device.isActive) {
 		throw new CustomError({
-			message: 'Unauthorized device',
-			status: 401
+			type: CustomErrorType.AUTH_ERROR,
+			name: 'Dispositivo no permitido',
+			description: 'El terminal que intenta usar no ha sido registrado o ha sido desactivado'
 		})
 	}
 
@@ -25,8 +26,9 @@ export async function updateShift(shiftId: string, deviceId: string, data: Shift
 	const device = await Device.findOne({ where: { deviceId } })
 	if (!device || !device.isActive) {
 		throw new CustomError({
-			message: 'Unauthorized device',
-			status: 401
+			type: CustomErrorType.AUTH_ERROR,
+			name: 'Dispositivo no permitido',
+			description: 'El terminal que intenta usar no ha sido registrado o ha sido desactivado'
 		})
 	}
 
@@ -34,7 +36,9 @@ export async function updateShift(shiftId: string, deviceId: string, data: Shift
 
 	if (!shift) {
 		throw new CustomError({
-			message: 'Turno no encontrado'
+			type: CustomErrorType.UNKNOWN_ERROR,
+			name: 'Turno no encontrado',
+			description: 'Turno no encontrado'
 		})
 	}
 

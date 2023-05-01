@@ -59,36 +59,21 @@ export default {
 			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId } = req.session!
+	getAll: async (req: Request, res: Response) => {
+		const { businessId } = req.session!
 
-			const categories = await Category.findAll({ where: { businessId }, order: [['name', 'ASC']] })
-			res.status(200).send(categories)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		const categories = await Category.findAll({ where: { businessId }, order: [['name', 'ASC']] })
+		res.status(200).send(categories)
 	},
-	getOne: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.params
+	getOne: async (req: Request, res: Response) => {
+		const { id } = req.params
 
-			const category = await Category.findOne({ where: { id } })
-			res.status(200).send(category)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		const category = await Category.findOne({ where: { id } })
+		res.status(200).send(category)
 	},
-	getCategoriesByBusiness: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId } = req.params
-			const categories = await getCategoriesByBusiness(businessId)
-			res.status(200).send(categories)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+	getCategoriesByBusiness: async (req: Request, res: Response) => {
+		const { businessId } = req.params
+		const categories = await getCategoriesByBusiness(businessId)
+		res.status(200).send(categories)
 	}
 }

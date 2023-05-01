@@ -27,5 +27,8 @@ const db = new Sequelize({
 
 db.sync()
 
+if (DB_HOST === 'localhost') [
+	db.query('SET GLOBAL sql_mode = (SELECT REPLACE(@@sql_mode,"ONLY_FULL_GROUP_BY", ""));')
+]
 
 export { db }

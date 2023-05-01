@@ -1,76 +1,60 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 import { login as handleLogin, changePassword as handleChangePassword, createAccount } from './services'
 
 export default {
-	login: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { email, password } = req.body
-			const { loggedin, user, token } = await handleLogin(email, password)
+	login: async (req: Request, res: Response) => {
+		const { email, password } = req.body
+		const { loggedin, user, token } = await handleLogin(email, password)
 
-			if (!loggedin) {
-				return res.status(401).send({
-					message: 'Email o contraseña incorrecta.'
-				})
-			}
-
-			req.session!.loggedin = true
-			req.session!.name = `${user?.firstName} ${user?.lastName}`
-			req.session!.photo = user?.photoUrl
-			req.session!.email = user?.email
-			req.session!.roleId = user?.roleId
-			req.session!.roleCode = user?.roleCode
-			req.session!.businessId = user?.businessId
-			req.session!.merchantId = user?.merchantId
-			req.session!.userId = user?.id
-
-			res.status(200).send({
-				token: token,
-				message: 'Sesion iniciada correctamente',
-				user
+		if (!loggedin) {
+			return res.status(401).send({
+				message: 'Email o contraseña incorrecta.'
 			})
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
 		}
+
+		req.session!.loggedin = true
+		req.session!.name = `${user?.firstName} ${user?.lastName}`
+		req.session!.photo = user?.photoUrl
+		req.session!.email = user?.email
+		req.session!.roleId = user?.roleId
+		req.session!.roleCode = user?.roleCode
+		req.session!.businessId = user?.businessId
+		req.session!.merchantId = user?.merchantId
+		req.session!.userId = user?.id
+
+		res.status(200).send({
+			token: token,
+			message: 'Sesion iniciada correctamente',
+			user
+		})
 	},
-	changePassword: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { oldPassword, newPassword } = req.body
-			const { userId, merchantId } = req.session!
+	changePassword: async (req: Request, res: Response) => {
+		const { oldPassword, newPassword } = req.body
+		const { userId, merchantId } = req.session!
 
-			const changed = await handleChangePassword(userId, oldPassword, newPassword, merchantId)
-			if (!changed) {
-				return res.status(401).send({
-					message: 'Contraseña incorrecta.'
-				})
-			}
-
-			res.sendStatus(204)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
+		const changed = await handleChangePassword(userId, oldPassword, newPassword, merchantId)
+		if (!changed) {
+			return res.status(401).send({
+				message: 'Contraseña incorrecta.'
+			})
 		}
-	},
-	signup: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { user, business, partnerCode } = req.body
-			const { error } = await createAccount(user, business, partnerCode)
-			if (error) {
-				return res.status(400).send({ message: error })
-			}
 
-			res.sendStatus(201)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.sendStatus(204)
 	},
-	logout: (req: Request, res: Response, next: NextFunction) => {
+	signup: async (req: Request, res: Response) => {
+		const { user, business, partnerCode } = req.body
+		const { error } = await createAccount(user, business, partnerCode)
+		if (error) {
+			return res.status(400).send({ message: error })
+		}
+
+		res.sendStatus(201)
+	},
+	logout: (req: Request, res: Response) => {
 		req.session?.destroy((error) => {
 			if (error) {
-				res.sendStatus(500)
-				next(error)
+				throw error
 			}
 
 			res.sendStatus(204)

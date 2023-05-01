@@ -2,7 +2,7 @@ import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, Op }
 import { format } from '@ldss95/helpers'
 import bcrypt from 'bcrypt'
 
-import { CustomError } from '../../errors'
+import { CustomError, CustomErrorType } from '../../errors'
 import { deleteFile, notifyUpdate } from '../../helpers'
 import { Business } from '../business/model'
 import { Role } from '../roles/model'
@@ -29,7 +29,9 @@ export async function deleteUser(id: string, force: boolean, merchantId: string)
 
 		if (user.businessId != business!.id) {
 			throw new CustomError({
-				message: 'You are trying to remove users that you do not own'
+				type: CustomErrorType.AUTH_ERROR,
+				name: 'Accion no permitida',
+				description: 'Estas intentando eliminar un usuario que no es de tu propiedad'
 			})
 		}
 
@@ -40,7 +42,9 @@ export async function deleteUser(id: string, force: boolean, merchantId: string)
 	} catch (error) {
 		if (error instanceof ForeignKeyConstraintError) {
 			throw new CustomError({
-				message: 'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.'
+				type: CustomErrorType.AUTH_ERROR,
+				name: 'Accion no permitida',
+				description: 'No se puede eliminar un usuario despues de haber realizado transacciones, se recomienda desactivar.'
 			})
 		}
 
@@ -114,7 +118,9 @@ export async function updateUser({ id, ...props }: UserProps, merchantId: string
 			else if (fields['users.dui']) message = `La cedula '${format.dui(dui)}' ya está en uso.`
 
 			throw new CustomError({
-				message
+				name: 'No se pudo actualizar',
+				type: CustomErrorType.UNKNOWN_ERROR,
+				description: message
 			})
 		}
 	}
@@ -143,21 +149,27 @@ export async function createUser(user: UserProps, businessId: string, merchantId
 			const { fields } = error
 			const { email, dui, nickName } = user
 
-			if (fields['users.email']) {
+			if (fields.email) {
 				throw new CustomError({
-					message: `El email '${email}' ya está en uso.`
+					name: `El email '${email}' ya está en uso.`,
+					description: 'No pueden existir 2 cuantas con el mismo correo electronico',
+					type: CustomErrorType.UNKNOWN_ERROR
 				})
 			}
 
-			if (fields['users.dui']) {
+			if (fields.dui) {
 				throw new CustomError({
-					message: `La cédula '${format.dui(dui)}' ya está en uso.`
+					name: `La cédula '${format.dui(dui)}' ya está en uso.`,
+					description: 'No pueden existir 2 cuantas con la misma cédula',
+					type: CustomErrorType.UNKNOWN_ERROR
 				})
 			}
 
-			if (fields['users.nickName']) {
+			if (fields.nickName) {
 				throw new CustomError({
-					message: `El nombre de usuario '${nickName}' ya está en uso.`
+					name: `El nombre de usuario '${nickName}' ya está en uso.`,
+					description: 'No pueden existir 2 cuantas con el mismo nombre de usuario',
+					type: CustomErrorType.UNKNOWN_ERROR
 				})
 			}
 		}
@@ -165,7 +177,9 @@ export async function createUser(user: UserProps, businessId: string, merchantId
 		if (error instanceof ValidationError) {
 			const { message } = error.errors[0]
 			throw new CustomError({
-				message
+				name: '',
+				type: CustomErrorType.UNKNOWN_ERROR,
+				description: message
 			})
 		}
 
@@ -199,7 +213,9 @@ export async function getUsersUpdates(date: string, merchantId: string): Promise
 
 	if (!business || !business.isActive) {
 		throw new CustomError({
-			message: 'Invalid merchantId'
+			type: CustomErrorType.AUTH_ERROR,
+			name: 'merchantId invalido',
+			description: 'El merchantId enviado no es incorrecto o se enuentra inactivo'
 		})
 	}
 

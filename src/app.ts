@@ -9,9 +9,11 @@ import swaggerJsDoc from 'swagger-jsdoc'
 import * as Sentry from '@sentry/node'
 import * as Tracing from '@sentry/tracing'
 import 'dotenv/config'
+import 'express-async-errors'
 
 import routes from './routes'
 import { addExtraData2Sentry } from './middlewares/errors'
+import { handleCustomError, handleUnknownError, handleZodError } from './errors'
 
 const { PORT, DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER, SECRET_SESSION, NODE_ENV, SENTRY_DSN } = process.env
 const app: Express = express()
@@ -93,7 +95,28 @@ const specs = swaggerJsDoc({
 app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs))
 app.use('/health', (_, res) => res.sendStatus(204))
 app.use(routes)
+app.use(handleZodError)
+app.use(handleCustomError)
+app.use(handleUnknownError)
 app.use(addExtraData2Sentry)
 app.use(Sentry.Handlers.errorHandler())
+
+process.on('uncaughtException', (error: Error) => {
+	Sentry.captureException(error, {
+		extra: {
+			type: 'uncaughtException',
+		}
+	})
+	process.exit(1)
+})
+
+process.on('unhandledRejection', (error: Error) => {
+	Sentry.captureException(error, {
+		extra: {
+			type: 'unhandledRejection',
+		}
+	})
+	process.exit(1)
+})
 
 export { app }

@@ -51,24 +51,14 @@ export default {
 			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId } = req.session!
-			const brands = await listAllBrands(businessId)
-			res.status(200).send(brands)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+	getAll: async (req: Request, res: Response) => {
+		const { businessId } = req.session!
+		const brands = await listAllBrands(businessId)
+		res.status(200).send(brands)
 	},
-	getOne: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.params
-			const brand = await getOneBrand(id)
-			res.status(200).send(brand)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+	getOne: async (req: Request, res: Response) => {
+		const { id } = req.params
+		const brand = await getOneBrand(id)
+		res.status(200).send(brand)
 	}
 }

@@ -76,23 +76,18 @@ export default {
 			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const providers = await Provider.findAll({
-				order: [['name', 'ASC']],
-				include: {
-					model: Bank,
-					as: 'bank'
-				},
-				where: {
-					businessId: req.session!.businessId
-				}
-			})
+	getAll: async (req: Request, res: Response) => {
+		const providers = await Provider.findAll({
+			order: [['name', 'ASC']],
+			include: {
+				model: Bank,
+				as: 'bank'
+			},
+			where: {
+				businessId: req.session!.businessId
+			}
+		})
 
-			res.status(200).send(providers.map((provider) => provider.toJSON()))
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.status(200).send(providers.map((provider) => provider.toJSON()))
 	}
 }

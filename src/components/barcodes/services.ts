@@ -3,7 +3,7 @@ import { Op } from 'sequelize'
 import { Barcode } from './model'
 import { Product } from '../products/model'
 import { Business } from '../business/model'
-import { CustomError } from '../../errors'
+import { CustomError, CustomErrorType } from '../../errors'
 
 interface UpdatesResponseProps {
 	created: {
@@ -26,11 +26,19 @@ export async function getUpdates(date: string, merchantId: string): Promise<Upda
 	})
 
 	if (!business) {
-		throw new CustomError({ message: 'Wrong merchantId' })
+		throw new CustomError({
+			type: CustomErrorType.AUTH_ERROR,
+			name: 'merchantId invalido',
+			description: 'El merchantId enviado no es incorrecto o se enuentra inactivo'
+		})
 	}
 
 	if (!business.isActive) {
-		throw new CustomError({ message: 'Cliente desabilitado' })
+		throw new CustomError({
+			type: CustomErrorType.AUTH_ERROR,
+			description: 'El clinete ha sido desabilitado',
+			name: 'Cliente desabilitado'
+		})
 	}
 
 	const created = await Barcode.findAll({

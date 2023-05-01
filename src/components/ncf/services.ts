@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { Op } from 'sequelize'
 
-import { CustomError } from '../../errors'
+import { CustomError, CustomErrorType } from '../../errors'
 import { Business } from '../business/model'
 import { Sale } from '../sales/model'
 import { NcfAvailabilityProps, NcfProps, NcfTypeId, NcfTypeProps } from './interface'
@@ -90,8 +90,9 @@ export async function getNextNcf(typeId: NcfTypeId, lastLocalNcf: number, mercha
 
 	if (!business) {
 		throw new CustomError({
-			message: 'Invalida Merchant ID',
-			status: 400
+			type: CustomErrorType.AUTH_ERROR,
+			name: 'merchantId invalido',
+			description: 'El merchantId enviado no es incorrecto o se enuentra inactivo'
 		})
 	}
 
@@ -106,14 +107,17 @@ export async function getNextNcf(typeId: NcfTypeId, lastLocalNcf: number, mercha
 
 	if (!availability) {
 		throw new CustomError({
-			message: 'El cliente no cuenta con comprobantes disponibles',
-			status: 400
+			type: CustomErrorType.NCF_ERROR,
+			name: 'El cliente no cuenta con comprobantes disponibles',
+			description: 'El cliente no cuenta con comprobantes disponibles',
 		})
 	}
 
 	if (moment(availability.expireAt).isBefore(moment())) {
 		throw new CustomError({
-			message: 'Comprobantes expirados',
+			type: CustomErrorType.NCF_ERROR,
+			name: 'Comprobantes expirados',
+			description: 'Comprobantes expirados',
 			status: 400
 		})
 	}

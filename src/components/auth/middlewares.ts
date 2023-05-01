@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express'
-import { ZodError } from 'zod'
 
 import { userSchema, businessSchema } from './schema'
 
@@ -40,31 +39,22 @@ export function validChangePassword(req: Request, res: Response, next: NextFunct
 }
 
 export function validSignup(req: Request, res: Response, next: NextFunction): Response | void {
-	try {
-		const { user, business } = req.body
+	const { user, business } = req.body
 
-		if (!user) {
-			return res.status(400).send({
-				message: 'Missin property `user`'
-			})
-		}
-
-		if (!business) {
-			return res.status(400).send({
-				message: 'Missin property `business`'
-			})
-		}
-
-		userSchema.parse(user)
-		businessSchema.parse(business)
-
-		next()
-	} catch (error) {
-		if (error instanceof ZodError) {
-			return res.status(400).send({
-				errors: error.issues,
-				message: 'Informacion incompleta o incorrecta'
-			})
-		}
+	if (!user) {
+		return res.status(400).send({
+			message: 'Missin property `user`'
+		})
 	}
+
+	if (!business) {
+		return res.status(400).send({
+			message: 'Missin property `business`'
+		})
+	}
+
+	userSchema.parse(user)
+	businessSchema.parse(business)
+
+	next()
 }

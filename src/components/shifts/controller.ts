@@ -62,49 +62,39 @@ export default {
 			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const businessId = req.session!.businessId
-			const { date, userId, pagination, sorter } = req.query as {
-				date: string;
-				userId?: string;
-				pagination: {
-					current: string;
-					pageSize: string;
-				},
-				sorter?: {
-					field: keyof ShiftProps,
-					order: 'ascend' | 'descend'
-				}
+	getAll: async (req: Request, res: Response) => {
+		const businessId = req.session!.businessId
+		const { date, userId, pagination, sorter } = req.query as {
+			date: string;
+			userId?: string;
+			pagination: {
+				current: string;
+				pageSize: string;
+			},
+			sorter?: {
+				field: keyof ShiftProps,
+				order: 'ascend' | 'descend'
 			}
-
-			const { shifts, count } = await getAllShifts({
-				businessId,
-				date,
-				userId,
-				pagination: {
-					current: +pagination?.current,
-					pageSize: +pagination?.pageSize
-				},
-				sorter
-			})
-			res.status(200).send({
-				data: shifts,
-				count
-			})
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
 		}
+
+		const { shifts, count } = await getAllShifts({
+			businessId,
+			date,
+			userId,
+			pagination: {
+				current: +pagination?.current,
+				pageSize: +pagination?.pageSize
+			},
+			sorter
+		})
+		res.status(200).send({
+			data: shifts,
+			count
+		})
 	},
 	getSoldDetails: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { shiftId } = req.params
-			const summary = await getShiftSummary(shiftId)
-			res.status(200).send(summary)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		const { shiftId } = req.params
+		const summary = await getShiftSummary(shiftId)
+		res.status(200).send(summary)
 	}
 }

@@ -8,7 +8,7 @@ import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
 import { ProductLinkProps, ProductProps } from './interface'
 import { Product, ProductLink } from './model'
-import { CustomError } from '../../errors'
+import { CustomError, CustomErrorType } from '../../errors'
 import { saveHistory } from '../history/services'
 import { HistoryAdditionalProps, Table } from '../history/interface'
 
@@ -355,8 +355,9 @@ export async function updateProduct(merchantId: string, data: ProductProps, hist
 	const before = product?.toJSON()
 	if (!product) {
 		throw new CustomError({
-			message: 'Producto no encontrado',
-			status: 400
+			type: CustomErrorType.UNKNOWN_ERROR,
+			description: 'El ID enviado no es valido',
+			name: 'Producto no encontrado'
 		})
 	}
 
@@ -397,6 +398,7 @@ export async function getUpdates(businessId: string, date: string): Promise<GetU
 			as: 'barcodes'
 		}
 	})
+
 	const updated = await Product.findAll({
 		where: {
 			...(date != 'ALL' && {

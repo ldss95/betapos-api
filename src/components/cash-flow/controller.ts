@@ -44,39 +44,34 @@ export default {
 			next(error)
 		}
 	},
-	getAll: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId } = req.session!
-			const { shiftId } = req.query
+	getAll: async (req: Request, res: Response) => {
+		const { businessId } = req.session!
+		const { shiftId } = req.query
 
-			const data = await CashFlow.findAll({
-				where: {
-					[Op.and]: [
-						{
-							...(shiftId && {
-								shiftId
-							})
-						},
-						{ businessId }
-					]
-				},
-				include: {
-					model: Shift,
-					as: 'shift',
-					include: [
-						{
-							model: User,
-							as: 'user',
-							paranoid: false
-						}
-					]
-				}
-			})
+		const data = await CashFlow.findAll({
+			where: {
+				[Op.and]: [
+					{
+						...(shiftId && {
+							shiftId
+						})
+					},
+					{ businessId }
+				]
+			},
+			include: {
+				model: Shift,
+				as: 'shift',
+				include: [
+					{
+						model: User,
+						as: 'user',
+						paranoid: false
+					}
+				]
+			}
+		})
 
-			res.status(200).send(data.map((item) => item.toJSON()))
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.status(200).send(data.map((item) => item.toJSON()))
 	}
 }

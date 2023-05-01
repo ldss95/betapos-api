@@ -50,85 +50,65 @@ export default {
 			next(error)
 		}
 	},
-	update: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.body
-			const { merchantId } = req.session!
+	update: async (req: Request, res: Response) => {
+		const { id } = req.body
+		const { merchantId } = req.session!
 
-			await Device.update(req.body, { where: { id } })
-			notifyUpdate('devices', merchantId)
+		await Device.update(req.body, { where: { id } })
+		notifyUpdate('devices', merchantId)
 
-			res.sendStatus(200)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.sendStatus(200)
 	},
-	delete: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.params
-			const { merchantId } = req.session!
+	delete: async (req: Request, res: Response) => {
+		const { id } = req.params
+		const { merchantId } = req.session!
 
-			await Device.destroy({ where: { id } })
-			notifyUpdate('devices', merchantId)
+		await Device.destroy({ where: { id } })
+		notifyUpdate('devices', merchantId)
 
-			res.sendStatus(200)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.sendStatus(200)
 	},
-	getAll: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId } = req.session!
+	getAll: async (req: Request, res: Response) => {
+		const { businessId } = req.session!
 
-			const devices = await Device.findAll({
-				where: { businessId },
-				include: {
-					model: Os,
-					as: 'os'
-				}
-			})
-			res.status(200).send(devices)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
-	},
-	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { date } = req.params
-			const merchantId = req.header('merchantId')
-			const deviceId = req.header('deviceId')
-
-			const business = await Business.findOne({
-				where: {
-					merchantId
-				}
-			})
-
-			if (!business || !business.isActive) {
-				return res.sendStatus(400)
+		const devices = await Device.findAll({
+			where: { businessId },
+			include: {
+				model: Os,
+				as: 'os'
 			}
+		})
+		res.status(200).send(devices)
+	},
+	getUpdates: async (req: Request, res: Response) => {
+		const { date } = req.params
+		const merchantId = req.header('merchantId')
+		const deviceId = req.header('deviceId')
 
-			const device = await Device.findOne({
-				where: {
-					[Op.and]: [
-						{ businessId: business.id },
-						{ deviceId },
-						{
-							updatedAt: {
-								[Op.gte]: date
-							}
-						}
-					]
-				}
-			})
+		const business = await Business.findOne({
+			where: {
+				merchantId
+			}
+		})
 
-			res.status(200).send(device?.toJSON())
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
+		if (!business || !business.isActive) {
+			return res.sendStatus(400)
 		}
+
+		const device = await Device.findOne({
+			where: {
+				[Op.and]: [
+					{ businessId: business.id },
+					{ deviceId },
+					{
+						updatedAt: {
+							[Op.gte]: date
+						}
+					}
+				]
+			}
+		})
+
+		res.status(200).send(device?.toJSON())
 	}
 }

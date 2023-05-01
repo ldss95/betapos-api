@@ -14,7 +14,7 @@ import { Sale } from './model'
 import { notifyUpdate, round } from '../../helpers'
 import { User } from '../users/model'
 import { Business } from '../business/model'
-import { CustomError } from '../../errors'
+import { CustomError, CustomErrorType } from '../../errors'
 import { Device } from '../devices/model'
 
 interface TicketProps extends SaleProps {
@@ -28,8 +28,9 @@ export async function insertSale(ticket: TicketProps, merchantId: string, device
 
 	if (!business || !business.isActive) {
 		throw new CustomError({
-			status: 400,
-			message: 'Invalida MERCHANT ID'
+			type: CustomErrorType.AUTH_ERROR,
+			name: 'merchantId invalido',
+			description: 'El merchantId enviado no es incorrecto o se enuentra inactivo'
 		})
 	}
 
@@ -39,8 +40,9 @@ export async function insertSale(ticket: TicketProps, merchantId: string, device
 
 	if (!device || !device.isActive) {
 		throw new CustomError({
-			status: 400,
-			message: 'Device not allowed'
+			type: CustomErrorType.AUTH_ERROR,
+			name: 'Dispositivo no permitido',
+			description: 'El terminal que intenta usar no ha sido registrado o ha sido desactivado'
 		})
 	}
 

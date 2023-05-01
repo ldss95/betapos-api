@@ -1,5 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
-import moment from 'moment'
+import { Request, Response } from 'express'
 import { Op, fn, col } from 'sequelize'
 
 import { Client } from './model'
@@ -9,229 +8,176 @@ import { Sale } from '../sales/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { ClientPayment } from '../clients-payments/model'
 import { SalePayment } from '../sales-payments/model'
-import { User } from '../users/model'
-import { ClientPaymentProps } from '../clients-payments/interface'
-import { SaleProps } from '../sales/interface'
 import { availableClientCredit, getClientCreditDetails } from './services'
 import { ClientsGroup } from '../clients-groups/model'
 
 export default {
-	create: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId, merchantId } = req.session!
+	create: async (req: Request, res: Response) => {
+		const { businessId, merchantId } = req.session!
 
-			const { id } = await Client.create({ ...req.body, businessId })
-			notifyUpdate('clients', merchantId)
+		const { id } = await Client.create({ ...req.body, businessId })
+		notifyUpdate('clients', merchantId)
 
-			res.status(201).send({ id })
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.status(201).send({ id })
 	},
-	update: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.body
-			const { merchantId } = req.session!
+	update: async (req: Request, res: Response) => {
+		const { id } = req.body
+		const { merchantId } = req.session!
 
-			await Client.update(req.body, { where: { id } })
-			notifyUpdate('clients', merchantId)
+		await Client.update(req.body, { where: { id } })
+		notifyUpdate('clients', merchantId)
 
-			res.sendStatus(204)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.sendStatus(204)
 	},
-	delete: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.params
-			const { merchantId } = req.session!
+	delete: async (req: Request, res: Response) => {
+		const { id } = req.params
+		const { merchantId } = req.session!
 
-			await Client.destroy({ where: { id }, force: true })
-			notifyUpdate('clients', merchantId)
-			res.sendStatus(204)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		await Client.destroy({ where: { id }, force: true })
+		notifyUpdate('clients', merchantId)
+		res.sendStatus(204)
 	},
-	getAll: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const clients = await Client.findAll({
-				include: {
-					model: ClientsGroup,
-					as: 'group'
-				},
-				where: { businessId: req.session!.businessId }
-			})
-			res.status(200).send(clients)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+	getAll: async (req: Request, res: Response) => {
+		const clients = await Client.findAll({
+			include: {
+				model: ClientsGroup,
+				as: 'group'
+			},
+			where: { businessId: req.session!.businessId }
+		})
+		res.status(200).send(clients)
 	},
-	getOne: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.params
+	getOne: async (req: Request, res: Response) => {
+		const { id } = req.params
 
-			const client = await Client.findOne({
-				include: {
-					model: ClientsGroup,
-					as: 'group'
-				},
-				where: { id }
-			})
+		const client = await Client.findOne({
+			include: {
+				model: ClientsGroup,
+				as: 'group'
+			},
+			where: { id }
+		})
 
-			res.status(200).send(client)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.status(200).send(client)
 	},
-	addPhoto: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			let { location } = req.file as Express.MulterS3.File
-			const { merchantId } = req.session!
-			if (location.substr(0, 8) != 'https://') {
-				location = `https://${location}`
+	addPhoto: async (req: Request, res: Response) => {
+		let { location } = req.file as Express.MulterS3.File
+		const { merchantId } = req.session!
+		if (location.substr(0, 8) != 'https://') {
+			location = `https://${location}`
+		}
+
+		const { id } = req.body
+
+		const client = await Client.findOne({ where: { id } })
+
+		// Delte current photo if exists
+		if (client?.photoUrl && client.photoUrl != location) {
+			let key = client.photoUrl.split('/images/').pop()
+			key = 'images/' + key
+			deleteFile(key)
+		}
+
+		await client!.update({ photoUrl: location })
+		notifyUpdate('clients', merchantId)
+		res.status(200).send({ photoUrl: location })
+	},
+	getUpdates: async (req: Request, res: Response) => {
+		const { date } = req.params
+		const merchantId = req.header('merchantId')
+
+		const business = await Business.findOne({
+			where: {
+				merchantId
 			}
+		})
 
-			const { id } = req.body
-
-			const client = await Client.findOne({ where: { id } })
-
-			// Delte current photo if exists
-			if (client?.photoUrl && client.photoUrl != location) {
-				let key = client.photoUrl.split('/images/').pop()
-				key = 'images/' + key
-				deleteFile(key)
-			}
-
-			await client!.update({ photoUrl: location })
-			notifyUpdate('clients', merchantId)
-			res.status(200).send({ photoUrl: location })
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
+		if (!business || !business.isActive) {
+			return res.sendStatus(400)
 		}
+
+		const created = await Client.findAll({
+			where: {
+				...(date != 'ALL' && {
+					createdAt: { [Op.gte]: date }
+				}),
+				businessId: business.id
+			},
+			raw: true
+		})
+		const updated = await Client.findAll({
+			where: {
+				...(date != 'ALL' && {
+					updatedAt: { [Op.gte]: date }
+				}),
+				businessId: business.id
+			},
+			raw: true
+		})
+
+		res.status(200).send({ created, updated })
 	},
-	getUpdates: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { date } = req.params
-			const merchantId = req.header('merchantId')
-
-			const business = await Business.findOne({
-				where: {
-					merchantId
-				}
-			})
-
-			if (!business || !business.isActive) {
-				return res.sendStatus(400)
+	getPending: async (req: Request, res: Response) => {
+		const { businessId } = req.session!
+		const paymentType = await SalePaymentType.findOne({
+			where: {
+				name: 'Fiao'
 			}
+		})
 
-			const created = await Client.findAll({
-				where: {
-					...(date != 'ALL' && {
-						createdAt: { [Op.gte]: date }
-					}),
-					businessId: business.id
-				},
-				raw: true
-			})
-			const updated = await Client.findAll({
-				where: {
-					...(date != 'ALL' && {
-						updatedAt: { [Op.gte]: date }
-					}),
-					businessId: business.id
-				},
-				raw: true
-			})
-
-			res.status(200).send({ created, updated })
-		} catch (error) {
+		if (!paymentType) {
 			res.sendStatus(500)
-			next(error)
+			throw new Error('Tipo de pago "Fiao" no encontrado')
 		}
-	},
-	getPending: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId } = req.session!
-			const paymentType = await SalePaymentType.findOne({
-				where: {
-					name: 'Fiao'
-				}
-			})
 
-			if (!paymentType) {
-				res.sendStatus(500)
-				throw new Error('Tipo de pago "Fiao" no encontrado')
-			}
-
-			const clients = await Client.findAll({
-				attributes: {
-					include: [
-						[fn('sum', col('sales->payments.amount')), 'debt']
-					]
-				},
-				where: { businessId },
+		const clients = await Client.findAll({
+			attributes: {
 				include: [
-					{
-						model: Sale,
-						as: 'sales',
-						where: {
-							status: 'DONE'
-						},
-						include: [{
-							model: SalePayment,
-							as: 'payments',
-							where: {
-								typeId: paymentType.id
-							}
-						}],
-						required: true
+					[fn('sum', col('sales->payments.amount')), 'debt']
+				]
+			},
+			where: { businessId },
+			include: [
+				{
+					model: Sale,
+					as: 'sales',
+					where: {
+						status: 'DONE'
 					},
-					{
-						model: ClientPayment,
+					include: [{
+						model: SalePayment,
 						as: 'payments',
-						separate: true
-					}
-				],
-				group: 'client.id'
-			})
+						where: {
+							typeId: paymentType.id
+						}
+					}],
+					required: true
+				},
+				{
+					model: ClientPayment,
+					as: 'payments',
+					separate: true
+				}
+			],
+			group: 'client.id'
+		})
 
-			res.status(200).send(
-				clients.map((client) => ({
-					...client.toJSON(),
-					payed: client.payments.reduce((total, { amount }) => total + amount, 0)
-				}))
-			)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.status(200).send(
+			clients.map((client) => ({
+				...client.toJSON(),
+				payed: client.payments.reduce((total, { amount }) => total + amount, 0)
+			}))
+		)
 	},
-	getPendingDetails: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { clientId } = req.params
-			const data = await getClientCreditDetails(clientId)
-			res.status(200).send(data)
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+	getPendingDetails: async (req: Request, res: Response) => {
+		const { clientId } = req.params
+		const data = await getClientCreditDetails(clientId)
+		res.status(200).send(data)
 	},
-	getAvailableCredit: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.params
-			const available = await availableClientCredit(id)
+	getAvailableCredit: async (req: Request, res: Response) => {
+		const { id } = req.params
+		const available = await availableClientCredit(id)
 
-			res.status(200).send({ available })
-		} catch (error) {
-			res.sendStatus(500)
-			next(error)
-		}
+		res.status(200).send({ available })
 	}
 }
