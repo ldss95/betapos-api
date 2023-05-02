@@ -29,7 +29,7 @@ export default {
 	},
 	update: async (req: Request, res: Response) => {
 		const { merchantId, userId } = req.session!
-		const ip = req.socket.remoteAddress
+		const ip = req.ip
 		const agent = req.headers['user-agent']
 		await updateProduct(merchantId, req.body, {
 			ip,
