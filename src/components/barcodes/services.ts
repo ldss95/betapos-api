@@ -3,7 +3,7 @@ import { Op } from 'sequelize'
 import { Barcode } from './model'
 import { Product } from '../products/model'
 import { Business } from '../business/model'
-import { CustomError, CustomErrorType } from '../../errors'
+import { CustomError, CustomErrorType } from '../../utils/errors'
 
 interface UpdatesResponseProps {
 	created: {

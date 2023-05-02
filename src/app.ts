@@ -13,7 +13,7 @@ import 'express-async-errors'
 
 import routes from './routes'
 import { addExtraData2Sentry } from './middlewares/errors'
-import { handleCustomError, handleUnknownError, handleZodError } from './errors'
+import { handleCustomError, handleUnknownError, handleZodError } from './utils/errors'
 
 const { PORT, DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER, SECRET_SESSION, NODE_ENV, SENTRY_DSN } = process.env
 const app: Express = express()

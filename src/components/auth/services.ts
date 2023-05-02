@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import { Business } from '../business/model'
 import { Role } from '../roles/model'
 import { User } from '../users/model'
-import { notifyUpdate } from '../../helpers'
+import { notifyUpdate } from '../../utils/helpers'
 import { db } from '../../database/connection'
 
 interface LoginResProps {

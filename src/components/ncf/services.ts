@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { Op } from 'sequelize'
 
-import { CustomError, CustomErrorType } from '../../errors'
+import { CustomError, CustomErrorType } from '../../utils/errors'
 import { Business } from '../business/model'
 import { Sale } from '../sales/model'
 import { NcfAvailabilityProps, NcfProps, NcfTypeId, NcfTypeProps } from './interface'

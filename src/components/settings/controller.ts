@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { notifyUpdate } from '../../helpers'
+import { notifyUpdate } from '../../utils/helpers'
 import { Business } from '../business/model'
 import { Setting } from './model'
 

@@ -3,7 +3,7 @@ import { Op, fn, col } from 'sequelize'
 
 import { Client } from './model'
 import { Business } from '../business/model'
-import { deleteFile, notifyUpdate } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../utils/helpers'
 import { Sale } from '../sales/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { ClientPayment } from '../clients-payments/model'

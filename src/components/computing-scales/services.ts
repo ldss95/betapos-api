@@ -1,6 +1,6 @@
 import { Op } from 'sequelize'
 
-import { notifyUpdate } from '../../helpers'
+import { notifyUpdate } from '../../utils/helpers'
 import { ComputingScaleProps } from './interface'
 import { ComputingScale } from './model'
 

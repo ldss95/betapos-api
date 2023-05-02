@@ -1,7 +1,7 @@
 import moment from 'moment'
 
-import { CustomError, CustomErrorType } from '../../errors'
-import { deleteFile } from '../../helpers'
+import { CustomError, CustomErrorType } from '../../utils/errors'
+import { deleteFile } from '../../utils/helpers'
 import { ProductProps } from '../products/interface'
 import { Product } from '../products/model'
 import { updateProduct } from '../products/services'

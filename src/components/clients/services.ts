@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { col, fn } from 'sequelize'
 
-import { round } from '../../helpers'
+import { round } from '../../utils/helpers'
 import { ClientPaymentProps } from '../clients-payments/interface'
 import { ClientPayment } from '../clients-payments/model'
 import { SalePaymentType } from '../sales-payments-types/model'

@@ -4,7 +4,7 @@ import { Business } from '../business/model'
 
 import { Os } from '../operative-systems/model'
 import { Device } from './model'
-import { notifyUpdate } from '../../helpers'
+import { notifyUpdate } from '../../utils/helpers'
 
 export default {
 	create: async (req: Request, res: Response, next: NextFunction) => {

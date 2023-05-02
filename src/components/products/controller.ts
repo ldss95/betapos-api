@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { literal } from 'sequelize'
 import moment from 'moment'
 
-import { deleteFile, notifyUpdate } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../utils/helpers'
 import { Barcode } from '../barcodes/model'
 import { Product } from './model'
 import { Business } from '../business/model'

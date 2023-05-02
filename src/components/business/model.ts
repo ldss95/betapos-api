@@ -5,7 +5,7 @@ import { BusinessType } from '../business-types/model'
 import { Province } from '../provinces/model'
 import { BusinessProps } from './interface'
 import { Device } from '../devices/model'
-import { notifyUpdate } from '../../helpers'
+import { notifyUpdate } from '../../utils/helpers'
 
 const Business = db.define<BusinessProps>(
 	'business',

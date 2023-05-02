@@ -2,8 +2,8 @@ import { ForeignKeyConstraintError, UniqueConstraintError, ValidationError, Op }
 import { format } from '@ldss95/helpers'
 import bcrypt from 'bcrypt'
 
-import { CustomError, CustomErrorType } from '../../errors'
-import { deleteFile, notifyUpdate } from '../../helpers'
+import { CustomError, CustomErrorType } from '../../utils/errors'
+import { deleteFile, notifyUpdate } from '../../utils/helpers'
 import { Business } from '../business/model'
 import { Role } from '../roles/model'
 import { UserProps } from './interface'

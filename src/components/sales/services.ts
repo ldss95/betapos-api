@@ -11,10 +11,10 @@ import { SaleProductProps } from '../sales-products/interface'
 import { SaleProduct } from '../sales-products/model'
 import { SaleProps } from './interface'
 import { Sale } from './model'
-import { notifyUpdate, round } from '../../helpers'
+import { notifyUpdate, round } from '../../utils/helpers'
 import { User } from '../users/model'
 import { Business } from '../business/model'
-import { CustomError, CustomErrorType } from '../../errors'
+import { CustomError, CustomErrorType } from '../../utils/errors'
 import { Device } from '../devices/model'
 
 interface TicketProps extends SaleProps {

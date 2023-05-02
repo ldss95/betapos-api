@@ -1,14 +1,14 @@
 import xlsx from 'json-as-xlsx'
 import { Op, literal } from 'sequelize'
 
-import { notifyUpdate, round } from '../../helpers'
+import { notifyUpdate, round } from '../../utils/helpers'
 import { BarcodeProps } from '../barcodes/interface'
 import { Barcode } from '../barcodes/model'
 import { Brand } from '../brands/model'
 import { Category } from '../categories/model'
 import { ProductLinkProps, ProductProps } from './interface'
 import { Product, ProductLink } from './model'
-import { CustomError, CustomErrorType } from '../../errors'
+import { CustomError, CustomErrorType } from '../../utils/errors'
 import { saveHistory } from '../history/services'
 import { HistoryAdditionalProps, Table } from '../history/interface'
 
@@ -351,7 +351,12 @@ export async function updateProduct(merchantId: string, data: ProductProps, hist
 	/**
 	 * Actualizar producto
 	 */
-	const product = await Product.findByPk(data.id)
+	const product = await Product.findByPk(data.id, {
+		include: {
+			model: Barcode,
+			as: 'barcodes'
+		}
+	})
 	const before = product?.toJSON()
 	if (!product) {
 		throw new CustomError({
@@ -371,7 +376,7 @@ export async function updateProduct(merchantId: string, data: ProductProps, hist
 	handleUpdateLinks(data.id, data.linkedProducts)
 	saveHistory({
 		before,
-		after: data as any,
+		after: data,
 		ip: history.ip,
 		agent: history.agent,
 		table: Table.PRODUCTS,

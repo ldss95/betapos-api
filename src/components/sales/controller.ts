@@ -8,7 +8,7 @@ import { User } from '../users/model'
 import { Product } from '../products/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { createExcelFile, getAllSales, getSalesSummary, insertSale } from './services'
-import { CustomError } from '../../errors'
+import { CustomError } from '../../utils/errors'
 
 export default {
 	create: async (req: Request, res: Response, next: NextFunction) => {

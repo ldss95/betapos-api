@@ -1,6 +1,6 @@
 import { literal, Op, col, fn } from 'sequelize'
 
-import { CustomError, CustomErrorType } from '../../errors'
+import { CustomError, CustomErrorType } from '../../utils/errors'
 import { Device } from '../devices/model'
 import { SalePaymentType } from '../sales-payments-types/model'
 import { SalePayment } from '../sales-payments/model'

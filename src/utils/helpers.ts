@@ -3,7 +3,7 @@ import http from 'supertest'
 import { Express } from 'express'
 import { DeleteObjectCommandOutput, S3 } from '@aws-sdk/client-s3'
 
-import { db } from './database/firebase'
+import { db } from '../database/firebase'
 
 export function deleteFile(Key: string): Promise<DeleteObjectCommandOutput | undefined> {
 	return new Promise((resolve, reject) => {

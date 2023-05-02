@@ -1,5 +1,5 @@
 import { Op } from 'sequelize'
-import { deleteFile, notifyUpdate } from '../../helpers'
+import { deleteFile, notifyUpdate } from '../../utils/helpers'
 
 import { BusinessType } from '../business-types/model'
 import { Province } from '../provinces/model'

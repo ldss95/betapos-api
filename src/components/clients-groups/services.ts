@@ -4,7 +4,7 @@ import path from 'path'
 import moment from 'moment'
 
 import { db } from '../../database/connection'
-import { round } from '../../helpers'
+import { round } from '../../utils/helpers'
 import { ClientPayment } from '../clients-payments/model'
 import { ClientsGroupProps } from './interface'
 import { ClientsGroup } from './model'

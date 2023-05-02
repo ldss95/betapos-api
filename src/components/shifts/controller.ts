@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { ForeignKeyConstraintError, UniqueConstraintError } from 'sequelize'
 
 import { createShift, getAllShifts, getShiftSummary, updateShift } from './services'
-import { CustomError } from '../../errors'
+import { CustomError } from '../../utils/errors'
 import { ShiftProps } from './interface'
 
 export default {
