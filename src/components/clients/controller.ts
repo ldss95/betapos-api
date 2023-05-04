@@ -10,6 +10,9 @@ import { ClientPayment } from '../clients-payments/model'
 import { SalePayment } from '../sales-payments/model'
 import { availableClientCredit, getClientCreditDetails } from './services'
 import { ClientsGroup } from '../clients-groups/model'
+import { saveHistory } from '../history/services'
+import { CustomError, CustomErrorType } from '../../utils/errors'
+import { Table } from '../history/interface'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -23,9 +26,31 @@ export default {
 	update: async (req: Request, res: Response) => {
 		const { id } = req.body
 		const { merchantId } = req.session!
+		const agent = req.headers['user-agent']
+		const { userId } = req.session!
 
-		await Client.update(req.body, { where: { id } })
+		const client = await Client.findByPk(id)
+		if (!client) {
+			throw new CustomError({
+				name: 'Cliente no encontrado',
+				description: 'El ID proporcionado no es correcto',
+				type: CustomErrorType.RECORD_NOT_FOUND
+			})
+		}
+
+		const before = client.toJSON()
+		await client.update(req.body)
 		notifyUpdate('clients', merchantId)
+
+		await saveHistory({
+			before,
+			after: req.body,
+			ip: req.ip,
+			agent,
+			table: Table.CLIENTS,
+			userId,
+			identifier: client.id
+		})
 
 		res.sendStatus(204)
 	},

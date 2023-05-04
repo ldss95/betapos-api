@@ -1,13 +1,16 @@
 import { Request, Response } from 'express'
 
 import { login as handleLogin, changePassword as handleChangePassword, createAccount } from './services'
+import { saveHistory } from '../history/services'
+import { Table } from '../history/interface'
 
 export default {
 	login: async (req: Request, res: Response) => {
 		const { email, password } = req.body
+		const agent = req.headers['user-agent']
 		const { loggedin, user, token } = await handleLogin(email, password)
 
-		if (!loggedin) {
+		if (!loggedin || !user) {
 			return res.status(401).send({
 				message: 'Email o contraseña incorrecta.'
 			})
@@ -22,6 +25,14 @@ export default {
 		req.session!.businessId = user?.businessId
 		req.session!.merchantId = user?.merchantId
 		req.session!.userId = user?.id
+		await saveHistory({
+			after: user,
+			ip: req.ip,
+			agent,
+			table: Table.SESSION,
+			userId: user.id,
+			identifier: user.id
+		})
 
 		res.status(200).send({
 			token: token,

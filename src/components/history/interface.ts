@@ -17,7 +17,9 @@ export interface HistoryProps extends Model {
 
 export enum Table {
 	PRODUCTS = 'products',
-	BARCODES = 'barcodes'
+	BARCODES = 'barcodes',
+	SESSION = 'session',
+	CLIENTS = 'clients'
 }
 
 export interface HistoryAdditionalProps {

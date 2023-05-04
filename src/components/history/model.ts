@@ -24,14 +24,8 @@ export const History = db.define<HistoryProps>('history', {
 		}
 	},
 	agent: DataTypes.STRING,
-	before: {
-		type: DataTypes.JSON,
-		allowNull: false
-	},
-	after: {
-		type: DataTypes.JSON,
-		allowNull: false
-	},
+	before: DataTypes.JSON,
+	after: DataTypes.JSON,
 	userId: {
 		type: DataTypes.UUID,
 		allowNull: false
