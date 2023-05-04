@@ -98,9 +98,9 @@ app.use('/health', (_, res) => res.sendStatus(204))
 app.use(routes)
 app.use(handleZodError)
 app.use(handleCustomError)
-app.use(handleUnknownError)
 app.use(addExtraData2Sentry)
 app.use(Sentry.Handlers.errorHandler())
+app.use(handleUnknownError)
 
 process.on('uncaughtException', (error: Error) => {
 	Sentry.captureException(error, {
