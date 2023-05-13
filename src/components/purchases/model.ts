@@ -70,6 +70,7 @@ const Purchase = db.define<PurchaseProps>(
 		}
 	},
 	{
+		paranoid: true,
 		indexes: [
 			{
 				fields: ['businessId', 'providerId', 'documentId'],

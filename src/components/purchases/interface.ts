@@ -20,6 +20,7 @@ export interface PurchaseProps extends Model {
 	products: PurchaseProductProps[];
 	adjustPrices: boolean;
 	userId: string;
+	deletedAt: string;
 	createdAt: string;
 	updatedAt: string;
 }
