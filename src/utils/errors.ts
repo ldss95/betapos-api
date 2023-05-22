@@ -22,6 +22,7 @@ export class CustomError extends Error {
 		this.message = description
 		this.status = status ?? 400
 		Error.captureStackTrace(this)
+		Object.setPrototypeOf(this, CustomError.prototype)
 	}
 }
 
