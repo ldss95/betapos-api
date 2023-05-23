@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import { ProductSchema } from './schema'
 
-export function validateCreateProduct(req: Request, res: Response, next: NextFunction) {
+export function validateProduct(req: Request, res: Response, next: NextFunction) {
 	const { cost, price } = req.body
 	if (+cost && +price && +cost > +price) {
 		return res.status(400).send({

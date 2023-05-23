@@ -460,6 +460,7 @@ async function handleUpdateBarcodes(productId: string, barcodes: BarcodeProps[] 
 			}
 		)
 	}
+
 	notifyUpdate('barcodes', merchantId)
 }
 

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const BarcodeSchema = z.object({
-	barcode: z.string().min(3)
+	barcode: z.string().min(3, 'Los códigos de barra deben tener minimo 3 digitos').max(60, 'Los códigos de barra no pueden tener mas de 60 caracteres')
 })
 
 export const ProductSchema = z.object({
