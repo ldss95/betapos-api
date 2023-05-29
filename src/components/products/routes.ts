@@ -9,7 +9,7 @@ import { transformNumbersPrice, validateProduct, validateTableRequest } from './
 routes
 	.route('/')
 	.post(isLoggedIn, tokenIsValid, transformNumbersPrice, validateProduct, controller.create)
-	.put(isLoggedIn, tokenIsValid, transformNumbersPrice, controller.update)
+	.put(isLoggedIn, tokenIsValid, controller.update)
 
 routes.get('/updates/:date', hasMerchantId, controller.getUpdates)
 routes.get('/transactions/:id', isLoggedIn, tokenIsValid, controller.getTransactions)
