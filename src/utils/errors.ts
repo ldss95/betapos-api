@@ -54,6 +54,6 @@ export function handleCustomError(error: unknown, req: Request, res: Response, n
 	next(error)
 }
 
-export function handleUnknownError(error: unknown, req: Request, res: Response) {
+export function handleUnknownError(error: unknown, req: Request, res: Response, next: NextFunction) {
 	res.status(500).send(error)
 }
