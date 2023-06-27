@@ -1,16 +1,20 @@
 import { Op, UniqueConstraintError } from 'sequelize'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import moment from 'moment'
 
 import { Business } from '../business/model'
 import { Role } from '../roles/model'
 import { User } from '../users/model'
 import { notifyUpdate } from '../../utils/helpers'
 import { db } from '../../database/connection'
+import { Bill } from '../billing/model'
+import { CustomError, CustomErrorType } from '../../utils/errors'
 
 interface LoginResProps {
 	loggedin: boolean;
 	token?: string;
+	expireSoon?: boolean;
 	user?: {
 		firstName: string;
 		lastName: string;
@@ -54,6 +58,20 @@ export async function login(email: string, password: string): Promise<LoginResPr
 		return { loggedin: false }
 	}
 
+	const bills = await Bill.findAll({
+		where: {
+			[Op.and]: [
+				{
+					payed: false
+				},
+				{
+					businessId: user.businessId
+				}
+			]
+		},
+		order: [['createdAt', 'DESC']]
+	})
+
 	const data = {
 		iss: 'Beta-POS-API',
 		aud: 'web',
@@ -74,6 +92,7 @@ export async function login(email: string, password: string): Promise<LoginResPr
 	return {
 		loggedin: true,
 		token: token,
+		expireSoon: bills.length >= 3,
 		user: {
 			firstName: user.firstName,
 			lastName: user.lastName,

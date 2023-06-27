@@ -8,7 +8,7 @@ export default {
 	login: async (req: Request, res: Response) => {
 		const { email, password } = req.body
 		const agent = req.headers['user-agent']
-		const { loggedin, user, token } = await handleLogin(email, password)
+		const { loggedin, user, token, expireSoon } = await handleLogin(email, password)
 
 		if (!loggedin || !user) {
 			return res.status(401).send({
@@ -37,7 +37,8 @@ export default {
 		res.status(200).send({
 			token: token,
 			message: 'Sesion iniciada correctamente',
-			user
+			user,
+			expireSoon
 		})
 	},
 	changePassword: async (req: Request, res: Response) => {
