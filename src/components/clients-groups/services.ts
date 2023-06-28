@@ -17,6 +17,10 @@ import { Business } from '../business/model'
 
 const CREDIT_ID = 'd14005a3-c39e-4a00-87b6-28939213a00f'
 
+export async function createClientGroup(name: string, businessId: string) {
+	await ClientsGroup.create({ name, businessId })
+}
+
 export async function getAllClientsGroups(businessId: string): Promise<ClientsGroupProps[]> {
 	const groups = await ClientsGroup.findAll({
 		where: {

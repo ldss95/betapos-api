@@ -2,12 +2,19 @@ import { Request, Response } from 'express'
 
 import {
 	applyClientsGroupPayment,
+	createClientGroup,
 	generateClientsGroupDetailsReport,
 	getAllClientsGroups,
 	getDebtByClientsGroup
 } from './services'
 
 export default {
+	create: async (req: Request, res: Response) => {
+		const { name } = req.body
+		const { businessId } = req.session!
+		await createClientGroup(name, businessId)
+		res.sendStatus(204)
+	},
 	getAll: async (req: Request, res: Response) => {
 		const groups = await getAllClientsGroups(req.session!.businessId)
 		res.status(200).send(groups)
