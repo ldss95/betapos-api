@@ -72,7 +72,7 @@ export async function login(email: string, password: string): Promise<LoginResPr
 		order: [['createdAt', 'DESC']]
 	})
 
-	if (bills.length >= 3 && moment().isAfter(moment(bills[0].createdAt).add(6, 'days'))) {
+	if (bills.length >= 3 && moment().isAfter(moment(bills[0].createdAt).add(7, 'days'))) {
 		throw new CustomError({
 			status: 402,
 			name: 'Cuenta suspendida por impago',
