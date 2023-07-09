@@ -144,12 +144,12 @@ export default {
 
 		if (purchases.length > 0) {
 			transactions.push(
-				...purchases.map(({ quantity, purchase, id }) => ({
+				...purchases.map(({ quantity, purchase, id, createdAt }) => ({
 					id,
 					description: 'Compra #' + purchase.documentId,
 					stock: 0,
 					quantity,
-					date: purchase.createdAt,
+					date: createdAt,
 					type: 'PURCHASE',
 					user: '',
 					transactionId: purchase.id
