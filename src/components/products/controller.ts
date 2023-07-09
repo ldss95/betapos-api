@@ -287,17 +287,7 @@ export default {
 						FROM
 							inventory_adjustments
 						WHERE
-							productId = product.id AND
-							type = 'IN'
-					), 0) -
-					COALESCE((
-						SELECT
-							SUM(quantity)
-						FROM
-							inventory_adjustments
-						WHERE
-							productId = product.id AND
-							type = 'OUT'
+							productId = product.id
 					), 0)
 				),
 				2
