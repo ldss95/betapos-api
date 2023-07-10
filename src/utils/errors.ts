@@ -31,7 +31,8 @@ export enum CustomErrorType {
 	NCF_ERROR = 'ncf_error',
 	UNKNOWN_ERROR = 'unknown',
 	RECORD_NOT_FOUND = 'record_not_found',
-	PAYMENT_REQUIRED = 'payment_required'
+	PAYMENT_REQUIRED = 'payment_required',
+	ACTION_NOT_ALLOWED = 'action_not_allowed'
 }
 
 export function handleZodError(error: unknown, req: Request, res: Response, next: NextFunction) {

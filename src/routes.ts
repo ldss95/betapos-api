@@ -32,6 +32,7 @@ import ncf from './components/ncf/routes'
 import purchases from './components/purchases/routes'
 import computingScales from './components/computing-scales/routes'
 import plans from './components/plans/routes'
+import inventory from './components/inventory/routes'
 import ws from './components/ws/routes'
 
 router.use('/auth', auth)
@@ -63,6 +64,7 @@ router.use('/settings', settings)
 router.use('/ncf', ncf)
 router.use('/purchases', purchases)
 router.use('/computing-scales', computingScales)
+router.use('/inventory', inventory)
 router.use('/ws', ws)
 
 router.all('*', (req, res) => res.status(404).sendFile(join(__dirname, '404.html')))
