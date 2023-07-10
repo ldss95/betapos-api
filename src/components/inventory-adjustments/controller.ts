@@ -5,11 +5,11 @@ import { createInventoryAdjustment } from './services'
 export default {
 	create: async (req: Request, res: Response) => {
 		const { userId } = req.session!
-		const { productId, quantity, description } = req.body
+		const { productId, quantity, description, type } = req.body
 
 		await createInventoryAdjustment({
 			userId,
-			type: 'IN',
+			type,
 			productId,
 			quantity,
 			description
