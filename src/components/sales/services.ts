@@ -279,19 +279,43 @@ export async function getSalesSummary(businessId: string, type: string) {
 async function today(businessId: string) {
 	const salesQty = await Sale.count({
 		where: {
-			[Op.and]: [{ businessId }, literal('DATE(sale.createdAt) = CURDATE()')]
+			[Op.and]: [
+				{ businessId },
+				{
+					status: {
+						[Op.ne]: 'CANCELLED'
+					}
+				},
+				literal('DATE(sale.createdAt) = CURDATE()')
+			]
 		}
 	})
 
 	const salesAmount = await Sale.sum('amount', {
 		where: {
-			[Op.and]: [{ businessId }, literal('DATE(sale.createdAt) = CURDATE()')]
+			[Op.and]: [
+				{ businessId },
+				{
+					status: {
+						[Op.ne]: 'CANCELLED'
+					}
+				},
+				literal('DATE(sale.createdAt) = CURDATE()')
+			]
 		}
 	})
 
 	const sales = await Sale.findAll({
 		where: {
-			[Op.and]: [{ businessId }, literal('DATE(sale.createdAt) = CURDATE()')]
+			[Op.and]: [
+				{ businessId },
+				{
+					status: {
+						[Op.ne]: 'CANCELLED'
+					}
+				},
+				literal('DATE(sale.createdAt) = CURDATE()')
+			]
 		},
 		include: [
 			{
@@ -345,6 +369,7 @@ async function week(businessId: string) {
 				sales s
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
 				WEEK(s.createdAt) = WEEK(CURDATE()) AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
 			GROUP BY DATE(s.createdAt)
@@ -366,6 +391,8 @@ async function week(businessId: string) {
 			LEFT JOIN
 				sales_products sp ON sp.saleId = s.id
 			WHERE
+				sp.deletedAt IS NULL AND
+				s.status != 'CANCELLED' AND
 				s.businessId = ? AND
 				WEEK(s.createdAt) = WEEK(CURDATE()) AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
@@ -391,6 +418,7 @@ async function week(businessId: string) {
 				sales_payment_types spt ON spt.id = sp.typeId
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
 				spt.name = 'Fiao' AND
 				WEEK(s.createdAt) = WEEK(CURDATE()) AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
@@ -421,6 +449,7 @@ async function month(businessId: string) {
 				sales s
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
 				MONTH(s.createdAt) = MONTH(CURDATE()) AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
 			GROUP BY DATE(s.createdAt)
@@ -443,6 +472,8 @@ async function month(businessId: string) {
 				sales_products sp ON sp.saleId = s.id
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
+				sp.deletedAt IS NULL AND
 				MONTH(s.createdAt) = MONTH(CURDATE()) AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
 			GROUP BY DATE(s.createdAt)
@@ -467,6 +498,7 @@ async function month(businessId: string) {
 				sales_payment_types spt ON spt.id = sp.typeId
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
 				spt.name = 'Fiao' AND
 				MONTH(s.createdAt) = MONTH(CURDATE()) AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
@@ -504,6 +536,7 @@ async function year(businessId: string) {
 				sales s
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
 			GROUP BY MONTH(s.createdAt)
 			ORDER BY month ASC
@@ -526,6 +559,8 @@ async function year(businessId: string) {
 				sales_products sp ON sp.saleId = s.id
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
+				sp.deletedAt IS NULL AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
 			GROUP BY MONTH(s.createdAt)
 			ORDER BY month ASC
@@ -550,6 +585,7 @@ async function year(businessId: string) {
 				sales_payment_types spt ON spt.id = sp.typeId
 			WHERE
 				s.businessId = ? AND
+				s.status != 'CANCELLED' AND
 				spt.name = 'Fiao' AND
 				YEAR(s.createdAt) = YEAR(CURDATE())
 			GROUP BY MONTH(s.createdAt)
