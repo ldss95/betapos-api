@@ -141,5 +141,14 @@ export async function getNextNcf(typeId: NcfTypeId, lastLocalNcf: number, mercha
 		return availability.startOn
 	}
 
-	return Math.max(lastCloudNcf || 0, lastLocalNcf || 0, (availability.startOn || 0) - 1) + 1
+	const next = Math.max(lastCloudNcf || 0, lastLocalNcf || 0, (availability.startOn || 0) - 1) + 1
+	if (next > availability.stopOn) {
+		throw new CustomError({
+			type: CustomErrorType.NCF_ERROR,
+			name: 'El cliente agotó todos los comprobantes disponibles',
+			description: 'El cliente no cuenta con comprobantes disponibles',
+		})
+	}
+
+	return next
 }
