@@ -6,6 +6,7 @@ import { Province } from '../provinces/model'
 import { BusinessProps } from './interface'
 import { Device } from '../devices/model'
 import { notifyUpdate } from '../../utils/helpers'
+import { Plan } from '../plans/model'
 
 const Business = db.define<BusinessProps>(
 	'business',
@@ -60,6 +61,7 @@ const Business = db.define<BusinessProps>(
 			allowNull: false
 		},
 		referredBy: DataTypes.UUID,
+		planId: DataTypes.UUID,
 		isActive: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true,
@@ -83,6 +85,7 @@ const Business = db.define<BusinessProps>(
 
 Business.belongsTo(BusinessType, { foreignKey: 'typeId', as: 'type' })
 Business.belongsTo(Province, { foreignKey: 'provinceId', as: 'province' })
+Business.belongsTo(Plan, { foreignKey: 'planId', as: 'plan' })
 
 Business.hasMany(Device, { foreignKey: 'businessId', as: 'devices' })
 

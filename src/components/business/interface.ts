@@ -18,6 +18,7 @@ export interface BusinessProps extends Model {
 	province?: ProvinceProps;
 	devices: DeviceProps[];
 	referredBy: string;
+	planId: string;
 	isActive: boolean;
 	createdAt: string;
 	updatedAt: string;
