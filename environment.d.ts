@@ -19,5 +19,6 @@ declare namespace NodeJS {
 		OPEN_IA_API_KEY: string;
 		DISABLE_MULTI_THREADS: 'true' | 'false';
 		MAX_THREADS: string;
+		RESEND_API_KEY: string;
 	}
 }
