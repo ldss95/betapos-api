@@ -5,7 +5,7 @@ import { ComputingScaleProps } from './interface'
 import { ComputingScale } from './model'
 
 export async function createComputingScale(data: ComputingScaleProps, merchantId: string): Promise<void> {
-	await ComputingScale.create(data)
+	await ComputingScale.create({ ...data })
 	notifyUpdate('scales', merchantId)
 }
 

@@ -15,7 +15,7 @@ interface SaveHistoryProps {
 }
 
 export async function saveHistory(history: SaveHistoryProps) {
-	await History.create(history)
+	await History.create({ ...history })
 	const to = 'jordany.jpa@gmail.com'
 
 	if (history.userId === 'b337b592-4caa-11ed-bef0-d52c5e528293' && history.table === Table.PRODUCTS) {

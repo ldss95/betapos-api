@@ -68,7 +68,7 @@ interface AddProductCount2InventoryParams {
 }
 
 export async function addProductCount2Inventory(params: AddProductCount2InventoryParams) {
-	await InventoryCount.create(params)
+	await InventoryCount.create({ ...params })
 }
 
 export async function modifyProductCountOnInventory(id: string, quantity: number) {
