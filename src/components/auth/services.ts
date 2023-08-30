@@ -72,7 +72,8 @@ export async function login(email: string, password: string): Promise<LoginResPr
 		order: [['createdAt', 'DESC']]
 	})
 
-	if (bills.length >= 3 && moment().isAfter(moment(bills[0].createdAt).add(7, 'days'))) {
+	const omit = user.businessId === '2a5ba546-b7c2-4c2b-abe1-88e7139551e9' // Omite suspension para colmado martin
+	if (bills.length >= 2 && !omit) {
 		throw new CustomError({
 			status: 402,
 			name: 'Cuenta suspendida por impago',
