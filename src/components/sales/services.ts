@@ -88,10 +88,11 @@ interface GetAllSalesProps {
 	search: string;
 	dateFrom?: string;
 	dateTo?: string;
+	ncfType?: '01' | '02';
 	shiftId?: string;
 }
 
-export async function getAllSales({ pagination, filters, sorter, search, dateFrom, dateTo, shiftId, businessId }: GetAllSalesProps) {
+export async function getAllSales({ pagination, filters, sorter, search, dateFrom, dateTo, shiftId, businessId, ncfType }: GetAllSalesProps) {
 	const currentPage = pagination.current || 1
 	const pageSize = pagination.pageSize || 100
 
@@ -163,6 +164,11 @@ export async function getAllSales({ pagination, filters, sorter, search, dateFro
 					createdAt: {
 						[Op.gte]: dateFrom
 					}
+				})
+			},
+			{
+				...(ncfType && {
+					ncfTypeId: ncfType
 				})
 			},
 			{
@@ -605,7 +611,7 @@ async function year(businessId: string) {
 	}))
 }
 
-export async function createExcelFile(businessId: string, dateFrom?: string, dateTo?: string): Promise<Buffer | undefined> {
+export async function createExcelFile(businessId: string, dateFrom?: string, dateTo?: string, ncfType?: '01' | '02'): Promise<Buffer | undefined> {
 	const conditions: any[] = [{ businessId }]
 	if (dateFrom && dateTo) {
 		conditions.push({
@@ -627,6 +633,11 @@ export async function createExcelFile(businessId: string, dateFrom?: string, dat
 		})
 	}
 
+	if (ncfType) {
+		conditions.push({
+			ncfTypeId: ncfType
+		})
+	}
 
 	const sales = await Sale.findAll({
 		where: {

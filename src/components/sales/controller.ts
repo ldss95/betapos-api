@@ -55,7 +55,7 @@ export default {
 		res.sendStatus(200)
 	},
 	getAll: async (req: Request, res: Response) => {
-		const { pagination, filters, sorter, search, dateFrom, dateTo, shiftId } = req.body
+		const { pagination, filters, sorter, search, dateFrom, dateTo, shiftId, ncfType } = req.body
 		const { count, total, sales } = await getAllSales({
 			pagination,
 			filters,
@@ -64,7 +64,8 @@ export default {
 			dateFrom,
 			dateTo,
 			shiftId,
-			businessId: req.session!.businessId
+			businessId: req.session!.businessId,
+			ncfType
 		})
 
 		res.status(200).send({
@@ -150,9 +151,9 @@ export default {
 		res.status(200).send(summary)
 	},
 	export: async (req: Request, res: Response) => {
-		const { dateFrom, dateTo } = req.query
+		const { dateFrom, dateTo, ncfType } = req.query
 		const { businessId } = req.session!
-		const doc = await createExcelFile(businessId, dateFrom?.toString(), dateTo?.toString())
+		const doc = await createExcelFile(businessId, dateFrom?.toString(), dateTo?.toString(), ncfType as ('01' | '02'))
 
 		res.status(200).send(doc)
 	}
