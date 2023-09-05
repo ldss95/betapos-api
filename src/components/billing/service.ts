@@ -59,13 +59,17 @@ export async function markInvoiceAsPayed(id: string, date: string, voucherUrl?: 
 		})
 	})
 
-	await sendReceipt(bill.business.email, {
-		amount: format.cash(bill.amount, 2),
-		invoice_number: `${Number(bill.orderNumber)}`,
-		date: moment(date).format('DD MMM YYYY'),
-		time: moment(date).format('hh:mm A'),
-		service_name: `Uso POS ${moment(date).format('MMMM')}`
-	})
+	await sendReceipt(
+		bill.business.email,
+		`Tu recibo de ${moment(date).format('MMMM')}`,
+		{
+			amount: format.cash(bill.amount, 2),
+			invoice_number: `${Number(bill.orderNumber)}`,
+			date: moment(date).format('DD MMM YYYY'),
+			time: moment(date).format('hh:mm A'),
+			service_name: `Uso POS ${moment(date).format('MMMM')}`
+		}
+	)
 }
 
 interface SendReceiptDataProps {
@@ -76,7 +80,7 @@ interface SendReceiptDataProps {
 	service_name: string;
 }
 
-export async function sendReceipt(email: string, data: SendReceiptDataProps) {
+export async function sendReceipt(email: string, subject: string, data: SendReceiptDataProps) {
 	const filePath = path.join(process.cwd(), 'src', 'templates', 'receipt.hbs')
 	const file = fs.readFileSync(filePath, 'utf-8')
 	const template = hbs.compile(file)
@@ -85,7 +89,7 @@ export async function sendReceipt(email: string, data: SendReceiptDataProps) {
 	await resend.emails.send({
 		from: 'Beta POS <no-reply@betapos.com.do>',
 		to: email,
-		subject: `Tu recibo de ${moment().format('MMMM')}`,
+		subject,
 		html
 	})
 }
