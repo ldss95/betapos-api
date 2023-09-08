@@ -36,10 +36,10 @@ export async function createInventoryAdjustment({ type, productId, quantity, des
 							FROM
 								purchase_products pp
 							JOIN
-								purchases p ON p.id = pp.purchaseId
+								purchases _p ON _p.id = pp.purchaseId
 							WHERE
 								pp.productId = p.id AND
-								p.affectsExistence = 1
+								_p.affectsExistence = 1
 						), 0) +
 						COALESCE((
 							SELECT
