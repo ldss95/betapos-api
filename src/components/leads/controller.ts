@@ -3,7 +3,8 @@ import { createNewLead, getAllLeads } from './services'
 
 export default {
 	create: async (req: Request, res: Response) => {
-		await createNewLead(req.body)
+		const { userId } = req.session!
+		await createNewLead({ ...req.body, userId })
 		res.sendStatus(201)
 	},
 	getAll: async (req: Request, res: Response) => {
