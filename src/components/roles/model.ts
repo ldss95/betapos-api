@@ -54,7 +54,7 @@ Role.sync().then(() => {
 			},
 			{
 				adminName: 'Soporte',
-				code: 'SUPORT',
+				code: 'SUPPORT',
 				isPublic: false,
 				description: 'Puede acceder al panel y aplicacion movil de ayuda para dar soporte a los clientes'
 			}
