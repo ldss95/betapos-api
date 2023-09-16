@@ -2,13 +2,21 @@ import { Router } from 'express'
 
 import controller from './controller'
 import { isLoggedIn, tokenIsValid } from '../../middlewares/auth'
-import { validateAttachFile, validateNewPurchase, validateUpdatePurchase, validateUpdateProductQty, validateUpdateProductCost, validateUpdateProductPrice } from './middlewares'
+import {
+	validateAttachFile,
+	validateNewPurchase,
+	validateUpdatePurchase,
+	validateUpdateProductQty,
+	validateUpdateProductCost,
+	validateUpdateProductPrice,
+	handleCreateError
+} from './middlewares'
 import { uploadSingle } from '../../middlewares/files'
 const router: Router = Router()
 
 router.route('/')
 	.get(isLoggedIn, tokenIsValid, controller.getAll)
-	.post(isLoggedIn, tokenIsValid, validateNewPurchase, controller.create)
+	.post(isLoggedIn, tokenIsValid, validateNewPurchase, controller.create, handleCreateError)
 	.put(isLoggedIn, tokenIsValid, validateUpdatePurchase, controller.update)
 
 router.route('/:id')

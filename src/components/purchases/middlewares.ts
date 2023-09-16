@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { UniqueConstraintError } from 'sequelize'
 import { z} from 'zod'
 
 export function validateNewPurchase(req: Request, res: Response, next: NextFunction): Response | void {
@@ -74,4 +75,15 @@ export function validateUpdateProductPrice(req: Request, res: Response, next: Ne
 
 	updateProductPriceSchema.parse(req.body)
 	next()
+}
+
+export function handleCreateError(error: unknown, req: Request, res: Response, next: NextFunction) {
+	if (error instanceof UniqueConstraintError) {
+		return res.status(400).json({
+			errors: [{ name: 'Factura Duplicada' }],
+			message: 'Esta factura ya fue registrada anteriormente'
+		})
+	}
+
+	next(error)
 }
