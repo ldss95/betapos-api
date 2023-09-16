@@ -3,7 +3,7 @@ import { Province } from '../provinces/model'
 import { User } from '../users/model'
 import { Lead } from './model'
 
-export async function getAllLeads(){
+export async function getAllLeads(userId?: string){
 	const leads = await Lead.findAll({
 		include: [
 			{
@@ -19,7 +19,12 @@ export async function getAllLeads(){
 				as: 'type'
 			}
 		],
-		order: [['createdAt', 'DESC']]
+		order: [['createdAt', 'DESC']],
+		where: {
+			...(userId && {
+				userId
+			})
+		}
 	})
 
 	return leads.map(lead => lead.toJSON())
