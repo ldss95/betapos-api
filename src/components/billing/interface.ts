@@ -7,8 +7,7 @@ export interface BillProps extends Model {
 	businessId: string;
 	business: BusinessProps;
 	orderNumber: string;
-	uepaPayOrderNumber?: string;
-	uepaPayLink?: string;
+	stripePayUrl?: string;
 	transferVoucherUrl?: string;
 	amount: number;
 	description: string;

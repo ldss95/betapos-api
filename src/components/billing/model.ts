@@ -21,12 +21,7 @@ const Bill = db.define<BillProps>(
 			allowNull: false,
 			unique: true
 		},
-		uepaPayOrderNumber: {
-			type: DataTypes.CHAR(7),
-			allowNull: true,
-			unique: true
-		},
-		uepaPayLink: {
+		stripePayUrl: {
 			type: DataTypes.STRING,
 			allowNull: true,
 			unique: true,

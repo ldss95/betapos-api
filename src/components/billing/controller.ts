@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import moment from 'moment'
 
 import { listAllInvoices, markInvoiceAsPayed } from './service'
 
@@ -14,6 +15,14 @@ export default {
 		const file = req.file as Express.MulterS3.File
 		await markInvoiceAsPayed(id, date, file?.location)
 
+		res.sendStatus(204)
+	},
+	payedWithStripe: async (req: Request, res: Response) => {
+		const { data } = req.body
+		await markInvoiceAsPayed(
+			data.object.metadata.billId,
+			moment().format('YYYY-MM-DD')
+		)
 		res.sendStatus(204)
 	}
 }
