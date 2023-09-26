@@ -20,6 +20,8 @@ import {
 	getUpdates,
 	updateProduct
 } from './services'
+import { Stock } from '../stocks/model'
+import { StockTransactionTypeId } from '../stocks/interface'
 
 export default {
 	create: async (req: Request, res: Response) => {
@@ -73,133 +75,81 @@ export default {
 			})
 		}
 
-		let transactions = [
-			{
-				id: '1',
-				description: 'Creacion del producto',
-				stock: product.initialStock,
-				quantity: product.initialStock,
-				date: product.createdAt,
-				type: 'INITIAL_STOCK',
-				user: '',
-				transactionId: ''
-			}
-		]
-
-		/**
-		 * Obtener las ventas
-		 */
-		const sales = await SaleProduct.findAll({
+		const transactions = await Stock.findAll({
+			attributes: {
+				include: [
+					[
+						literal(`
+							(SELECT
+								CONCAT(firstName, ' ', lastName) AS 'user'
+							FROM
+								users WHERE id = (
+									SELECT
+										sellerId
+									FROM
+										sales
+									WHERE
+										id = stock.transactionId
+								)
+							)
+						`),
+						'user'
+					],
+					[
+						literal(`
+							(SELECT
+								ticketNumber
+							FROM
+								sales
+							WHERE
+								id = stock.transactionId
+							)
+						`),
+						'ticketNumber'
+					]
+				]
+			},
 			where: {
 				productId: id
 			},
-			include: {
-				model: Sale,
-				as: 'sale',
-				include: [
-					{
-						model: User,
-						as: 'seller',
-						paranoid: false
-					}
-				],
-				where: {
-					status: 'DONE'
-				},
-				required: true
-			}
+			order: [['createdAt', 'DESC']]
 		})
 
-		if (sales.length > 0) {
-			transactions.push(
-				...sales.map(({ quantity, sale, id }) => ({
-					id,
-					description: 'Venta #' + sale.ticketNumber,
-					stock: 0,
-					quantity: quantity * -1,
-					date: sale.createdAt,
-					type: 'SALE',
-					user: sale.seller.firstName + ' ' + sale.seller.lastName,
-					transactionId: sale.id
-				}))
-			)
+		function getTransactionType(transactionTypeId: string) {
+			if (transactionTypeId === StockTransactionTypeId.SALE) {
+				return 'SALE'
+			}
+
+			if (transactionTypeId === StockTransactionTypeId.PURCHASE) {
+				return 'PURCHASE'
+			}
+
+			return 'INVENTORY_ADJUSTMENT'
 		}
 
-		/**
-		 * Obtener las compras
-		 */
-		const purchases = await PurchaseProduct.findAll({
-			where: {
-				productId: id
-			},
-			include: {
-				model: Purchase,
-				as: 'purchase',
-				where: {
-					affectsExistence: true
-				},
-				required: true
+		function getDescription(transactionTypeId: string, ticketNumber: string) {
+			if (transactionTypeId === StockTransactionTypeId.SALE) {
+				return `Venta #${ticketNumber}`
 			}
-		})
 
-		if (purchases.length > 0) {
-			transactions.push(
-				...purchases.map(({ quantity, purchase, id, createdAt }) => ({
+			return ''
+		}
+
+		res.status(200).send(
+			transactions.map(t => {
+				const { id, stock, quantity, createdAt, transactionId, user, transactionTypeId, ticketNumber } = t.toJSON()
+				return {
 					id,
-					description: 'Compra #' + purchase.documentId,
-					stock: 0,
+					description: getDescription(transactionTypeId, ticketNumber),
+					stock,
 					quantity,
 					date: createdAt,
-					type: 'PURCHASE',
-					user: '',
-					transactionId: purchase.id
-				}))
-			)
-		}
-
-		/**
-		 * Obtener ajustes de inventario
-		 */
-		const adjustments = await InventoryAdjustment.findAll({
-			where: {
-				productId: id
-			},
-			include: {
-				model: User,
-				as: 'user',
-				paranoid: false
-			}
-		})
-
-		if (adjustments.length > 0) {
-			transactions.push(
-				...adjustments.map(({ quantity, createdAt, description, id, user }) => ({
-					id,
-					description,
-					stock: 0,
-					quantity: quantity,
-					date: createdAt,
-					type: 'INVENTORY_ADJUSTMENT',
-					user: user.firstName + ' ' + user.lastName,
-					transactionId: id
-				}))
-			)
-		}
-
-		// Ordena por fecha
-		transactions = transactions.sort(
-			(a, b) => moment(a.date).toDate().getTime() - moment(b.date).toDate().getTime()
+					type: getTransactionType(transactionTypeId),
+					user,
+					transactionId
+				}
+			})
 		)
-		// Asigna el stock
-		transactions.forEach((transaction, index) => {
-			if (index === 0) {
-				return
-			}
-
-			transaction.stock = transactions[index - 1].stock + transaction.quantity
-		})
-
-		res.status(200).send(transactions)
 	},
 	getOne: async (req: Request, res: Response) => {
 		const { id } = req.params

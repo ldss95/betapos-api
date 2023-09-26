@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize'
+import { DataTypes, Op } from 'sequelize'
 
 import { db } from '../../database/connection'
 import { SaleProps } from './interface'
@@ -9,6 +9,8 @@ import { User } from '../users/model'
 import { Shift } from '../shifts/model'
 import { Client } from '../clients/model'
 import { SalePaymentType } from '../sales-payments-types/model'
+import { Stock } from '../stocks/model'
+import { StockTransactionTypeId } from '../stocks/interface'
 
 const Sale = db.define<SaleProps>(
 	'sale',
@@ -72,7 +74,30 @@ const Sale = db.define<SaleProps>(
 			{
 				fields: ['businessId', 'ticketNumber']
 			}
-		]
+		],
+		hooks: {
+			afterCreate: async (sale) => {
+				const currentStocks = await Stock.findAll({
+					where: {
+						productId: {
+							[Op.in]: sale.products.map(({ productId }) => productId)
+						}
+					},
+					group: ['productId'],
+					order: [['createdAt', 'DESC']]
+				})
+
+				await Stock.bulkCreate(
+					sale.products.map(({ productId, quantity }) => ( {
+						productId,
+						quantity: quantity * -1,
+						stock: (currentStocks.find((stock) => stock.productId === productId)?.stock || 0) - quantity,
+						transactionId: sale.id,
+						transactionTypeId: StockTransactionTypeId.SALE
+					}))
+				)
+			}
+		}
 	}
 )
 

@@ -182,9 +182,8 @@ export async function addProductToPurchase(purchaseId: string, productId: string
 }
 
 export async function updatePurchaseProductQty(id: string, quantity: number): Promise<void> {
-	await PurchaseProduct.update({ quantity }, {
-		where: { id }
-	})
+	const product = await PurchaseProduct.findByPk(id)
+	product && await product.update({ quantity })
 }
 
 export async function updatePurchaseProductCost(merchantId: string, id: string, cost: number, history: HistoryAdditionalProps): Promise<void> {
