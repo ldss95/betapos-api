@@ -61,37 +61,14 @@ export async function getAllProducts({
 	const stockQuery = `
 		ROUND(
 			(
-				product.initialStock -
-				COALESCE((
-					SELECT
-						SUM(sp.quantity)
-					FROM
-						sales_products sp
-					JOIN
-						sales s ON s.id = sp.saleId
-					WHERE
-						sp.productId = product.id AND
-						s.status = 'DONE'
-				), 0) +
-				COALESCE((
-					SELECT
-						SUM(pp.quantity)
-					FROM
-						purchase_products pp
-					JOIN
-						purchases p ON p.id = pp.purchaseId
-					WHERE
-						pp.productId = product.id AND
-						p.affectsExistence = 1
-				), 0) +
-				COALESCE((
-					SELECT
-						SUM(quantity)
-					FROM
-						inventory_adjustments
-					WHERE
-						productId = product.id
-				), 0)
+				SELECT
+					stock
+				FROM
+					stocks
+				WHERE
+					productId = product.id
+				ORDER BY createdAt DESC
+				LIMIT 1
 			),
 			2
 		)
@@ -208,47 +185,14 @@ export async function createExcelFile(businessId: string): Promise<Buffer | unde
 					literal(`
 						ROUND(
 							(
-								product.initialStock -
-								COALESCE((
-									SELECT
-										SUM(sp.quantity)
-									FROM
-										sales_products sp
-									JOIN
-										sales s ON s.id = sp.saleId
-									WHERE
-										sp.productId = product.id AND
-										s.status = 'DONE'
-								), 0) +
-								COALESCE((
-									SELECT
-										SUM(pp.quantity)
-									FROM
-										purchase_products pp
-									JOIN
-										purchases p ON p.id = pp.purchaseId
-									WHERE
-										pp.productId = product.id AND
-										p.affectsExistence = 1
-								), 0) +
-								COALESCE((
-									SELECT
-										SUM(quantity)
-									FROM
-										inventory_adjustments
-									WHERE
-										productId = product.id AND
-										type = 'IN'
-								), 0) -
-								COALESCE((
-									SELECT
-										SUM(quantity)
-									FROM
-										inventory_adjustments
-									WHERE
-										productId = product.id AND
-										type = 'OUT'
-								), 0)
+								SELECT
+									stock
+								FROM
+									stocks
+								WHERE
+									productId = product.id
+								ORDER BY createdAt DESC
+								LIMIT 1
 							),
 							2
 						)
