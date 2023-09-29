@@ -7,17 +7,23 @@ import { Product } from '../products/model'
 import { updateProduct } from '../products/services'
 import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
-import { PurchaseProps } from './interface'
-import { Purchase } from './model'
+import { PurchaseProps, PurchaseStatusEnum } from './interface'
+import { Purchase, PurchaseStatus } from './model'
 import { HistoryAdditionalProps } from '../history/interface'
 
 export async function getAllPurchases(businessId: string): Promise<PurchaseProps[]> {
 	const purchases = await Purchase.findAll({
 		where: { businessId },
-		include: {
-			model: Provider,
-			as: 'provider'
-		},
+		include: [
+			{
+				model: Provider,
+				as: 'provider'
+			},
+			{
+				model: PurchaseStatus,
+				as: 'status'
+			}
+		],
 		order: [['date', 'DESC']]
 	})
 
@@ -40,6 +46,10 @@ export async function getOnePurchase(id: string): Promise<PurchaseProps | null> 
 					paranoid: false
 				}],
 				as: 'products'
+			},
+			{
+				model: PurchaseStatus,
+				as: 'status'
 			}
 		],
 		order: [
@@ -61,7 +71,7 @@ export async function getOnePurchase(id: string): Promise<PurchaseProps | null> 
 	return purchase?.toJSON()
 }
 
-export async function createPurchase(data: PurchaseProps, businessId: string, userId: string): Promise<string> {
+export async function createPurchase(data: PurchaseProps, businessId: string, userId: string) {
 	const provider = await Provider.findByPk(data.providerId)
 
 	if (!provider) {
@@ -85,11 +95,13 @@ export async function createPurchase(data: PurchaseProps, businessId: string, us
 	return id
 }
 
-export async function updatePurchase(data: PurchaseProps, businessId: string): Promise<void> {
+export async function updatePurchase(data: PurchaseProps, businessId: string) {
 	const purchase = await Purchase.findByPk(data.id)
 	if (!purchase || purchase.businessId !== businessId) {
 		return
 	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
 
 	const provider = await Provider.findByPk(data.providerId)
 
@@ -129,22 +141,26 @@ export async function updatePurchase(data: PurchaseProps, businessId: string): P
 	})
 }
 
-export async function saveUploadedPurchaseFile(id: string, fileUrl: string): Promise<void> {
-	await Purchase.update(
-		{
-			fileUrl: encodeURI(fileUrl)
-		},
-		{
-			where: { id }
-		}
-	)
+export async function saveUploadedPurchaseFile(id: string, fileUrl: string) {
+	const purchase = await Purchase.findByPk(id)
+	if (!purchase) {
+		return
+	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
+
+	await purchase.update({
+		fileUrl: encodeURI(fileUrl)
+	})
 }
 
-export async function deletePurchaseFile(id: string): Promise<void> {
+export async function deletePurchaseFile(id: string) {
 	const purchase = await Purchase.findByPk(id)
 	if (!purchase?.fileUrl) {
 		return
 	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
 
 	const url = purchase.fileUrl
 	await purchase.update({ fileUrl: null })
@@ -153,15 +169,18 @@ export async function deletePurchaseFile(id: string): Promise<void> {
 	deleteFile(fileName)
 }
 
-export async function markPurchaseAsPayed(id: string): Promise<void> {
-	await Purchase.update({ payed: true }, { where: { id } })
+export async function markPurchaseAsPayed(id: string) {
+	const purchase = await Purchase.findByPk(id)
+	purchase && await purchase.update({ payed: true })
 }
 
-export async function deletePurchase(id: string): Promise<void> {
+export async function deletePurchase(id: string) {
 	const purchase = await Purchase.findByPk(id)
 	if (!purchase) {
 		return
 	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
 
 	await purchase.destroy()
 	if (purchase.fileUrl) {
@@ -169,7 +188,14 @@ export async function deletePurchase(id: string): Promise<void> {
 	}
 }
 
-export async function addProductToPurchase(purchaseId: string, productId: string): Promise<void> {
+export async function addProductToPurchase(purchaseId: string, productId: string) {
+	const purchase = await Purchase.findByPk(purchaseId)
+	if (!purchase) {
+		return
+	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
+
 	const product = await Product.findByPk(productId)
 
 	await PurchaseProduct.create({
@@ -181,12 +207,22 @@ export async function addProductToPurchase(purchaseId: string, productId: string
 	})
 }
 
-export async function updatePurchaseProductQty(id: string, quantity: number): Promise<void> {
+export async function updatePurchaseProductQty(id: string, quantity: number) {
 	const product = await PurchaseProduct.findByPk(id)
-	product && await product.update({ quantity })
+	if (!product) {
+		return
+	}
+
+	const purchase = await Purchase.findByPk(product.purchaseId)
+	if (!purchase) {
+		return
+	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
+	await product.update({ quantity })
 }
 
-export async function updatePurchaseProductCost(merchantId: string, id: string, cost: number, history: HistoryAdditionalProps): Promise<void> {
+export async function updatePurchaseProductCost(merchantId: string, id: string, cost: number, history: HistoryAdditionalProps) {
 	const product = await PurchaseProduct.findByPk(id)
 	if (!product) {
 		throw new CustomError({
@@ -196,9 +232,14 @@ export async function updatePurchaseProductCost(merchantId: string, id: string, 
 		})
 	}
 
-	await PurchaseProduct.update({ cost }, {
-		where: { id }
-	})
+	const purchase = await Purchase.findByPk(product.purchaseId)
+	if (!purchase) {
+		return
+	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
+
+	await product.update({ cost })
 
 	updateProduct(
 		merchantId,
@@ -210,7 +251,7 @@ export async function updatePurchaseProductCost(merchantId: string, id: string, 
 	)
 }
 
-export async function updatePurchaseProductPrice(merchantId: string, id: string, price: number, history: HistoryAdditionalProps): Promise<void> {
+export async function updatePurchaseProductPrice(merchantId: string, id: string, price: number, history: HistoryAdditionalProps) {
 	const product = await PurchaseProduct.findByPk(id)
 	if (!product) {
 		throw new CustomError({
@@ -220,9 +261,14 @@ export async function updatePurchaseProductPrice(merchantId: string, id: string,
 		})
 	}
 
-	await PurchaseProduct.update({ price }, {
-		where: { id }
-	})
+	const purchase = await Purchase.findByPk(product.purchaseId)
+	if (!purchase) {
+		return
+	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
+
+	await product.update({ price })
 
 	updateProduct(
 		merchantId, {
@@ -233,8 +279,38 @@ export async function updatePurchaseProductPrice(merchantId: string, id: string,
 	)
 }
 
-export async function removePurchaseProduct(id: string): Promise<void> {
-	await PurchaseProduct.destroy({
-		where: { id }
+export async function removePurchaseProduct(id: string) {
+	const product = await PurchaseProduct.findByPk(id)
+	if (!product) {
+		return
+	}
+
+	const purchase = await Purchase.findByPk(product.purchaseId)
+	if (!purchase) {
+		return
+	}
+
+	stopIfPurchaseIsFinished(purchase.statusId)
+	await product.destroy()
+}
+
+export async function finishPurchase(id: string) {
+	const purchase = await Purchase.findByPk(id)
+	purchase && purchase.update({
+		statusId: PurchaseStatusEnum.Finished
 	})
+}
+
+/**
+ * Termina la ejecucion lanzando un error 400 si la factura ya se encuentra finalizada.
+ * Porque no se pueden modificar facturas finalizadas
+ */
+function stopIfPurchaseIsFinished(statusId: string) {
+	if (statusId === PurchaseStatusEnum.Finished) {
+		throw new CustomError({
+			type: CustomErrorType.ACTION_NOT_ALLOWED,
+			name: 'Factura Cerrada para modificacion',
+			description: 'No se puede modificar una factura una vez ha sido marcada como finalizada'
+		})
+	}
 }

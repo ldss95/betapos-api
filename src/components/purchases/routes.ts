@@ -34,5 +34,6 @@ router.put('/update-product-price/', isLoggedIn, tokenIsValid, validateUpdatePro
 router.post('/add-product', isLoggedIn, tokenIsValid, controller.addProduct)
 
 router.delete('/remove-product/:id', isLoggedIn, tokenIsValid, controller.removeProduct)
+router.put('/finish/:id', isLoggedIn, tokenIsValid, controller.finishPurchase)
 
 export default router

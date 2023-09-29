@@ -3,7 +3,7 @@ import { UniqueConstraintError } from 'sequelize'
 import { z} from 'zod'
 
 export function validateNewPurchase(req: Request, res: Response, next: NextFunction): Response | void {
-	const newPurchaseSchecema = z.object({
+	const newPurchaseSchema = z.object({
 		providerId: z.string(),
 		documentId: z.string(),
 		paymentType: z.enum(['IMMEDIATE', 'CREDIT']),
@@ -11,10 +11,11 @@ export function validateNewPurchase(req: Request, res: Response, next: NextFunct
 		fileUrl: z.string().optional(),
 		amount: z.number().min(1),
 		date: z.string(),
-		adjustPrices: z.boolean()
+		adjustPrices: z.boolean(),
+		ncf: z.string().length(11).optional().nullable()
 	})
 
-	newPurchaseSchecema.parse(req.body)
+	newPurchaseSchema.parse(req.body)
 	next()
 }
 

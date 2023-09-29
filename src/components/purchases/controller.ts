@@ -1,6 +1,21 @@
 import { Request, Response } from 'express'
 
-import { addProductToPurchase, createPurchase, deletePurchase, deletePurchaseFile, getAllPurchases, getOnePurchase, markPurchaseAsPayed, removePurchaseProduct, saveUploadedPurchaseFile, updatePurchase, updatePurchaseProductCost, updatePurchaseProductPrice, updatePurchaseProductQty } from './services'
+import {
+	addProductToPurchase,
+	createPurchase,
+	deletePurchase,
+	deletePurchaseFile,
+	finishPurchase,
+	getAllPurchases,
+	getOnePurchase,
+	markPurchaseAsPayed,
+	removePurchaseProduct,
+	saveUploadedPurchaseFile,
+	updatePurchase,
+	updatePurchaseProductCost,
+	updatePurchaseProductPrice,
+	updatePurchaseProductQty
+} from './services'
 
 export default {
 	getAll: async (req: Request, res: Response) => {
@@ -81,7 +96,12 @@ export default {
 	},
 	removeProduct: async (req: Request, res: Response) => {
 		const { id } = req.params
-		removePurchaseProduct(id)
+		await removePurchaseProduct(id)
+		res.sendStatus(204)
+	},
+	finishPurchase: async (req: Request, res: Response) => {
+		const { id } = req.params
+		await finishPurchase(id)
 		res.sendStatus(204)
 	}
 }

@@ -1,13 +1,15 @@
-import { DataTypes } from 'sequelize'
+import { DataTypes, Op } from 'sequelize'
 
-import { PurchaseProps } from './interface'
+import { PurchaseProps, PurchaseStatusEnum, PurchaseStatusProps } from './interface'
 import { db } from '../../database/connection'
 import { Business } from '../business/model'
 import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { User } from '../users/model'
+import { Stock } from '../stocks/model'
+import { StockTransactionTypeId } from '../stocks/interface'
 
-const Purchase = db.define<PurchaseProps>(
+export const Purchase = db.define<PurchaseProps>(
 	'purchase',
 	{
 		id: {
@@ -67,6 +69,11 @@ const Purchase = db.define<PurchaseProps>(
 		userId: {
 			type: DataTypes.UUID,
 			allowNull: false
+		},
+		ncf: DataTypes.STRING(19),
+		statusId: {
+			type: DataTypes.UUID,
+			defaultValue: PurchaseStatusEnum.Draft
 		}
 	},
 	{
@@ -75,15 +82,65 @@ const Purchase = db.define<PurchaseProps>(
 			{
 				fields: ['businessId', 'providerId', 'documentId'],
 				unique: true
+			},
+			{
+				fields: ['providerId', 'ncf']
 			}
-		]
+		],
+		hooks: {
+			afterUpdate: async (purchase) => {
+				if (!purchase.affectsExistence) {
+					return
+				}
+
+				const { statusId, id } = purchase
+
+				if (statusId === PurchaseStatusEnum.Finished && purchase.previous('statusId') === PurchaseStatusEnum.Draft) {
+					const products = await PurchaseProduct.findAll({
+						where: {
+							purchaseId: id
+						}
+					})
+
+					const currentStocks = await Stock.findAll({
+						where: {
+							productId: {
+								[Op.in]: products.map(({ productId }) => productId)
+							}
+						},
+						order: [['createdAt', 'DESC']],
+						group: ['productId']
+					})
+
+					await Stock.bulkCreate(products.map(({ productId ,quantity }) => ({
+						productId,
+						stock: (currentStocks.find((stock) => stock.productId === productId)?.stock || 0) + quantity,
+						quantity,
+						transactionId: id,
+						transactionTypeId: StockTransactionTypeId.PURCHASE
+					})))
+				}
+			}
+		}
 	}
 )
+
+export const PurchaseStatus = db.define<PurchaseStatusProps>('purchases_status', {
+	id: {
+		type: DataTypes.UUID,
+		defaultValue: DataTypes.UUIDV4,
+		primaryKey: true
+	},
+	name: {
+		type: DataTypes.STRING,
+		allowNull: false
+	},
+	description: DataTypes.TEXT,
+})
 
 Purchase.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
 Purchase.belongsTo(Provider, { foreignKey: 'providerId', as: 'provider' })
 Purchase.belongsTo(User, { foreignKey: 'userId', as: 'user' })
+Purchase.belongsTo(PurchaseStatus, { foreignKey: 'statusId', as: 'status' })
 Purchase.hasMany(PurchaseProduct, { foreignKey: 'purchaseId', as: 'products' })
 PurchaseProduct.belongsTo(Purchase, { foreignKey: 'purchaseId', as: 'purchase' })
-
-export { Purchase }
