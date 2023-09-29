@@ -34,7 +34,6 @@ import computingScales from './components/computing-scales/routes'
 import plans from './components/plans/routes'
 import inventory from './components/inventory/routes'
 import leads from './components/leads/routes'
-import ws from './components/ws/routes'
 
 router.use('/auth', auth)
 router.use('/users', users)
@@ -67,7 +66,6 @@ router.use('/purchases', purchases)
 router.use('/computing-scales', computingScales)
 router.use('/inventory', inventory)
 router.use('/leads', leads)
-router.use('/ws', ws)
 
 router.all('*', (req, res) => res.status(404).sendFile(join(__dirname, '404.html')))
 
