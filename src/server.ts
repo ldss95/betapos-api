@@ -21,7 +21,7 @@ function runServer() {
 	}
 
 	const cpus = os.cpus().length
-	if (cluster.isMaster) {
+	if (cluster.isPrimary) {
 		for (let i = 0; i < cpus && i < Number(MAX_THREADS); i++) {
 			cluster.fork()
 		}
