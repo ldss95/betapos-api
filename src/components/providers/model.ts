@@ -4,6 +4,7 @@ import { db } from '../../database/connection'
 import { ProviderProps } from './interface'
 import { Business } from '../business/model'
 import { Bank } from '../banks/model'
+import { Ncf } from '../ncf/model'
 
 const Provider = db.define<ProviderProps>(
 	'provider',
@@ -27,6 +28,7 @@ const Provider = db.define<ProviderProps>(
 				isEmail: true
 			}
 		},
+		rnc: DataTypes.STRING(11),
 		phone: {
 			type: DataTypes.CHAR(10),
 			set: function (phone: string) {
@@ -65,5 +67,6 @@ const Provider = db.define<ProviderProps>(
 
 Provider.belongsTo(Business, { foreignKey: 'businessId', as: 'business' })
 Provider.belongsTo(Bank, { foreignKey: 'bankId', as: 'bank' })
+Provider.belongsTo(Ncf, { foreignKey: 'rnc', as: 'rncIdentity' })
 
 export { Provider }

@@ -52,3 +52,23 @@ export async function login4Tests(app: Express, session: { session: string; toke
 		.map((item: string) => item.split(';')[0])
 		.join(';')
 }
+
+export function isValidRNC(rnc: string) {
+	if (!rnc) {
+		return false
+	}
+
+	if (rnc.length > 11) {
+		return false
+	}
+
+	if (rnc.length < 9) {
+		return false
+	}
+
+	if (rnc.length === 10) {
+		return false
+	}
+
+	return true
+}

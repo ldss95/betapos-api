@@ -1,68 +1,38 @@
 import { NextFunction, Request, Response } from 'express'
-import { UniqueConstraintError, ForeignKeyConstraintError } from 'sequelize'
+import { ForeignKeyConstraintError } from 'sequelize'
 
 import { Provider } from './model'
 import { Bank } from '../banks/model'
+import { isValidRNC } from '../../utils/helpers'
+
+
 
 export default {
-	create: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { businessId } = req.session!
-			await Provider.create({ ...req.body, businessId })
-			res.sendStatus(201)
-		} catch (error) {
-			if (error instanceof UniqueConstraintError) {
-				const { fields } = error
-
-				const { name, email, bankAccount } = req.body
-
-				let message = ''
-				if (fields['providers_business_id_name']) {
-					message = `Ya tienes un proveedor llamado '${name}'.`
-				} else if (fields['providers_business_id_email']) {
-					message = `Ya tienes un proveedor con el email '${email}'.`
-				} else if (fields['providers_business_id_bank_account']) {
-					message = `Ya tienes un proveedor con el numero de cuenta '${bankAccount}'.`
-				}
-
-				return res.status(400).send({ message })
-			}
-
-			res.sendStatus(500)
-			next(error)
-		}
+	create: async (req: Request, res: Response) => {
+		const { businessId } = req.session!
+		const { rnc } = req.body
+		await Provider.create({
+			...req.body,
+			rnc: isValidRNC(rnc) ? rnc : null,
+			businessId
+		})
+		res.sendStatus(201)
 	},
-	update: async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const { id } = req.body
-			await Provider.update(req.body, { where: { id } })
-			res.sendStatus(204)
-		} catch (error) {
-			if (error instanceof UniqueConstraintError) {
-				const { fields } = error
+	update: async (req: Request, res: Response) => {
+		const { id, rnc } = req.body
+		const provider = await Provider.findByPk(id)
+		provider && await provider.update({
+			...req.body,
+			rnc: isValidRNC(rnc) ? rnc : null
+		})
+		res.sendStatus(204)
 
-				const { name, email, bankAccount } = req.body
-
-				let message = ''
-				if (fields['providers.name']) {
-					message = `Ya tienes un proveedor llamado '${name}'.`
-				} else if (fields['providers.email']) {
-					message = `Ya tienes un proveedor con el email '${email}'.`
-				} else if (fields['providers.bankAccount']) {
-					message = `Ya tienes un proveedor con el numero de cuenta '${bankAccount}'.`
-				}
-
-				return res.status(400).send({ message })
-			}
-
-			res.sendStatus(500)
-			next(error)
-		}
 	},
 	delete: async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { id } = req.params
-			await Provider.destroy({ where: { id } })
+			const provider = await Provider.findByPk(id)
+			provider && await provider.destroy()
 			res.sendStatus(204)
 		} catch (error) {
 			if (error instanceof ForeignKeyConstraintError) {

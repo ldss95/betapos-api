@@ -5,6 +5,7 @@ export interface ProviderProps extends Model {
 	businessId: string;
 	name: string;
 	email: string;
+	rnc: string;
 	phone: string;
 	address: string;
 	creditDays: number;
