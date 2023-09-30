@@ -1,4 +1,4 @@
-import { DataTypes, Op } from 'sequelize'
+import { DataTypes, Op, QueryTypes } from 'sequelize'
 
 import { PurchaseProps, PurchaseStatusEnum, PurchaseStatusProps } from './interface'
 import { db } from '../../database/connection'
@@ -7,7 +7,9 @@ import { Provider } from '../providers/model'
 import { PurchaseProduct } from '../purchase-products/model'
 import { User } from '../users/model'
 import { Stock } from '../stocks/model'
-import { StockTransactionTypeId } from '../stocks/interface'
+import { StockProps, StockTransactionTypeId } from '../stocks/interface'
+import { ProductLink } from '../products/model'
+import { round } from '../../utils/helpers'
 
 export const Purchase = db.define<PurchaseProps>(
 	'purchase',
@@ -95,31 +97,145 @@ export const Purchase = db.define<PurchaseProps>(
 
 				const { statusId, id } = purchase
 
-				if (statusId === PurchaseStatusEnum.Finished && purchase.previous('statusId') === PurchaseStatusEnum.Draft) {
-					const products = await PurchaseProduct.findAll({
-						where: {
-							purchaseId: id
+				if (statusId === PurchaseStatusEnum.Draft) {
+					return
+				}
+
+				if (purchase.previous('statusId') === PurchaseStatusEnum.Finished) {
+					return
+				}
+
+				const purchaseProducts = await PurchaseProduct.findAll({
+					where: {
+						purchaseId: id
+					}
+				})
+
+				const currentStocks = await db.query<StockProps>(
+					`SELECT
+						*
+					FROM
+						stocks s
+					WHERE
+						s.createdAt = (
+							SELECT
+								MAX(createdAt)
+							FROM
+								stocks
+							WHERE
+								productId = s.productId
+							LIMIT 1
+						) AND
+						s.productId IN (?)
+					GROUP BY s.productId;`,
+					{
+						replacements: [
+							purchaseProducts.map(({ productId }) => productId),
+						],
+						type: QueryTypes.SELECT
+					}
+				)
+
+				await Stock.bulkCreate(
+					purchaseProducts.map(({ productId, quantity }) => ({
+						productId,
+						quantity: quantity,
+						stock: round(
+							(currentStocks.find((stock) => stock.productId === productId)?.stock || 0) +
+							quantity
+						),
+						transactionId: purchase.id,
+						transactionTypeId: StockTransactionTypeId.SALE
+					}))
+				)
+
+				// Productos relacionados
+				const ids = purchaseProducts.map(({ productId }) => productId)
+				const products = await ProductLink.findAll({
+					where: {
+						[Op.or]: [
+							{
+								parentProductId: {
+									[Op.in]: ids
+								}
+							},
+							{
+								childProductId: {
+									[Op.in]: ids
+								}
+							}
+						]
+					}
+				})
+
+				if (products.length === 0) {
+					return
+				}
+
+				function isParent(id: string) {
+					return purchaseProducts.map(({ productId }) => productId).includes(id)
+				}
+
+				const currentLinkedStocks = await db.query<StockProps>(
+					`SELECT
+						*
+					FROM
+						stocks s
+					WHERE
+						s.createdAt = (
+							SELECT
+								MAX(createdAt)
+							FROM
+								stocks
+							WHERE
+								productId = s.productId
+							LIMIT 1
+						) AND
+						s.productId IN (?)
+					GROUP BY s.productId;`,
+					{
+						replacements: [
+							products
+								.map(({ parentProductId, childProductId }) => [parentProductId, childProductId])
+								.flat()
+						],
+						type: QueryTypes.SELECT
+					}
+				)
+
+				await Stock.bulkCreate(
+					products.map(({ parentProductId, childProductId, quantityOnParent }) => {
+						if (isParent(parentProductId)) {
+							const quantity = purchaseProducts.find((product) => product.productId === parentProductId)?.quantity || 0
+							const childQuantity = quantity * quantityOnParent
+
+							return {
+								productId: childProductId,
+								quantity: childQuantity,
+								stock: round(
+									(currentLinkedStocks.find((stock) => stock.productId === childProductId)?.stock || 0)
+									+ childQuantity
+								),
+								transactionId: purchase.id,
+								transactionTypeId: StockTransactionTypeId.SALE
+							}
+						}
+
+						const quantity = purchaseProducts.find((product) => product.productId === childProductId)?.quantity || 0
+						const parentQuantity = round(quantity / quantityOnParent)
+
+						return {
+							productId: parentProductId,
+							quantity: parentQuantity,
+							stock: round(
+								(currentLinkedStocks.find((stock) => stock.productId === parentProductId)?.stock || 0) +
+								parentQuantity
+							),
+							transactionId: purchase.id,
+							transactionTypeId: StockTransactionTypeId.SALE
 						}
 					})
-
-					const currentStocks = await Stock.findAll({
-						where: {
-							productId: {
-								[Op.in]: products.map(({ productId }) => productId)
-							}
-						},
-						order: [['createdAt', 'DESC']],
-						group: ['productId']
-					})
-
-					await Stock.bulkCreate(products.map(({ productId ,quantity }) => ({
-						productId,
-						stock: (currentStocks.find((stock) => stock.productId === productId)?.stock || 0) + quantity,
-						quantity,
-						transactionId: id,
-						transactionTypeId: StockTransactionTypeId.PURCHASE
-					})))
-				}
+				)
 			}
 		}
 	}
