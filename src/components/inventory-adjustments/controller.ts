@@ -9,7 +9,7 @@ export default {
 
 		await createInventoryAdjustment({
 			userId,
-			type: 'IN',
+			type,
 			productId,
 			quantity,
 			description
