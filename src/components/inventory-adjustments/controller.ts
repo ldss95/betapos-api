@@ -11,7 +11,7 @@ export default {
 			userId,
 			type,
 			productId,
-			quantity,
+			quantity: Number(quantity),
 			description
 		})
 

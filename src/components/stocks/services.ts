@@ -7,7 +7,7 @@ import { round } from '../../utils/helpers'
 import { ProductLink } from '../products/model'
 
 interface HandleStockChangesParams {
-	transactionId: string;
+	transactionId?: string;
 	transactionTypeId: StockTransactionTypeId;
 	products: {
 		productId: string;

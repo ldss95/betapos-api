@@ -1,17 +1,10 @@
 import { Request, Response } from 'express'
 import { literal } from 'sequelize'
-import moment from 'moment'
 
 import { deleteFile, notifyUpdate } from '../../utils/helpers'
 import { Barcode } from '../barcodes/model'
 import { Product } from './model'
 import { Business } from '../business/model'
-import { SaleProduct } from '../sales-products/model'
-import { Sale } from '../sales/model'
-import { PurchaseProduct } from '../purchase-products/model'
-import { Purchase } from '../purchases/model'
-import { InventoryAdjustment } from '../inventory-adjustments/model'
-import { User } from '../users/model'
 import {
 	createExcelFile,
 	createProduct,
